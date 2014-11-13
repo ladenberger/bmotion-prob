@@ -1,10 +1,9 @@
 package de.bms.prob
 
-import com.corundumstudio.socketio.AckRequest
 import com.corundumstudio.socketio.SocketIOClient
 import com.corundumstudio.socketio.listener.ConnectListener
-import com.corundumstudio.socketio.listener.DataListener
 import com.google.common.io.Resources
+import de.bms.DesktopApi
 import de.bms.server.BMotionServer
 import de.prob.webconsole.WebConsole
 import groovy.util.logging.Slf4j
@@ -34,12 +33,18 @@ public class Main {
             }
         });
 
-        WebConsole.run("127.0.0.1", new Runnable() {
-            @Override
+        new Thread(new Runnable() {
             public void run() {
-                probPort = WebConsole.getPort()
+                WebConsole.run("127.0.0.1", new Runnable() {
+                    @Override
+                    public void run() {
+                        probPort = WebConsole.getPort()
+                    }
+                });
             }
-        });
+        }).start();
+
+        openBrowser(server)
 
         /*new Thread(new Runnable() {
             public void run() {
@@ -49,6 +54,11 @@ public class Main {
             }
         }).start();*/
 
+    }
+
+    static def openBrowser(BMotionServer server) {
+        java.net.URI uri = new java.net.URI("http://" + server.host + ":" + server.port + "/bms/")
+        DesktopApi.browse(uri)
     }
 
 }
