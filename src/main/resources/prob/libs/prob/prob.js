@@ -5,54 +5,33 @@ require.config({
 });
 define(['require','bmotion'], function(require,bmotion) {
 
+    $("#bmotion-label").html("BMotion Studio for ProB")
+
     bmotion.socket.on('initProB', function(data) {
 
-        // TODO: Is there a better way to append a large amount of html code?
-        $("body").append('<div data-view="Events" title="Events"><iframe src="" frameBorder="0"></iframe></div>'+
-                         '<div data-view="CurrentTrace" title="History"><iframe src="" frameBorder="0"></iframe></div>'+
-                         '<div data-view="StateInspector" title="State"><iframe src="" frameBorder="0"></iframe></div>'+
-                         '<div data-view="CurrentAnimations" title="Animations"><iframe src="" frameBorder="0"></iframe></div>'+
-                         '<div data-view="Log" title="Log"><iframe src="" frameBorder="0"></iframe></div>'+
-                         '<div data-view="ModelCheckingUI" title="ModelChecking"><iframe src="" frameBorder="0"></iframe></div>'+
-                         '<div data-view="GroovyConsoleSession" title="Console"><iframe src="" frameBorder="0"></iframe></div>')
-
-        $("body").append('<nav class="navbar navbar-default navbar-fixed-bottom" role="navigation">'+
-                         '        <div class="container-fluid">'+
-                         '            <div class="navbar-header">'+
-                         '                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">'+
-                         '                    <span class="sr-only">Toggle navigation</span>'+
-                         '                    <span class="icon-bar"></span>'+
-                         '                    <span class="icon-bar"></span>'+
-                         '                    <span class="icon-bar"></span>'+
-                         '                </button>'+
-                         '                <a class="navbar-brand" href="#">BMotion Studio for ProB</a>'+
-                         '            </div>'+
-                         '            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">'+
-                         '                <ul class="nav navbar-nav navbar-right">'+
-                         '                    <li class="dropdown">'+
-                         '                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Open View <span class="caret"></span></a>'+
-                         '                        <ul class="dropdown-menu" role="menu">'+
-                         '                            <li><a href="#" id="bt_open_CurrentTrace"><i class="glyphicon glyphicon-indent-left"></i> History</a></li>'+
-                         '                            <li><a href="#" id="bt_open_Events"><i class="glyphicon glyphicon-align-left"></i> Events</a></li>'+
-                         '                            <li><a href="#" id="bt_open_StateInspector"><i class="glyphicon glyphicon-list-alt"></i> State</a></li>'+
-                         '                            <li><a href="#" id="bt_open_CurrentAnimations"><i class="glyphicon glyphicon-th-list"></i> Animations</a></li>'+
-                         '                            <li><a href="#" id="bt_open_Log"><i class="glyphicon glyphicon-file"></i> Log</a></li>'+
-                         '                            <li><a href="#" id="bt_open_GroovyConsoleSession"><i class="glyphicon glyphicon-phone"></i> Console</a></li>'+
-                         '                            <li><a href="#" id="bt_open_ModelCheckingUI"><i class="glyphicon glyphicon-ok"></i> Model Checking</a></li>'+
-                         '                         </ul>'+
-                         '                    </li>'+
-                         '                    <li class="dropdown">'+
-                         '                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Model <span class="caret"></span></a>'+
-                         '                        <ul class="dropdown-menu" role="menu">'+
-                         '                            <li><a href="#">Reload</a></li>'+
-                         '                        </ul>'+
-                         '                    </li>'+
-                         '                </ul>'+
-                         '            </div>'+
-                         '        </div>'+
-                         '    </nav>')
-
         $(function(){
+
+            // TODO: Is there a better way to append a large amount of html code?
+            $("body").append('<div data-view="Events" title="Events"><iframe src="" frameBorder="0"></iframe></div>'+
+            '<div data-view="CurrentTrace" title="History"><iframe src="" frameBorder="0"></iframe></div>'+
+            '<div data-view="StateInspector" title="State"><iframe src="" frameBorder="0"></iframe></div>'+
+            '<div data-view="CurrentAnimations" title="Animations"><iframe src="" frameBorder="0"></iframe></div>'+
+            '<div data-view="Log" title="Log"><iframe src="" frameBorder="0"></iframe></div>'+
+            '<div data-view="ModelCheckingUI" title="ModelChecking"><iframe src="" frameBorder="0"></iframe></div>'+
+            '<div data-view="GroovyConsoleSession" title="Console"><iframe src="" frameBorder="0"></iframe></div>')
+
+            $("#bmotion-navigation").append('<li class="dropdown">'+
+            '                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Open View <span class="caret"></span></a>'+
+            '                        <ul class="dropdown-menu" role="menu">'+
+            '                            <li><a href="#" id="bt_open_CurrentTrace"><i class="glyphicon glyphicon-indent-left"></i> History</a></li>'+
+            '                            <li><a href="#" id="bt_open_Events"><i class="glyphicon glyphicon-align-left"></i> Events</a></li>'+
+            '                            <li><a href="#" id="bt_open_StateInspector"><i class="glyphicon glyphicon-list-alt"></i> State</a></li>'+
+            '                            <li><a href="#" id="bt_open_CurrentAnimations"><i class="glyphicon glyphicon-th-list"></i> Animations</a></li>'+
+            '                            <li><a href="#" id="bt_open_Log"><i class="glyphicon glyphicon-file"></i> Log</a></li>'+
+            '                            <li><a href="#" id="bt_open_GroovyConsoleSession"><i class="glyphicon glyphicon-phone"></i> Console</a></li>'+
+            '                            <li><a href="#" id="bt_open_ModelCheckingUI"><i class="glyphicon glyphicon-ok"></i> Model Checking</a></li>'+
+            '                         </ul>'+
+            '                    </li>')
 
             // Initialise dialogs
             $.each($("div[data-view]"), function( i, e ) {

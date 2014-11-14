@@ -92,11 +92,6 @@
             <artifactId>de.prob2.kernel</artifactId>
             <version>2.0.0-milestone-19-SNAPSHOT</version>
         </dependency>
-        <dependency>
-            <groupId>com.corundumstudio.socketio</groupId>
-            <artifactId>netty-socketio</artifactId>
-            <version>1.6.5</version>
-        </dependency>
     </dependencies>
 
 </project>

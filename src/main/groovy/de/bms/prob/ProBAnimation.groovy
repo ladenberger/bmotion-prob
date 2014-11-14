@@ -79,7 +79,7 @@ public abstract class ProBAnimation implements ITool, IAnimationChangeListener, 
     }
 
     @Override
-    void initModel(String modelPath) {
+    void loadModel(String modelPath) {
         log.info "Loading model " + modelPath
         def formalism = getFormalism(modelPath)
         def model = Eval.x(api, "x.${formalism}_load('$modelPath')")
