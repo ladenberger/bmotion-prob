@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<org.eventb.core.prFile version="1">
+<org.eventb.core.prProof name="INITIALISATION/inv1/INV" org.eventb.core.confidence="0" org.eventb.core.prFresh="" org.eventb.core.prHyps="">
+<org.eventb.core.prRule name="r0" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="type rewrites" org.eventb.core.prHyps="">
+<org.eventb.core.prAnte name="'">
+<org.eventb.core.prHypAction name="HIDE0" org.eventb.core.prHyps="p0"/>
+<org.eventb.core.prHypAction name="HIDE1" org.eventb.core.prHyps="p1"/>
+</org.eventb.core.prAnte>
+</org.eventb.core.prRule>
+<org.eventb.core.prPred name="p0" org.eventb.core.predicate="groundf∈ℤ">
+<org.eventb.core.prIdent name="groundf" org.eventb.core.type="ℤ"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p1" org.eventb.core.predicate="topf∈ℤ">
+<org.eventb.core.prIdent name="topf" org.eventb.core.type="ℤ"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prReas name="r0" org.eventb.core.prRID="org.eventb.core.seqprover.typeRewrites:1"/>
+</org.eventb.core.prProof>
+<org.eventb.core.prProof name="INITIALISATION/inv2/INV" org.eventb.core.confidence="1000" org.eventb.core.prFresh="" org.eventb.core.prGoal="p0" org.eventb.core.prHyps="">
+<org.eventb.core.prRule name="r0" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="simplification rewrites" org.eventb.core.prGoal="p0" org.eventb.core.prHyps="">
+<org.eventb.core.prAnte name="'" org.eventb.core.prGoal="p1">
+<org.eventb.core.prRule name="r1" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="⊤ goal" org.eventb.core.prGoal="p1" org.eventb.core.prHyps=""/>
+</org.eventb.core.prAnte>
+</org.eventb.core.prRule>
+<org.eventb.core.prIdent name="groundf" org.eventb.core.type="ℤ"/>
+<org.eventb.core.prIdent name="topf" org.eventb.core.type="ℤ"/>
+<org.eventb.core.prPred name="p1" org.eventb.core.predicate="⊤"/>
+<org.eventb.core.prPred name="p0" org.eventb.core.predicate="(∅ ⦂ ℙ(ℤ))⊆groundf ‥ topf"/>
+<org.eventb.core.prReas name="r1" org.eventb.core.prRID="org.eventb.core.seqprover.trueGoal"/>
+<org.eventb.core.prReas name="r0" org.eventb.core.prRID="org.eventb.core.seqprover.autoRewritesL2:0"/>
+</org.eventb.core.prProof>
+<org.eventb.core.prProof name="INITIALISATION/inv4/INV" org.eventb.core.confidence="1000" org.eventb.core.prFresh="" org.eventb.core.prGoal="p0" org.eventb.core.prHyps="">
+<org.eventb.core.prRule name="r0" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="simplification rewrites" org.eventb.core.prGoal="p0" org.eventb.core.prHyps="">
+<org.eventb.core.prAnte name="'" org.eventb.core.prGoal="p1">
+<org.eventb.core.prRule name="r1" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="⊤ goal" org.eventb.core.prGoal="p1" org.eventb.core.prHyps=""/>
+</org.eventb.core.prAnte>
+</org.eventb.core.prRule>
+<org.eventb.core.prIdent name="groundf" org.eventb.core.type="ℤ"/>
+<org.eventb.core.prIdent name="topf" org.eventb.core.type="ℤ"/>
+<org.eventb.core.prPred name="p1" org.eventb.core.predicate="⊤"/>
+<org.eventb.core.prPred name="p0" org.eventb.core.predicate="(∅ ⦂ ℙ(ℤ))⊆groundf ‥ topf"/>
+<org.eventb.core.prReas name="r1" org.eventb.core.prRID="org.eventb.core.seqprover.trueGoal"/>
+<org.eventb.core.prReas name="r0" org.eventb.core.prRID="org.eventb.core.seqprover.autoRewritesL2:0"/>
+</org.eventb.core.prProof>
+<org.eventb.core.prProof name="move_up/inv1/INV" org.eventb.core.confidence="0" org.eventb.core.prFresh="" org.eventb.core.prHyps="">
+<org.eventb.core.prRule name="r0" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="type rewrites" org.eventb.core.prHyps="">
+<org.eventb.core.prAnte name="'">
+<org.eventb.core.prHypAction name="HIDE0" org.eventb.core.prHyps="p0"/>
+<org.eventb.core.prHypAction name="HIDE1" org.eventb.core.prHyps="p1"/>
+<org.eventb.core.prHypAction name="HIDE2" org.eventb.core.prHyps="p2"/>
+<org.eventb.core.prHypAction name="HIDE3" org.eventb.core.prHyps="p3"/>
+</org.eventb.core.prAnte>
+</org.eventb.core.prRule>
+<org.eventb.core.prPred name="p0" org.eventb.core.predicate="groundf∈ℤ">
+<org.eventb.core.prIdent name="groundf" org.eventb.core.type="ℤ"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p1" org.eventb.core.predicate="topf∈ℤ">
+<org.eventb.core.prIdent name="topf" org.eventb.core.type="ℤ"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p2" org.eventb.core.predicate="door_open∈BOOL">
+<org.eventb.core.prIdent name="door_open" org.eventb.core.type="BOOL"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p3" org.eventb.core.predicate="direction_up∈BOOL">
+<org.eventb.core.prIdent name="direction_up" org.eventb.core.type="BOOL"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prReas name="r0" org.eventb.core.prRID="org.eventb.core.seqprover.typeRewrites:1"/>
+</org.eventb.core.prProof>
+<org.eventb.core.prProof name="move_down/inv1/INV" org.eventb.core.confidence="0" org.eventb.core.prFresh="" org.eventb.core.prHyps="">
+<org.eventb.core.prRule name="r0" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="type rewrites" org.eventb.core.prHyps="">
+<org.eventb.core.prAnte name="'">
+<org.eventb.core.prHypAction name="HIDE0" org.eventb.core.prHyps="p0"/>
+<org.eventb.core.prHypAction name="HIDE1" org.eventb.core.prHyps="p1"/>
+<org.eventb.core.prHypAction name="HIDE2" org.eventb.core.prHyps="p2"/>
+<org.eventb.core.prHypAction name="HIDE3" org.eventb.core.prHyps="p3"/>
+</org.eventb.core.prAnte>
+</org.eventb.core.prRule>
+<org.eventb.core.prPred name="p0" org.eventb.core.predicate="groundf∈ℤ">
+<org.eventb.core.prIdent name="groundf" org.eventb.core.type="ℤ"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p1" org.eventb.core.predicate="topf∈ℤ">
+<org.eventb.core.prIdent name="topf" org.eventb.core.type="ℤ"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p2" org.eventb.core.predicate="door_open∈BOOL">
+<org.eventb.core.prIdent name="door_open" org.eventb.core.type="BOOL"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p3" org.eventb.core.predicate="direction_up∈BOOL">
+<org.eventb.core.prIdent name="direction_up" org.eventb.core.type="BOOL"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prReas name="r0" org.eventb.core.prRID="org.eventb.core.seqprover.typeRewrites:1"/>
+</org.eventb.core.prProof>
+<org.eventb.core.prProof name="close_door/inv2/INV" org.eventb.core.confidence="0" org.eventb.core.prFresh="" org.eventb.core.prHyps="">
+<org.eventb.core.prRule name="r0" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="type rewrites" org.eventb.core.prHyps="">
+<org.eventb.core.prAnte name="'">
+<org.eventb.core.prHypAction name="HIDE0" org.eventb.core.prHyps="p0"/>
+<org.eventb.core.prHypAction name="HIDE1" org.eventb.core.prHyps="p1"/>
+<org.eventb.core.prHypAction name="HIDE2" org.eventb.core.prHyps="p2"/>
+<org.eventb.core.prHypAction name="HIDE3" org.eventb.core.prHyps="p3"/>
+</org.eventb.core.prAnte>
+</org.eventb.core.prRule>
+<org.eventb.core.prPred name="p0" org.eventb.core.predicate="groundf∈ℤ">
+<org.eventb.core.prIdent name="groundf" org.eventb.core.type="ℤ"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p1" org.eventb.core.predicate="topf∈ℤ">
+<org.eventb.core.prIdent name="topf" org.eventb.core.type="ℤ"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p2" org.eventb.core.predicate="door_open∈BOOL">
+<org.eventb.core.prIdent name="door_open" org.eventb.core.type="BOOL"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p3" org.eventb.core.predicate="direction_up∈BOOL">
+<org.eventb.core.prIdent name="direction_up" org.eventb.core.type="BOOL"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prReas name="r0" org.eventb.core.prRID="org.eventb.core.seqprover.typeRewrites:1"/>
+</org.eventb.core.prProof>
+<org.eventb.core.prProof name="close_door/inv4/INV" org.eventb.core.confidence="0" org.eventb.core.prFresh="" org.eventb.core.prHyps="">
+<org.eventb.core.prRule name="r0" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="type rewrites" org.eventb.core.prHyps="">
+<org.eventb.core.prAnte name="'">
+<org.eventb.core.prHypAction name="HIDE0" org.eventb.core.prHyps="p0"/>
+<org.eventb.core.prHypAction name="HIDE1" org.eventb.core.prHyps="p1"/>
+<org.eventb.core.prHypAction name="HIDE2" org.eventb.core.prHyps="p2"/>
+<org.eventb.core.prHypAction name="HIDE3" org.eventb.core.prHyps="p3"/>
+</org.eventb.core.prAnte>
+</org.eventb.core.prRule>
+<org.eventb.core.prPred name="p0" org.eventb.core.predicate="groundf∈ℤ">
+<org.eventb.core.prIdent name="groundf" org.eventb.core.type="ℤ"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p1" org.eventb.core.predicate="topf∈ℤ">
+<org.eventb.core.prIdent name="topf" org.eventb.core.type="ℤ"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p2" org.eventb.core.predicate="door_open∈BOOL">
+<org.eventb.core.prIdent name="door_open" org.eventb.core.type="BOOL"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p3" org.eventb.core.predicate="direction_up∈BOOL">
+<org.eventb.core.prIdent name="direction_up" org.eventb.core.type="BOOL"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prReas name="r0" org.eventb.core.prRID="org.eventb.core.seqprover.typeRewrites:1"/>
+</org.eventb.core.prProof>
+<org.eventb.core.prProof name="push_inside_button/inv2/INV" org.eventb.core.confidence="1000" org.eventb.core.prFresh="" org.eventb.core.prGoal="p0" org.eventb.core.prHyps="p1,p2">
+<org.eventb.core.prRule name="r0" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="simplification rewrites" org.eventb.core.prGoal="p0" org.eventb.core.prHyps="">
+<org.eventb.core.prAnte name="'" org.eventb.core.prGoal="p7">
+<org.eventb.core.prHypAction name="FORWARD_INF0" org.eventb.core.prHyps="p3" org.eventb.core.prInfHyps="p4"/>
+<org.eventb.core.prHypAction name="HIDE1" org.eventb.core.prHyps="p3"/>
+<org.eventb.core.prHypAction name="FORWARD_INF2" org.eventb.core.prHyps="p5" org.eventb.core.prInfHyps="p6"/>
+<org.eventb.core.prHypAction name="HIDE3" org.eventb.core.prHyps="p5"/>
+<org.eventb.core.prRule name="r1" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="generalized MP" org.eventb.core.prGoal="p7" org.eventb.core.prHyps="p1,p2">
+<org.eventb.core.prAnte name="'" org.eventb.core.prGoal="p8">
+<org.eventb.core.prRule name="r0" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="simplification rewrites" org.eventb.core.prGoal="p8" org.eventb.core.prHyps="">
+<org.eventb.core.prAnte name="'" org.eventb.core.prGoal="p9">
+<org.eventb.core.prRule name="r2" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="⊤ goal" org.eventb.core.prGoal="p9" org.eventb.core.prHyps=""/>
+</org.eventb.core.prAnte>
+</org.eventb.core.prRule>
+</org.eventb.core.prAnte>
+</org.eventb.core.prRule>
+</org.eventb.core.prAnte>
+</org.eventb.core.prRule>
+<org.eventb.core.prIdent name="b" org.eventb.core.type="ℤ"/>
+<org.eventb.core.prIdent name="groundf" org.eventb.core.type="ℤ"/>
+<org.eventb.core.prIdent name="inside_buttons" org.eventb.core.type="ℙ(ℤ)"/>
+<org.eventb.core.prIdent name="topf" org.eventb.core.type="ℤ"/>
+<org.eventb.core.prPred name="p9" org.eventb.core.predicate="⊤"/>
+<org.eventb.core.prPred name="p0" org.eventb.core.predicate="inside_buttons∪{b}⊆groundf ‥ topf"/>
+<org.eventb.core.prPred name="p8" org.eventb.core.predicate="⊤∧⊤"/>
+<org.eventb.core.prPred name="p6" org.eventb.core.predicate="¬b=cur_floor">
+<org.eventb.core.prIdent name="cur_floor" org.eventb.core.type="ℤ"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p1" org.eventb.core.predicate="b∈groundf ‥ topf"/>
+<org.eventb.core.prPred name="p5" org.eventb.core.predicate="b≠cur_floor">
+<org.eventb.core.prIdent name="cur_floor" org.eventb.core.type="ℤ"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p7" org.eventb.core.predicate="inside_buttons⊆groundf ‥ topf∧b∈groundf ‥ topf"/>
+<org.eventb.core.prPred name="p3" org.eventb.core.predicate="b∉inside_buttons"/>
+<org.eventb.core.prPred name="p2" org.eventb.core.predicate="inside_buttons⊆groundf ‥ topf"/>
+<org.eventb.core.prPred name="p4" org.eventb.core.predicate="¬b∈inside_buttons"/>
+<org.eventb.core.prReas name="r2" org.eventb.core.prRID="org.eventb.core.seqprover.trueGoal"/>
+<org.eventb.core.prReas name="r1" org.eventb.core.prRID="org.eventb.core.seqprover.genMP"/>
+<org.eventb.core.prReas name="r0" org.eventb.core.prRID="org.eventb.core.seqprover.autoRewritesL2:0"/>
+</org.eventb.core.prProof>
+<org.eventb.core.prProof name="push_call_button/inv4/INV" org.eventb.core.confidence="1000" org.eventb.core.prFresh="" org.eventb.core.prGoal="p0" org.eventb.core.prHyps="p1,p2">
+<org.eventb.core.prRule name="r0" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="simplification rewrites" org.eventb.core.prGoal="p0" org.eventb.core.prHyps="">
+<org.eventb.core.prAnte name="'" org.eventb.core.prGoal="p5">
+<org.eventb.core.prHypAction name="FORWARD_INF0" org.eventb.core.prHyps="p3" org.eventb.core.prInfHyps="p4"/>
+<org.eventb.core.prHypAction name="HIDE1" org.eventb.core.prHyps="p3"/>
+<org.eventb.core.prRule name="r1" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="generalized MP" org.eventb.core.prGoal="p5" org.eventb.core.prHyps="p1,p2">
+<org.eventb.core.prAnte name="'" org.eventb.core.prGoal="p6">
+<org.eventb.core.prRule name="r0" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="simplification rewrites" org.eventb.core.prGoal="p6" org.eventb.core.prHyps="">
+<org.eventb.core.prAnte name="'" org.eventb.core.prGoal="p7">
+<org.eventb.core.prRule name="r2" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="⊤ goal" org.eventb.core.prGoal="p7" org.eventb.core.prHyps=""/>
+</org.eventb.core.prAnte>
+</org.eventb.core.prRule>
+</org.eventb.core.prAnte>
+</org.eventb.core.prRule>
+</org.eventb.core.prAnte>
+</org.eventb.core.prRule>
+<org.eventb.core.prIdent name="b" org.eventb.core.type="ℤ"/>
+<org.eventb.core.prIdent name="call_buttons" org.eventb.core.type="ℙ(ℤ)"/>
+<org.eventb.core.prIdent name="groundf" org.eventb.core.type="ℤ"/>
+<org.eventb.core.prIdent name="topf" org.eventb.core.type="ℤ"/>
+<org.eventb.core.prPred name="p7" org.eventb.core.predicate="⊤"/>
+<org.eventb.core.prPred name="p5" org.eventb.core.predicate="call_buttons⊆groundf ‥ topf∧b∈groundf ‥ topf"/>
+<org.eventb.core.prPred name="p0" org.eventb.core.predicate="call_buttons∪{b}⊆groundf ‥ topf"/>
+<org.eventb.core.prPred name="p6" org.eventb.core.predicate="⊤∧⊤"/>
+<org.eventb.core.prPred name="p1" org.eventb.core.predicate="b∈groundf ‥ topf"/>
+<org.eventb.core.prPred name="p4" org.eventb.core.predicate="¬b∈call_buttons"/>
+<org.eventb.core.prPred name="p2" org.eventb.core.predicate="call_buttons⊆groundf ‥ topf"/>
+<org.eventb.core.prPred name="p3" org.eventb.core.predicate="b∉call_buttons"/>
+<org.eventb.core.prReas name="r2" org.eventb.core.prRID="org.eventb.core.seqprover.trueGoal"/>
+<org.eventb.core.prReas name="r1" org.eventb.core.prRID="org.eventb.core.seqprover.genMP"/>
+<org.eventb.core.prReas name="r0" org.eventb.core.prRID="org.eventb.core.seqprover.autoRewritesL2:0"/>
+</org.eventb.core.prProof>
+<org.eventb.core.prProof name="treat_up/inv1/INV" org.eventb.core.confidence="0" org.eventb.core.prFresh="" org.eventb.core.prHyps="">
+<org.eventb.core.prRule name="org.eventb.core.seqprover.typeRewrites:1" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="type rewrites" org.eventb.core.prHyps="">
+<org.eventb.core.prAnte name="0">
+<org.eventb.core.prHypAction name="HIDE0" org.eventb.core.prHyps="p0"/>
+<org.eventb.core.prHypAction name="HIDE1" org.eventb.core.prHyps="p1"/>
+<org.eventb.core.prHypAction name="HIDE2" org.eventb.core.prHyps="p2"/>
+<org.eventb.core.prHypAction name="HIDE3" org.eventb.core.prHyps="p3"/>
+</org.eventb.core.prAnte>
+</org.eventb.core.prRule>
+<org.eventb.core.prPred name="p0" org.eventb.core.predicate="groundf∈ℤ">
+<org.eventb.core.prIdent name="groundf" org.eventb.core.type="ℤ"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p2" org.eventb.core.predicate="door_open∈BOOL">
+<org.eventb.core.prIdent name="door_open" org.eventb.core.type="BOOL"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p3" org.eventb.core.predicate="direction_up∈BOOL">
+<org.eventb.core.prIdent name="direction_up" org.eventb.core.type="BOOL"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p1" org.eventb.core.predicate="topf∈ℤ">
+<org.eventb.core.prIdent name="topf" org.eventb.core.type="ℤ"/>
+</org.eventb.core.prPred>
+</org.eventb.core.prProof>
+</org.eventb.core.prFile>
