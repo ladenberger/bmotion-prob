@@ -6,9 +6,7 @@ import com.google.common.io.Resources
 import de.bms.DesktopApi
 import de.bms.server.BMotionServer
 import de.prob.webconsole.WebConsole
-import groovy.util.logging.Slf4j
 
-@Slf4j
 public class Main {
 
     public static void main(final String[] args) throws InterruptedException {
