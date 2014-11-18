@@ -1,12 +1,13 @@
 package de.bms.prob.observer
 
+import com.google.gson.Gson
+import de.bms.BMotion
 import de.bms.observer.BMotionObserver
-import de.bms.observer.ReactTransform
+import de.bms.observer.TransformerObject
 import de.bms.observer.TransformerObserver
 import de.prob.animator.domainobjects.EvalResult
-import de.bms.BMotion
-import de.prob.statespace.Transition
 import de.prob.statespace.Trace
+import de.prob.statespace.Transition
 import groovy.transform.TupleConstructor
 
 @TupleConstructor
@@ -16,7 +17,9 @@ class CSPTraceObserver extends BMotionObserver {
 
     private objs = []
 
-    private selectorCache = [:]
+    private int lastIndex
+
+    private final Gson g = new Gson()
 
     def static CSPTraceObserver make(Closure cls) {
         new CSPTraceObserver().with cls
@@ -52,23 +55,30 @@ class CSPTraceObserver extends BMotionObserver {
         return opNameWithParameter;
     }
 
-    def List<String> getCachedBmsId(BMotion bms, String selector) {
-        def t = selector.isEmpty() ? [] : selectorCache.get(selector)
-        if (t == null) {
-            t = bms.components.get(_component).element.select(selector).collect { it.attr("data-bmsid") }
-            selectorCache.put(selector, t)
-        }
-        t
-    }
-
     @Override
     def apply(BMotion bms) {
-        def map = [:]
 
-        def Trace trace = bms.getTool().getTrace()
-        trace.ensureOpInfosEvaluated()
+        def List<TransformerObject> tobjects = []
 
-        trace.getCurrent().getOpList().each { Transition op ->
+        def Trace newTrace = bms.getTool().getTrace()
+
+        def int newIndex = newTrace.current.getIndex()
+        lastIndex = lastIndex ?: newTrace.head.getIndex()
+
+        if (lastIndex > newIndex) {
+            bms.clients.each { it.sendEvent("revertCSP") }
+        }
+
+        for (Transition op : newTrace.getTransitionList(true)) {
+
+            boolean stop = false;
+            if (lastIndex > newIndex) {
+                //TODO: Backtrack provides a wrong current element! This is a workaround!
+                Transition currentTransition = newTrace.getTransitionList().get(newTrace.getCurrent().getIndex())
+                if (currentTransition.equals(op)) {
+                    stop = true
+                }
+            }
 
             def fullOp = getOpString(op)
             objs.each { EventsObserver evt ->
@@ -82,24 +92,16 @@ class CSPTraceObserver extends BMotionObserver {
                         evt.transformers.each { TransformerObserver gt ->
 
                             def fselector = (gt._selector instanceof Closure) ? gt._selector(op) : gt._selector
-                            def fattributes = gt._attributes.collectEntries {
+                            def t = new TransformerObject(fselector)
+                            t.attributes = gt._attributes.collectEntries {
                                 kv -> (kv.value instanceof Closure) ? [kv.key, kv.value(op)] : [kv.key, kv.value]
                             }
-                            def fstyles = gt._styles.collectEntries {
+                            t.styles = gt._styles.collectEntries {
                                 kv -> (kv.value instanceof Closure) ? [kv.key, kv.value(op)] : [kv.key, kv.value]
                             }
-                            def fcontent = (gt._content instanceof Closure) ? gt._content(op) : gt._content
+                            t.content = (gt._content instanceof Closure) ? gt._content(op) : gt._content
+                            tobjects << t
 
-                            getCachedBmsId(bms, fselector).each {
-                                def ReactTransform rt = map.get(it)
-                                if (rt == null) {
-                                    rt = new ReactTransform(it)
-                                    map.put(it, rt)
-                                }
-                                rt.attributes.putAll(fattributes)
-                                rt.styles.putAll(fstyles)
-                                rt.content = fcontent
-                            }
                         }
 
                     }
@@ -108,9 +110,14 @@ class CSPTraceObserver extends BMotionObserver {
 
             }
 
+            if (stop == true)
+                break;
+
         }
 
-        bms.submit([cmd: "bmotion_om.core.setComponent", type: "probmotion-html", id: _component, observers: map])
+        lastIndex = newIndex
+
+        bms.clients.each { it.sendEvent("applyTransformersCSP", g.toJson(tobjects)) }
 
     }
 

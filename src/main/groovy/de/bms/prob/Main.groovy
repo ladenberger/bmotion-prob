@@ -1,8 +1,10 @@
 package de.bms.prob
 
+import com.corundumstudio.socketio.AckRequest
 import com.corundumstudio.socketio.SocketIOClient
-import com.corundumstudio.socketio.listener.ConnectListener
+import com.corundumstudio.socketio.listener.DataListener
 import com.google.common.io.Resources
+import de.bms.BMotion
 import de.bms.DesktopApi
 import de.bms.server.BMotionServer
 import de.prob.webconsole.WebConsole
@@ -24,10 +26,18 @@ public class Main {
 
         server.start()
 
-        server.socketServer.getServer().addConnectListener(new ConnectListener() {
+        server.socketServer.getServer().addEventListener("initProB", String.class, new DataListener<String>() {
             @Override
-            public void onConnect(SocketIOClient client) {
-                client.sendEvent("initProB", [host: "localhost", port: probPort])
+            public void onData(final SocketIOClient client, String str,
+                               final AckRequest ackRequest) {
+
+                def String url = server.socketServer.clients.get(client)
+                def BMotion session = server.socketServer.sessions.get(url)
+                if (session != null)
+                    session.getTool().refresh()
+                if (ackRequest.isAckRequested())
+                    ackRequest.sendAckData([host: "localhost", port: probPort]);
+
             }
         });
 

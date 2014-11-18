@@ -101,7 +101,6 @@ public abstract class ProBAnimation implements ITool, IAnimationChangeListener, 
         return lang;
     }
 
-    @Override
     public void refresh() {
         if (trace.getCurrentState().isInitialised()) {
             toolRegistry.notifyToolChange(BMotion.TRIGGER_ANIMATION_CHANGED, this);
