@@ -9,6 +9,34 @@
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
+    <repositories>
+        <repository>
+            <id>cobra</id>
+            <name>cobra</name>
+            <url>http://cobra.cs.uni-duesseldorf.de/artifactory/repo</url>
+        </repository>
+    </repositories>
+
+    <scm>
+        <connection>scm:git:ssh://github.com/ladenberger/bmotion-prob.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com/ladenberger/bmotion-prob.git</developerConnection>
+        <url>https://github.com/ladenberger/bmotion-prob</url>
+        <tag>HEAD</tag>
+    </scm>
+
+    <distributionManagement>
+        <repository>
+            <id>cobra.cs.uni-duesseldorf.de</id>
+            <name>cobra.cs.uni-duesseldorf.de-releases</name>
+            <url>http://cobra.cs.uni-duesseldorf.de/artifactory/libs-release-local</url>
+        </repository>
+        <snapshotRepository>
+            <id>cobra.cs.uni-duesseldorf.de</id>
+            <name>cobra.cs.uni-duesseldorf.de-snapshots</name>
+            <url>http://cobra.cs.uni-duesseldorf.de/artifactory/libs-snapshot-local</url>
+        </snapshotRepository>
+    </distributionManagement>
+
     <build>
 
         <plugins>
@@ -73,19 +101,11 @@
 
     </build>
 
-    <repositories>
-        <repository>
-            <id>cobra</id>
-            <name>cobra</name>
-            <url>http://cobra.cs.uni-duesseldorf.de/artifactory/repo</url>
-        </repository>
-    </repositories>
-
     <dependencies>
         <dependency>
             <groupId>de.bmotion</groupId>
             <artifactId>bmotion</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>1.0</version>
         </dependency>
         <dependency>
             <groupId>de.prob2</groupId>
