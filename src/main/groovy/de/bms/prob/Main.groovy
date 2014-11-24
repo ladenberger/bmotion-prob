@@ -30,14 +30,8 @@ public class Main {
             @Override
             public void onData(final SocketIOClient client, String str,
                                final AckRequest ackRequest) {
-
-                def String url = server.socketServer.clients.get(client)
-                def BMotion session = server.socketServer.sessions.get(url)
-                if (session != null)
-                    session.getTool().refresh()
                 if (ackRequest.isAckRequested())
                     ackRequest.sendAckData([host: "localhost", port: probPort]);
-
             }
         });
 

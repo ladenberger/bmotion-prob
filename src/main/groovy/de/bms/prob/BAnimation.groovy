@@ -34,7 +34,7 @@ public class BAnimation extends ProBAnimation {
         } catch (Exception e) {
             throw new ImpossibleStepException();
         }
-        return trace.getCurrentState().getId();
+        return trace?.getCurrentState().getId();
     }
 
     @Override

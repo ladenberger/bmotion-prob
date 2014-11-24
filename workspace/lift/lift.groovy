@@ -1,21 +1,18 @@
 import de.bms.observer.TransformerObserver
+import de.prob.statespace.Trace
 
 TransformerObserver.make {
     selector "#door"
     set "fill", { (bms.eval("door_open").value == "TRUE") ? "white" : "lightgray" }
     set "y", {
-        switch ( bms.eval("cur_floor").value ) {
-            case "-1":
-                "275"
+        switch (bms.eval("cur_floor").value) {
+            case "-1": "275"
                 break
-            case "0":
-                "175"
+            case "0": "175"
                 break
-            case "1":
-                "60"
+            case "1": "60"
                 break
-            default:
-                "275"
+            default: "275"
         }
     }
     register(bms)
@@ -32,7 +29,7 @@ TransformerObserver.make {
 }
 // Set current floor label to bold
 TransformerObserver.make {
-    selector "#txt_floor" + bms.eval("cur_floor").value
+    selector { "#txt_floor" + bms.eval("cur_floor").value }
     style "font-weight", "bold"
     register(bms)
 }
@@ -44,24 +41,18 @@ TransformerObserver.make {
 }
 
 bms.registerMethod("openCloseDoor", {
-    def t = bms.getTool().getTrace()
-    def sId = t.getCurrentState()
-    def statespace = bms.getTool().getStateSpace()
-    def op = getOp(sId,statespace,"open_door","TRUE=TRUE") ?: getOp(sId,statespace,"close_door","TRUE=TRUE")
-    if(op != null) {
-        animations.traceChange(t.add(op.getId()))
-        return [executedOperation:op.getName()]
+    def Trace t = bms.getTool().getTrace()
+    def Trace newTrace = executeEvent(t, "open_door", []) ?: executeEvent(t, "close_door", [])
+    if (newTrace != null) {
+        animations.traceChange(newTrace)
+        return [newState: newTrace.getCurrentState().id]
     }
 })
 
-// --------------------------
-// Helper methods
-// --------------------------
-def getOp(sId,statepsace,name,pred) {
+def Trace executeEvent(t, name, pred) {
     try {
-        def ops = statepsace.opFromPredicate(sId,name,pred,1)
-        ops[0]
-    } catch (Exception e) {
+        t.execute(name, pred)
+    } catch (IllegalArgumentException e) {
         null
     }
 }

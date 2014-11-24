@@ -31,10 +31,13 @@ public abstract class ProBAnimation implements ITool, IAnimationChangeListener, 
         return model;
     }
 
-    public void setModel(final AbstractModel model) {
+    public void setModel(final AbstractModel model, boolean replace = true) {
         this.model = model;
+        def oldTrace = trace
         trace = new Trace(model);
         animations.addNewAnimation(trace)
+        if (oldTrace != null && replace)
+            animations.removeTrace(oldTrace)
     }
 
     public Trace getTrace() {
@@ -79,11 +82,10 @@ public abstract class ProBAnimation implements ITool, IAnimationChangeListener, 
     }
 
     @Override
-    void loadModel(String modelPath) {
-        log.info "Loading model " + modelPath
+    public void loadModel(String modelPath) {
         def formalism = getFormalism(modelPath)
         def model = Eval.x(api, "x.${formalism}_load('$modelPath')")
-        setModel(model)
+        setModel(model, true)
     }
 
     protected String getFormalism(final String modelPath) {
@@ -101,6 +103,7 @@ public abstract class ProBAnimation implements ITool, IAnimationChangeListener, 
         return lang;
     }
 
+    @Override
     public void refresh() {
         if (trace != null && trace.getCurrentState().isInitialised()) {
             toolRegistry.notifyToolChange(BMotion.TRIGGER_ANIMATION_CHANGED, this);

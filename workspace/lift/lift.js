@@ -4,17 +4,12 @@ require.config({
     }
 });
 define(["require","prob"], function(require) {
-
     var bms = require('bmotion')
-
-    $(function() {
-       $("#door").click(function() {
-         bms.callMethod("openCloseDoor", {
-             success : function(data) {
-                 console.log(data)
-             }
-         });
-       });
+    $("#door").click(function() {
+     bms.callMethod("openCloseDoor", {
+         success : function(data) {
+             alert("New state id: " + data.newState)
+         }
      });
-
+    });
 });
