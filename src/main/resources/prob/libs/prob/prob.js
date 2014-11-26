@@ -5,12 +5,12 @@ require.config({
 });
 define(['require', 'bmotion'], function (require, bmotion) {
 
-    $("#bmotion-label").html("BMotion Studio for ProB")
-
     bmotion.socket.on('connect', function () {
         bmotion.socket.emit('initProB', function (data) {
 
             $(function () {
+
+                $("#bmotion-label").html("BMotion Studio for ProB")
 
                 // TODO: Is there a better way to append a large amount of html code?
                 $("body").append('<div data-view="Events" title="Events"><iframe src="" frameBorder="0"></iframe></div>' +

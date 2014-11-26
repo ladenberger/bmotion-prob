@@ -3,7 +3,6 @@ package de.bms.prob
 import com.corundumstudio.socketio.AckRequest
 import com.corundumstudio.socketio.SocketIOClient
 import com.corundumstudio.socketio.listener.DataListener
-import com.google.common.io.Resources
 import de.bms.DesktopApi
 import de.bms.server.BMotionServer
 import de.prob.webconsole.WebConsole
@@ -15,24 +14,18 @@ public class Main {
         def probPort = "8081"
 
         // Start BMotion Server
-        BMotionServer server = new BMotionServer(args)
+        BMotionServer server = BMotionProB.start(args)
 
-        server.setScriptEngineProvider(new ProBScriptEngineProvider())
-        server.setIToolProvider(new ProBIToolProvider())
-
-        String[] paths = [Resources.getResource("prob").toString()]
-        server.setResourcePaths(paths)
-
-        server.start()
-
-        server.socketServer.getServer().addEventListener("initProB", String.class, new DataListener<String>() {
-            @Override
-            public void onData(final SocketIOClient client, String str,
-                               final AckRequest ackRequest) {
-                if (ackRequest.isAckRequested())
-                    ackRequest.sendAckData([host: "localhost", port: probPort]);
-            }
-        });
+        if (server.standalone) {
+            server.socketServer.getServer().addEventListener("initProB", String.class, new DataListener<String>() {
+                @Override
+                public void onData(final SocketIOClient client, String str,
+                                   final AckRequest ackRequest) {
+                    if (ackRequest.isAckRequested())
+                        ackRequest.sendAckData([host: "localhost", port: probPort]);
+                }
+            });
+        }
 
         new Thread(new Runnable() {
             public void run() {
@@ -46,14 +39,6 @@ public class Main {
         }).start();
 
         openBrowser(server)
-
-        /*new Thread(new Runnable() {
-            public void run() {
-                de.prob.Main m = de.prob.Main.getInjector().getInstance(de.prob.Main.class);
-                String[] probargs = ["-local", "-s"]
-                m.main(probargs)
-            }
-        }).start();*/
 
     }
 
