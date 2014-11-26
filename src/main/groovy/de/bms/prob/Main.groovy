@@ -4,7 +4,6 @@ import com.corundumstudio.socketio.AckRequest
 import com.corundumstudio.socketio.SocketIOClient
 import com.corundumstudio.socketio.listener.DataListener
 import com.google.common.io.Resources
-import de.bms.BMotion
 import de.bms.DesktopApi
 import de.bms.server.BMotionServer
 import de.prob.webconsole.WebConsole
