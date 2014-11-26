@@ -65,19 +65,26 @@ class CSPTraceObserver extends BMotionObserver {
         def int newIndex = newTrace.current.getIndex()
         lastIndex = lastIndex ?: newTrace.head.getIndex()
 
+        // Backtrack
         if (lastIndex > newIndex) {
             bms.clients.each { it.sendEvent("revertCSP") }
         }
 
-        for (Transition op : newTrace.getTransitionList(true)) {
+        def Transition currentTransition = newTrace.getCurrent().getTransition()
+        def Transition headTransition = newTrace.getHead().getTransition()
 
-            boolean stop = false;
-            if (lastIndex > newIndex) {
-                //TODO: Backtrack provides a wrong current element! This is a workaround!
-                Transition currentTransition = newTrace.getTransitionList().get(newTrace.getCurrent().getIndex())
-                if (currentTransition.equals(op)) {
-                    stop = true
-                }
+        //TODO: Backtrack provides a wrong current element! This is a workaround!
+        if(!currentTransition.equals(headTransition)) {
+            currentTransition = newTrace.getTransitionList().get(newTrace.getCurrent().getIndex())
+        }
+
+        def boolean stop = false
+        def list = newTrace.getTransitionList(true)
+        //System.out.println(list)
+        for (Transition op : list) {
+
+            if (currentTransition.equals(op)) {
+                stop = true
             }
 
             def fullOp = getOpString(op)
