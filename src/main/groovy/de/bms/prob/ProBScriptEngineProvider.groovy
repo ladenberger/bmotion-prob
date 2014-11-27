@@ -4,7 +4,6 @@ import com.google.common.base.Charsets
 import com.google.common.io.Resources
 import de.bms.BMotionGroovy
 import de.bms.server.BMotionScriptEngineProvider
-import de.bms.server.SessionConfiguration
 import de.prob.scripting.Api
 import de.prob.scripting.Downloader
 import de.prob.statespace.AnimationSelector
@@ -17,7 +16,6 @@ public class ProBScriptEngineProvider implements BMotionScriptEngineProvider {
     private AnimationSelector animations;
     private ScriptEngineManager manager;
     private Downloader downloader;
-    private SessionConfiguration sessionConfiguration
     private static final String[] IMPORTS = ["import de.prob.statespace.*;",
                                              "import de.prob.model.representation.*;",
                                              "import de.prob.model.classicalb.*;",
@@ -27,8 +25,7 @@ public class ProBScriptEngineProvider implements BMotionScriptEngineProvider {
                                              "import de.bms.prob.*",
                                              "import de.bms.prob.observer.*"];
 
-    public ProBScriptEngineProvider(SessionConfiguration sessionConfiguration) {
-        this.sessionConfiguration = sessionConfiguration
+    public ProBScriptEngineProvider() {
         this.api = de.prob.Main.getInjector().getInstance(Api.class)
         this.animations = de.prob.Main.getInjector().getInstance(AnimationSelector.class)
         this.downloader = de.prob.Main.getInjector().getInstance(Downloader.class)

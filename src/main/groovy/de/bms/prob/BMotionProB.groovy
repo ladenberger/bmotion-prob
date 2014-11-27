@@ -10,7 +10,7 @@ public class BMotionProB {
         BMotionServer server = new BMotionServer(args)
         server.setScriptEngineProvider(new ProBScriptEngineProvider())
         server.setIToolProvider(new ProBIToolProvider())
-        String[] paths = [Resources.getResource("prob").toString()]
+        URL[] paths = [Resources.getResource("prob")]
         server.setResourcePaths(paths)
         server.start()
         return server
