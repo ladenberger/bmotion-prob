@@ -31,12 +31,12 @@ public abstract class ProBAnimation implements ITool, IAnimationChangeListener, 
         return model;
     }
 
-    public void setModel(final AbstractModel model, boolean replace = true) {
+    public void setModel(final AbstractModel model) {
         this.model = model;
         def oldTrace = trace
         trace = new Trace(model);
         animations.addNewAnimation(trace)
-        if (oldTrace != null && replace)
+        if (oldTrace != null)
             animations.removeTrace(oldTrace)
     }
 
@@ -54,9 +54,10 @@ public abstract class ProBAnimation implements ITool, IAnimationChangeListener, 
 
     @Override
     public void traceChange(final Trace currentTrace, final boolean currentAnimationChanged) {
-        Trace oldtrace = trace;
         trace = currentTrace;
-        if (oldtrace != null && !currentTrace.equals(oldtrace) && currentTrace.getCurrentState().isInitialised()) {
+        def modelFileName = currentTrace.getModel().getModelFile().getName()
+        if ((model != null && model.getModelFile().getName().equals(modelFileName)) && currentTrace.getCurrentState().
+                isInitialised()) {
             toolRegistry.notifyToolChange(BMotion.TRIGGER_ANIMATION_CHANGED, this);
         }
     }
@@ -82,10 +83,13 @@ public abstract class ProBAnimation implements ITool, IAnimationChangeListener, 
     }
 
     @Override
-    public void loadModel(String modelPath) {
-        def formalism = getFormalism(modelPath)
-        def model = Eval.x(api, "x.${formalism}_load('$modelPath')")
-        setModel(model, true)
+    public void loadModel(String modelPath, boolean force) {
+        if (!trace?.getModel()?.getModelFile()?.getPath()?.equals(modelPath) || force) {
+            def formalism = getFormalism(modelPath)
+            def model = Eval.x(api, "x.${formalism}_load('$modelPath')")
+            setModel(model)
+            refresh()
+        }
     }
 
     protected String getFormalism(final String modelPath) {
