@@ -14,8 +14,8 @@ public class Main {
         def probPort = "8081"
 
         // Start BMotion Server
-        BMotionServer server = BMotionProB.start(args)
-
+        BMotionServer server = ProBServerFactory.getServer(args)
+        server.start()
         if (server.standalone) {
             server.socketServer.getServer().addEventListener("initProB", String.class, new DataListener<String>() {
                 @Override
