@@ -68,7 +68,7 @@ public abstract class ProBVisualisation extends BMotion implements IAnimationCha
                 // If a current trace is set and a load was forced, add a new trace
                 // and remove the old one from the AnimationSelector
                 def oldTrace = this.currentTrace
-                this.currentTrace = createNewModelTrace(modelFile.getPath())
+                this.currentTrace = createNewModelTrace(modelFile.getCanonicalPath())
                 animations.addNewAnimation(this.currentTrace)
                 animations.removeTrace(oldTrace)
             }
@@ -76,11 +76,11 @@ public abstract class ProBVisualisation extends BMotion implements IAnimationCha
             // If no trace exists yet, check if the current trace in the AnimationSelector
             // corresponds to the model path, if not, load a new model and add it to the AnimationSelector
             def selectedTrace = animations.getCurrentTrace()
-            if (selectedTrace?.getModel()?.getModelFile()?.getPath()?.equals(modelFile.getPath())) {
+            if (selectedTrace?.getModel()?.getModelFile()?.getCanonicalPath()?.equals(modelFile.getCanonicalPath())) {
                 this.currentTrace = selectedTrace
             } else {
                 // Create a new trace for the model and add it to the AnimationSelector
-                this.currentTrace = createNewModelTrace(modelFile.getPath())
+                this.currentTrace = createNewModelTrace(modelFile.getCanonicalPath())
                 animations.addNewAnimation(this.currentTrace)
             }
         }
