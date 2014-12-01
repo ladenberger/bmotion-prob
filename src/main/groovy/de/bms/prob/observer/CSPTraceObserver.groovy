@@ -60,7 +60,7 @@ class CSPTraceObserver extends BMotionObserver {
 
         def List<TransformerObject> tobjects = []
 
-        def Trace newTrace = bms.getTool().getTrace()
+        def Trace newTrace = bms.getTrace()
 
         def int newIndex = newTrace.current.getIndex()
         lastIndex = lastIndex ?: newTrace.head.getIndex()

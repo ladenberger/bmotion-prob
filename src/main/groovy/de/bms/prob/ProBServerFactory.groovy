@@ -6,10 +6,8 @@ import de.bms.server.BMotionServer
 public class ProBServerFactory {
 
     public static BMotionServer getServer(args) {
-        // Start BMotion Server
         BMotionServer server = new BMotionServer(args)
-        server.setScriptEngineProvider(new ProBScriptEngineProvider())
-        server.setIToolProvider(new ProBIToolProvider())
+        server.setIToolProvider(new ProBVisualisationProvider())
         URL[] paths = [Resources.getResource("prob")]
         server.setResourcePaths(paths)
         return server

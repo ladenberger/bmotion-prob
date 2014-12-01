@@ -1,47 +1,51 @@
 package de.bms.prob
 
-import de.bms.BMotion
+import de.bms.IllegalFormulaException
+import de.bms.ImpossibleStepException
+import de.bms.server.BMotionScriptEngineProvider
 import de.prob.animator.domainobjects.EvaluationException
 import de.prob.animator.domainobjects.IEvalElement
 import de.prob.animator.domainobjects.IEvalResult
-import de.bms.itool.IllegalFormulaException
-import de.bms.itool.ImpossibleStepException
-import de.bms.itool.ToolRegistry
 import de.prob.statespace.State
 import de.prob.statespace.StateSpace
 import de.prob.statespace.Trace
 
-public class CSPAnimation extends ProBAnimation {
+public class CSPVisualisation extends ProBVisualisation {
 
     private final Map<String, IEvalResult> formulaCache = new HashMap<String, IEvalResult>();
 
-    public CSPAnimation(final String toolId, final ToolRegistry toolRegistry) {
-        super(toolId, toolRegistry);
+    public CSPVisualisation(final UUID sessionId, final String templatePath,
+                            final BMotionScriptEngineProvider scriptEngineProvider) {
+        super(sessionId, templatePath, scriptEngineProvider);
     }
 
     @Override
-    public String doStep(final String stateref, final String event, final String... parameters)
-            throws ImpossibleStepException {
-        try {
-            Trace new_trace = trace.execute(event, Arrays.asList(parameters));
-            animations.traceChange(new_trace);
-            trace = new_trace;
-            toolRegistry.notifyToolChange(BMotion.TRIGGER_ANIMATION_CHANGED, this);
-        } catch (Exception e) {
-            throw new ImpossibleStepException();
+    public Object executeEvent(final String event, final data) throws ImpossibleStepException {
+
+        if (trace == null) {
+            throw new ImpossibleStepException("BMotion Studio: No currentTrace exists.")
         }
-        return trace?.getCurrentState().getId();
+        try {
+            Trace new_trace = data.predicate != null ? trace.execute(event, data.predicate) : trace.execute(event)
+            animations.traceChange(new_trace)
+            currentTrace = new_trace
+            checkObserver()
+        } catch (Exception e) {
+            throw new IllegalFormulaException("BMotion Studio: " + e.getClass() + " thrown: " + e.getMessage())
+        }
+        return trace.getCurrentState().getId();
+
     }
 
     @Override
-    public Object evaluate(final String stateref, final String formula) throws IllegalFormulaException {
+    public Object eval(final String formula) throws IllegalFormulaException {
         if (trace == null) {
             return null;
         }
         if (!formulaCache.containsKey(formula)) {
             IEvalElement e = trace.getModel().parseFormula(formula);
             StateSpace space = trace.getStateSpace();
-            State state = space.getState(stateref);
+            State state = space.getState(getCurrentState());
             if (state != null) {
                 formulaCache.put(formula, state.eval(e));
             }
@@ -49,7 +53,6 @@ public class CSPAnimation extends ProBAnimation {
         return formulaCache.get(formula);
     }
 
-    @Override
     public List<String> getErrors(final String state, final String formula) {
         List<String> errors = new ArrayList<String>();
         if (trace != null) {

@@ -17,9 +17,9 @@ public class ProBScriptEngineProvider implements BMotionScriptEngineProvider {
     private ScriptEngineManager manager;
     private Downloader downloader;
     private static final String[] IMPORTS = ["import de.prob.statespace.*;",
-                                             "import de.prob.model.representation.*;",
-                                             "import de.prob.model.classicalb.*;",
-                                             "import de.prob.model.eventb.*;",
+                                             "import de.prob.currentModel.representation.*;",
+                                             "import de.prob.currentModel.classicalb.*;",
+                                             "import de.prob.currentModel.eventb.*;",
                                              "import de.prob.animator.domainobjects.*;",
                                              "import de.prob.animator.command.*;",
                                              "import de.bms.prob.*",
