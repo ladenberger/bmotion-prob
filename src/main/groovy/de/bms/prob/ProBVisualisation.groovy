@@ -60,39 +60,32 @@ public abstract class ProBVisualisation extends BMotion implements IAnimationCha
     }
 
     @Override
-    public void loadModel(String modelPath, boolean force) {
+    public void loadModel(File modelFile, boolean force) {
 
-        File modelFile = new File(modelPath)
-
-        // A model path is set in the visualisation template
-        if (modelFile.exists()) {
-
-            if (currentTrace != null) {
-                animations.changeCurrentAnimation(currentTrace)
-                if (force) {
-                    // If a current trace is set and a load was forced, add a new trace
-                    // and remove the old one from the AnimationSelector
-                    def oldTrace = this.currentTrace
-                    this.currentTrace = createNewModelTrace(modelFile.getPath())
-                    animations.addNewAnimation(this.currentTrace)
-                    animations.removeTrace(oldTrace)
-                }
-            } else {
-                // If no trace exists yet, check if the current trace in the AnimationSelector
-                // corresponds to the model path, if not, load a new model and add it to the AnimationSelector
-                def selectedTrace = animations.getCurrentTrace()
-                if (selectedTrace?.getModel()?.getModelFile()?.getPath()?.equals(modelFile.getPath())) {
-                    this.currentTrace = selectedTrace
-                } else {
-                    // Create a new trace for the model and add it to the AnimationSelector
-                    this.currentTrace = createNewModelTrace(modelFile.getPath())
-                    animations.addNewAnimation(this.currentTrace)
-                }
+        if (currentTrace != null) {
+            animations.changeCurrentAnimation(currentTrace)
+            if (force) {
+                // If a current trace is set and a load was forced, add a new trace
+                // and remove the old one from the AnimationSelector
+                def oldTrace = this.currentTrace
+                this.currentTrace = createNewModelTrace(modelFile.getPath())
+                animations.addNewAnimation(this.currentTrace)
+                animations.removeTrace(oldTrace)
             }
-
-            refresh()
-
+        } else {
+            // If no trace exists yet, check if the current trace in the AnimationSelector
+            // corresponds to the model path, if not, load a new model and add it to the AnimationSelector
+            def selectedTrace = animations.getCurrentTrace()
+            if (selectedTrace?.getModel()?.getModelFile()?.getPath()?.equals(modelFile.getPath())) {
+                this.currentTrace = selectedTrace
+            } else {
+                // Create a new trace for the model and add it to the AnimationSelector
+                this.currentTrace = createNewModelTrace(modelFile.getPath())
+                animations.addNewAnimation(this.currentTrace)
+            }
         }
+
+        refresh()
 
     }
 
