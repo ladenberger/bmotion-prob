@@ -5,7 +5,8 @@ require.config({
 });
 define(['require', 'bmotion'], function (require, bmotion) {
 
-    bmotion.socket.on('connect', function () {
+    bmotion.socket.on('initialisation', function () {
+
         bmotion.socket.emit('initProB', function (data) {
 
             $(function () {
