@@ -7,7 +7,7 @@ public class ProBServerFactory {
 
     public static BMotionServer getServer(args) {
         BMotionServer server = new BMotionServer(args)
-        server.setIToolProvider(new ProBVisualisationProvider())
+        server.setVisualisationProvider(new ProBVisualisationProvider())
         URL[] paths = [Resources.getResource("prob")]
         server.setResourcePaths(paths)
         return server
