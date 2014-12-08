@@ -85,8 +85,6 @@ public abstract class ProBVisualisation extends BMotion implements IAnimationCha
             }
         }
 
-        refresh()
-
     }
 
     private Trace createNewModelTrace(String modelPath) {

@@ -7,7 +7,9 @@ import de.prob.animator.domainobjects.*
 import de.prob.statespace.State
 import de.prob.statespace.StateSpace
 import de.prob.statespace.Trace
+import groovy.util.logging.Slf4j
 
+@Slf4j
 public class BVisualisation extends ProBVisualisation {
 
     private final Map<String, IEvalElement> formulas = new HashMap<String, IEvalElement>();
@@ -21,41 +23,59 @@ public class BVisualisation extends ProBVisualisation {
     public Object executeEvent(final String event, final data) throws ImpossibleStepException {
 
         if (trace == null) {
-            throw new ImpossibleStepException("BMotion Studio: No currentTrace exists.")
+            log.error "BMotion Studio: No currentTrace exists."
         }
-        try {
-            Trace new_trace = data.predicate != null ? trace.execute(event, data.predicate) : trace.execute(event)
+        Trace new_trace = data.predicate != null ? executeEventHelper(trace, event, data.predicate) :
+                executeEventHelper(trace, event, [])
+        if (new_trace == null && data.alternative != null) {
+            for (def alt : data.alternative) {
+                new_trace = alt.predicate != null ? executeEventHelper(trace, alt.name, alt.predicate) :
+                        executeEventHelper(trace, alt.name, [])
+                if (new_trace != null)
+                    break;
+            }
+        }
+
+        if (new_trace != null) {
             animations.traceChange(new_trace)
             currentTrace = new_trace
-            checkObserver()
-        } catch (Exception e) {
-            throw new IllegalFormulaException("BMotion Studio: " + e.getClass() + " thrown: " + e.getMessage())
+        } else {
+            log.error "BMotion Studio: Could not execute any event ..."
         }
+
         return trace.getCurrentState().getId();
 
+    }
+
+    private Trace executeEventHelper(t, name, pred) {
+        try {
+            t.execute(name, pred)
+        } catch (Exception e) {
+            null
+        }
     }
 
     @Override
     public Object eval(final String formula) throws IllegalFormulaException {
         if (trace == null) {
-            throw new IllegalFormulaException("BMotion Studio: No currentTrace exists.");
+            log.error "BMotion Studio: No currentTrace exists."
         }
         try {
             StateSpace space = trace.getStateSpace();
             IEvalElement e = formulas.get(formula);
-            if (e == null) {
+            if (!space.isSubscribed(e)) {
                 e = trace.getModel().parseFormula(formula);
                 formulas.put(formula, e);
                 space.subscribe(this, e);
+
             }
             State sId = space.getState(getCurrentState());
             IEvalResult result = sId.getValues().get(formulas.get(formula));
             return result;
         } catch (EvaluationException e) {
-            throw new IllegalFormulaException(
-                    "BMotion Studio: Formula " + formula + " could not be parsed: " + e.getMessage());
+            log.error "BMotion Studio: Formula " + formula + " could not be parsed: " + e.getMessage()
         } catch (Exception e) {
-            throw new IllegalFormulaException("BMotion Studio: " + e.getClass() + " thrown: " + e.getMessage());
+            log.error "BMotion Studio: " + e.getClass() + " thrown: " + e.getMessage()
         }
     }
 
