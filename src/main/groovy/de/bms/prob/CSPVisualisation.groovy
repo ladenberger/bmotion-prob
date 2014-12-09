@@ -1,14 +1,12 @@
 package de.bms.prob
 
 import de.bms.IllegalFormulaException
-import de.bms.ImpossibleStepException
 import de.bms.server.BMotionScriptEngineProvider
 import de.prob.animator.domainobjects.EvaluationException
 import de.prob.animator.domainobjects.IEvalElement
 import de.prob.animator.domainobjects.IEvalResult
 import de.prob.statespace.State
 import de.prob.statespace.StateSpace
-import de.prob.statespace.Trace
 
 public class CSPVisualisation extends ProBVisualisation {
 
@@ -17,24 +15,6 @@ public class CSPVisualisation extends ProBVisualisation {
     public CSPVisualisation(final UUID sessionId, final String templatePath,
                             final BMotionScriptEngineProvider scriptEngineProvider) {
         super(sessionId, templatePath, scriptEngineProvider);
-    }
-
-    @Override
-    public Object executeEvent(final data) throws ImpossibleStepException {
-
-        if (trace == null) {
-            throw new ImpossibleStepException("BMotion Studio: No currentTrace exists.")
-        }
-        try {
-            Trace new_trace = data.predicate != null ? trace.execute(event, data.predicate) : trace.execute(event)
-            animations.traceChange(new_trace)
-            currentTrace = new_trace
-            checkObserver()
-        } catch (Exception e) {
-            throw new IllegalFormulaException("BMotion Studio: " + e.getClass() + " thrown: " + e.getMessage())
-        }
-        return trace.getCurrentState().getId();
-
     }
 
     @Override

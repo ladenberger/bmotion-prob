@@ -1,6 +1,7 @@
 package de.bms.prob
 
 import de.bms.BMotion
+import de.bms.ImpossibleStepException
 import de.bms.server.BMotionScriptEngineProvider
 import de.prob.model.representation.AbstractModel
 import de.prob.scripting.Api
@@ -106,6 +107,39 @@ public abstract class ProBVisualisation extends BMotion implements IAnimationCha
             return "tla";
         }
         return lang;
+    }
+
+    @Override
+    public Object executeEvent(final data) throws ImpossibleStepException {
+
+        if (trace == null) {
+            log.error "BMotion Studio: No currentTrace exists."
+        }
+
+        def Trace new_trace
+        for (def alt : data.events) {
+            new_trace = alt.predicate != null ? executeEventHelper(trace, alt.name, alt.predicate) :
+                    executeEventHelper(trace, alt.name, [])
+            if (new_trace != null)
+                break;
+        }
+        if (new_trace != null) {
+            animations.traceChange(new_trace)
+            currentTrace = new_trace
+        } else {
+            log.error "BMotion Studio: Could not execute any event ..."
+        }
+
+        return trace.getCurrentState().getId();
+
+    }
+
+    private Trace executeEventHelper(t, name, pred) {
+        try {
+            t.execute(name, pred)
+        } catch (Exception e) {
+            null
+        }
     }
 
     @Override
