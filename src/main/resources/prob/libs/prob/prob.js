@@ -12,11 +12,16 @@ require.config({
 define(['require', 'bmotion', 'css!prob-css'], function (require, bmotion) {
 
     // --------------------- Extend jQuery
-    $.fn.executeEvent = function (name, options) {
-        $(this).click(function () {
-            bmotion.executeEvent(name, options)
+    $.fn.executeEvent = function (options) {
+        var settings = $.extend({
+            events: [],
+            callback: function () {
+            }
+        }, options);
+        this.click(function () {
+            bmotion.socket.emit("executeEvent", {data: settings}, settings.callback);
         }).css('cursor', 'pointer')
-        $(this).tooltipster({
+        this.tooltipster({
             position: "bottom-right",
             animation: "fade",
             hideOnClick: true,
@@ -29,11 +34,7 @@ define(['require', 'bmotion', 'css!prob-css'], function (require, bmotion) {
             functionBefore: function (origin, continueTooltip) {
 
                 continueTooltip();
-                var df = {
-                    name: name,
-                    data: options === undefined ? {} : options
-                };
-                bmotion.socket.emit('initTooltip', df, function (data) {
+                bmotion.socket.emit('initTooltip', {data: settings}, function (data) {
 
                     var container = $('<ul class="event-tooltip"></ul>')
                     $.each(data.events, function (i, v) {
@@ -42,8 +43,8 @@ define(['require', 'bmotion', 'css!prob-css'], function (require, bmotion) {
                         var link = $('<span>' + v.name + ' ' + v.predicate + '</span>')
                         if (v.canExecute) {
                             link = $('<a href="#">' + v.name + ' ' + v.predicate + '</a>').click(function () {
-                                bmotion.executeEvent(v.name, {
-                                    predicate: v.predicate,
+                                bmotion.executeEvent({
+                                    events: [{name: v.name, predicate: v.predicate}],
                                     callback: function () {
                                         // Update tooltip
                                         origin.tooltipster('hide')
@@ -60,8 +61,59 @@ define(['require', 'bmotion', 'css!prob-css'], function (require, bmotion) {
 
             }
         });
-        return $(this);
+        return this
     }
+
+    /*$.fn.executeEvent = function (name, options) {
+     $(this).click(function () {
+     bmotion.executeEvent(name, options)
+     }).css('cursor', 'pointer')
+     $(this).tooltipster({
+     position: "bottom-right",
+     animation: "fade",
+     hideOnClick: true,
+     updateAnimation: false,
+     offsetY: 15,
+     delay: 500,
+     content: 'Loading...',
+     theme: 'tooltipster-shadow',
+     interactive: true,
+     functionBefore: function (origin, continueTooltip) {
+
+     continueTooltip();
+     var df = {
+     name: name,
+     data: options === undefined ? {} : options
+     };
+     bmotion.socket.emit('initTooltip', df, function (data) {
+
+     var container = $('<ul class="event-tooltip"></ul>')
+     $.each(data.events, function (i, v) {
+     var spanClass = v.canExecute ? 'glyphicon glyphicon-ok-circle' : 'glyphicon glyphicon-remove-circle'
+     var span = $('<span aria-hidden="true"></span>').addClass(spanClass)
+     var link = $('<span>' + v.name + ' ' + v.predicate + '</span>')
+     if (v.canExecute) {
+     link = $('<a href="#">' + v.name + ' ' + v.predicate + '</a>').click(function () {
+     bmotion.executeEvent(v.name, {
+     predicate: v.predicate,
+     callback: function () {
+     // Update tooltip
+     origin.tooltipster('hide')
+     origin.tooltipster('show')
+     }
+     })
+     });
+     }
+     container.append($('<li></li>').addClass(v.canExecute ? 'enabled' : 'disabled').append(span, link))
+     });
+     origin.tooltipster('content', container)
+
+     });
+
+     }
+     });
+     return $(this);
+     }*/
     // ---------------------
 
     bmotion.socket.on('initialisation', function () {

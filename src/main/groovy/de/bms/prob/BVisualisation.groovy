@@ -20,22 +20,19 @@ public class BVisualisation extends ProBVisualisation {
     }
 
     @Override
-    public Object executeEvent(final String event, final data) throws ImpossibleStepException {
+    public Object executeEvent(final data) throws ImpossibleStepException {
 
         if (trace == null) {
             log.error "BMotion Studio: No currentTrace exists."
         }
-        Trace new_trace = data.predicate != null ? executeEventHelper(trace, event, data.predicate) :
-                executeEventHelper(trace, event, [])
-        if (new_trace == null && data.alternative != null) {
-            for (def alt : data.alternative) {
-                new_trace = alt.predicate != null ? executeEventHelper(trace, alt.name, alt.predicate) :
-                        executeEventHelper(trace, alt.name, [])
-                if (new_trace != null)
-                    break;
-            }
-        }
 
+        def Trace new_trace
+        for (def alt : data.events) {
+            new_trace = alt.predicate != null ? executeEventHelper(trace, alt.name, alt.predicate) :
+                    executeEventHelper(trace, alt.name, [])
+            if (new_trace != null)
+                break;
+        }
         if (new_trace != null) {
             animations.traceChange(new_trace)
             currentTrace = new_trace

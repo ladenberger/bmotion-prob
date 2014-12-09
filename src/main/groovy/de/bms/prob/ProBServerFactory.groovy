@@ -6,6 +6,7 @@ import com.corundumstudio.socketio.listener.DataListener
 import com.google.common.io.Resources
 import de.bms.BMotion
 import de.bms.server.BMotionServer
+import de.bms.server.JsonObject
 import de.bms.server.NameDataObject
 import de.prob.statespace.Trace
 
@@ -16,33 +17,22 @@ public class ProBServerFactory {
         URL[] paths = [Resources.getResource("prob")]
         server.setResourcePaths(paths)
         server.socketServer.getServer().
-                addEventListener("initTooltip", NameDataObject.class, new DataListener<NameDataObject>() {
+                addEventListener("initTooltip", JsonObject.class, new DataListener<JsonObject>() {
                     @Override
-                    public void onData(final SocketIOClient client, NameDataObject d,
+                    public void onData(final SocketIOClient client, JsonObject d,
                                        final AckRequest ackRequest) {
-
                         String path = server.socketServer.clients.get(client)
                         def BMotion bmotion = server.socketServer.sessions.get(path) ?: null
                         if (bmotion != null) {
-
                             Trace t = bmotion.getTrace()
-                            def event = d.name
-                            def predicate = d.data.predicate == null ? [] : d.data.predicate
-                            def alternative = d.data.alternative == null ? [] : d.data.alternative
-
-                            def eventMap = alternative.collect {
+                            def eventMap = d.data.events.collect {
                                 def p = it.predicate == null ? [] : it.predicate
                                 [name: it.name, predicate: p, canExecute: t.canExecuteEvent(it.name, p)]
                             }
-                            eventMap << [name: event, predicate: predicate, canExecute: t.
-                                    canExecuteEvent(event, predicate)]
-
                             if (ackRequest.isAckRequested()) {
                                 ackRequest.sendAckData([events: eventMap]);
                             }
-
                         }
-
                     }
                 });
         return server

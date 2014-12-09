@@ -20,7 +20,7 @@ public class CSPVisualisation extends ProBVisualisation {
     }
 
     @Override
-    public Object executeEvent(final String event, final data) throws ImpossibleStepException {
+    public Object executeEvent(final data) throws ImpossibleStepException {
 
         if (trace == null) {
             throw new ImpossibleStepException("BMotion Studio: No currentTrace exists.")
