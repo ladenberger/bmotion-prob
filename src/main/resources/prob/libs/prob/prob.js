@@ -18,8 +18,8 @@ define(['require', 'bmotion', 'css!prob-css'], function (require, bmotion) {
             callback: function () {
             }
         }, options);
-        this.click(function () {
-            bmotion.socket.emit("executeEvent", {data: settings}, settings.callback);
+        this.click(function (e) {
+            bmotion.executeEvent(options, e.target)
         }).css('cursor', 'pointer')
         this.tooltipster({
             position: "bottom-right",
