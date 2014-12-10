@@ -7,7 +7,6 @@ import com.google.common.io.Resources
 import de.bms.BMotion
 import de.bms.server.BMotionServer
 import de.bms.server.JsonObject
-import de.bms.server.NameDataObject
 import de.prob.statespace.Trace
 
 public class ProBServerFactory {
@@ -35,6 +34,39 @@ public class ProBServerFactory {
                         }
                     }
                 });
+        /*server.socketServer.getServer().
+                addEventListener("observeRefinement", JsonObject.class, new DataListener<JsonObject>() {
+                    @Override
+                    public void onData(final SocketIOClient client, JsonObject d,
+                                       final AckRequest ackRequest) {
+                        String path = server.socketServer.clients.get(client)
+                        def BMotion bmotion = server.socketServer.sessions.get(path) ?: null
+                        if (bmotion != null) {
+
+                            Trace t = bmotion.getTrace()
+
+                            def EventBMachine eventBMachine = t.getModel().getMainComponent()
+                            def _getrefs
+                            _getrefs = { refines ->
+                                def results = []
+                                refines.each() {
+                                    results << it
+                                    def refs = it.refines
+                                    if (refs) {
+                                        results << _getrefs(refs)
+                                    }
+                                }
+                                results
+                            }
+                            System.out.println(_getrefs(eventBMachine.refines))
+
+                            if (ackRequest.isAckRequested()) {
+                                ackRequest.sendAckData([events: eventMap]);
+                            }
+
+                        }
+                    }
+                });*/
         return server
     }
 

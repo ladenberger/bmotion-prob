@@ -53,7 +53,7 @@ public abstract class ProBVisualisation extends BMotion implements IAnimationCha
 
     @Override
     public void modelChanged(StateSpace s) {
-        checkObserver(de.prob.bmotion.ProBAnimation.TRIGGER_MODEL_CHANGED);
+        checkObserver(TRIGGER_MODEL_CHANGED);
     }
 
     public String getCurrentState() {

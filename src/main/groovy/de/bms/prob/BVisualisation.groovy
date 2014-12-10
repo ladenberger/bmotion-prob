@@ -49,7 +49,7 @@ public class BVisualisation extends ProBVisualisation {
             StateSpace space = trace.getStateSpace();
             IEvalElement e = formulas.get(formula);
             if (e == null) {
-                e = new TranslateFormula(formula as ClassicalB)
+                e = new TranslateFormula(formula as EventB)
                 formulas.put(formula, e);
             }
             State sId = space.getState(getCurrentState());
