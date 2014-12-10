@@ -7,6 +7,7 @@ import com.google.common.io.Resources
 import de.bms.BMotion
 import de.bms.server.BMotionServer
 import de.bms.server.JsonObject
+import de.prob.model.eventb.EventBMachine
 import de.prob.statespace.Trace
 
 public class ProBServerFactory {
@@ -34,7 +35,7 @@ public class ProBServerFactory {
                         }
                     }
                 });
-        /*server.socketServer.getServer().
+        server.socketServer.getServer().
                 addEventListener("observeRefinement", JsonObject.class, new DataListener<JsonObject>() {
                     @Override
                     public void onData(final SocketIOClient client, JsonObject d,
@@ -42,31 +43,25 @@ public class ProBServerFactory {
                         String path = server.socketServer.clients.get(client)
                         def BMotion bmotion = server.socketServer.sessions.get(path) ?: null
                         if (bmotion != null) {
-
                             Trace t = bmotion.getTrace()
-
                             def EventBMachine eventBMachine = t.getModel().getMainComponent()
                             def _getrefs
                             _getrefs = { refines ->
-                                def results = []
-                                refines.each() {
-                                    results << it
+                                return refines.collect() {
                                     def refs = it.refines
                                     if (refs) {
-                                        results << _getrefs(refs)
+                                        [it.toString(), _getrefs(refs)]
+                                    } else {
+                                        it.toString()
                                     }
-                                }
-                                results
+                                }.flatten()
                             }
-                            System.out.println(_getrefs(eventBMachine.refines))
-
                             if (ackRequest.isAckRequested()) {
-                                ackRequest.sendAckData([events: eventMap]);
+                                ackRequest.sendAckData([_getrefs(eventBMachine.refines).reverse() << eventBMachine.toString()]);
                             }
-
                         }
                     }
-                });*/
+                });
         return server
     }
 

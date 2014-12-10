@@ -21,7 +21,8 @@ public abstract class ProBVisualisation extends BMotion implements IAnimationCha
         super(sessionId, templatePath, scriptEngineProvider)
         animations = de.prob.Main.getInjector().getInstance(AnimationSelector.class)
         api = de.prob.Main.getInjector().getInstance(Api.class)
-        animations.registerAnimationChangeListener(this);
+        animations.registerAnimationChangeListener(this)
+        animations.registerModelChangedListener(this)
     }
 
     public AbstractModel getModel() {
@@ -53,7 +54,7 @@ public abstract class ProBVisualisation extends BMotion implements IAnimationCha
 
     @Override
     public void modelChanged(StateSpace s) {
-        checkObserver(TRIGGER_MODEL_CHANGED);
+        System.out.println("MODEL CHANGED")
     }
 
     public String getCurrentState() {
@@ -62,10 +63,10 @@ public abstract class ProBVisualisation extends BMotion implements IAnimationCha
 
     @Override
     public void loadModel(File modelFile, boolean force) {
-
         if (currentTrace != null) {
             animations.changeCurrentAnimation(currentTrace)
-            if (force) {
+            if (force || !currentTrace?.getModel()?.getModelFile()?.getCanonicalPath()?.
+                    equals(modelFile.getCanonicalPath())) {
                 // If a current trace is set and a load was forced, add a new trace
                 // and remove the old one from the AnimationSelector
                 def oldTrace = this.currentTrace
@@ -85,7 +86,6 @@ public abstract class ProBVisualisation extends BMotion implements IAnimationCha
                 animations.addNewAnimation(this.currentTrace)
             }
         }
-
     }
 
     private Trace createNewModelTrace(String modelPath) {
@@ -144,6 +144,7 @@ public abstract class ProBVisualisation extends BMotion implements IAnimationCha
 
     @Override
     public void refresh() {
+        checkObserver(TRIGGER_MODEL_CHANGED);
         if (currentTrace != null && currentTrace.getCurrentState().isInitialised()) {
             checkObserver(BMotion.TRIGGER_ANIMATION_CHANGED);
         }
