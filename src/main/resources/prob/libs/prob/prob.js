@@ -16,12 +16,20 @@ define(['require', 'bmotion', 'css!prob-css'], function (require, bmotion) {
         observeRefinement: function (options, origin) {
             var settings = $.extend({
                 refinements: [],
-                trigger: function () {
+                enable: function () {
+                },
+                disable: function () {
                 }
             }, options);
             $(document).bind("checkObserver_ModelChanged", function () {
                 bmotion.socket.emit("observeRefinement", {data: settings}, function (data) {
-                    origin !== undefined ? settings.trigger.call(this, origin, data) : settings.trigger.call(this, data)
+                    $.each(settings.refinements, function (i, v) {
+                        if ($.inArray(v, data.refinements) > -1) {
+                            origin !== undefined ? settings.enable.call(this, origin, data) : settings.enable.call(this, data)
+                        } else {
+                            origin !== undefined ? settings.disable.call(this, origin, data) : settings.disable.call(this, data)
+                        }
+                    });
                 });
             });
         }

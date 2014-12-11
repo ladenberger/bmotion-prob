@@ -57,7 +57,8 @@ public class ProBServerFactory {
                                 }.flatten()
                             }
                             if (ackRequest.isAckRequested()) {
-                                ackRequest.sendAckData([_getrefs(eventBMachine.refines).reverse() << eventBMachine.toString()]);
+                                ackRequest.sendAckData([refinements: _getrefs(eventBMachine.refines).
+                                        reverse() << eventBMachine.toString()]);
                             }
                         }
                     }

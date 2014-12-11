@@ -12,6 +12,7 @@ import groovy.util.logging.Slf4j
 public abstract class ProBVisualisation extends BMotion implements IAnimationChangeListener, IModelChangedListener {
 
     public static final String TRIGGER_MODEL_CHANGED = "ModelChanged";
+    public static final String TRIGGER_MODEL_INITIALISED = "ModelInitialised";
     def final AnimationSelector animations;
     def final Api api
     def Trace currentTrace;
@@ -43,6 +44,11 @@ public abstract class ProBVisualisation extends BMotion implements IAnimationCha
 
     @Override
     public void traceChange(final Trace changeTrace, final boolean currentAnimationChanged) {
+
+        // TODO: Is there a better way to check that the current transition is the initialise machine event?
+        if (changeTrace.getCurrentTransition().toString().startsWith("\$initialise_machine")) {
+            checkObserver(TRIGGER_MODEL_INITIALISED)
+        }
         def modelFileName = changeTrace.getModel().getModelFile().getName()
         if (getModel()?.getModelFile()?.getName()?.equals(modelFileName)) {
             this.currentTrace = changeTrace
@@ -50,11 +56,12 @@ public abstract class ProBVisualisation extends BMotion implements IAnimationCha
                     isInitialised())
                 checkObserver(BMotion.TRIGGER_ANIMATION_CHANGED)
         }
+
     }
 
     @Override
     public void modelChanged(StateSpace s) {
-        System.out.println("MODEL CHANGED")
+        checkObserver(TRIGGER_MODEL_CHANGED)
     }
 
     public String getCurrentState() {
@@ -146,6 +153,7 @@ public abstract class ProBVisualisation extends BMotion implements IAnimationCha
     public void refresh() {
         checkObserver(TRIGGER_MODEL_CHANGED);
         if (currentTrace != null && currentTrace.getCurrentState().isInitialised()) {
+            checkObserver(TRIGGER_MODEL_INITIALISED);
             checkObserver(BMotion.TRIGGER_ANIMATION_CHANGED);
         }
     }
