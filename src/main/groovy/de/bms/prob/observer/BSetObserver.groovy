@@ -34,6 +34,7 @@ class BSetObserver extends TransformerObserver {
         this
     }
 
+    @Override
     def List<TransformerObject> update(BMotion bms) {
         def a = _resolve(bms.eval((_expression instanceof Closure) ? _expression() : _expression))
         def b = a.collect { _convert(it) }
