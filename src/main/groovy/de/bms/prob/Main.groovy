@@ -11,8 +11,6 @@ public class Main {
 
     public static void main(final String[] args) throws InterruptedException {
 
-        def probPort = "8081"
-
         // Start BMotion Server
         BMotionServer server = ProBServerFactory.getServer(args)
         server.start()
@@ -22,19 +20,15 @@ public class Main {
                 public void onData(final SocketIOClient client, String str,
                                    final AckRequest ackRequest) {
                     if (ackRequest.isAckRequested())
-                        ackRequest.sendAckData([host: "localhost", port: probPort]);
+                        ackRequest.sendAckData([host: "localhost", port: WebConsole.getPort()]);
                 }
             });
         }
 
         new Thread(new Runnable() {
             public void run() {
-                WebConsole.run("127.0.0.1", new Runnable() {
-                    @Override
-                    public void run() {
-                        probPort = WebConsole.getPort()
-                    }
-                });
+                String[] probargs = ["-local", "-s"]
+                de.prob.Main.main(probargs)
             }
         }).start();
 
