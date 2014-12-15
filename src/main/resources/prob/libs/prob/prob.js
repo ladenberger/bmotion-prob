@@ -40,11 +40,24 @@ define(['require', 'bmotion', 'css!prob-css'], function (require, bmotion) {
     }
 
     $.fn.executeEvent = function (options) {
+
         var settings = $.extend({
             events: [],
             callback: function () {
             }
         }, options);
+
+        var obj = this
+        $(document).bind("eventHighlight", function () {
+            var offset = obj.offset();
+            var width = obj[0].getBoundingClientRect().width
+            var height = obj[0].getBoundingClientRect().height
+            var max = Math.max(width, height)
+            var centerX = width > max ? offset.left : offset.left - (max - width) / 2
+            var centerY = height > max ? offset.top : offset.top - (max - height) / 2
+            var d = $('<div class="overlay" style="width:' + max + 'px;height:' + max + 'px;top:' + centerY + 'px;left:' + centerX + 'px"></div>')
+            $('body').append(d)
+        });
         this.click(function (e) {
             bmotion.executeEvent(options, e.target)
         }).css('cursor', 'pointer')
@@ -63,13 +76,13 @@ define(['require', 'bmotion', 'css!prob-css'], function (require, bmotion) {
                 continueTooltip();
                 bmotion.socket.emit('initTooltip', {data: settings}, function (data) {
 
-                    var container = $('<ul class="event-tooltip"></ul>')
+                    var container = $('<ul></ul>')
                     $.each(data.events, function (i, v) {
                         var spanClass = v.canExecute ? 'glyphicon glyphicon-ok-circle' : 'glyphicon glyphicon-remove-circle'
                         var span = $('<span aria-hidden="true"></span>').addClass(spanClass)
-                        var link = $('<span>' + v.name + ' ' + v.predicate + '</span>')
+                        var link = $('<span> ' + v.name + ' ' + v.predicate + '</span>')
                         if (v.canExecute) {
-                            link = $('<a href="#">' + v.name + '(' + v.predicate + ')</a>').click(function () {
+                            link = $('<a href="#"> ' + v.name + '(' + v.predicate + ')</a>').click(function () {
                                 bmotion.executeEvent({
                                     events: [{name: v.name, predicate: v.predicate}],
                                     callback: function () {
@@ -160,6 +173,10 @@ define(['require', 'bmotion', 'css!prob-css'], function (require, bmotion) {
                 '<div data-view="ModelCheckingUI" title="ModelChecking"><iframe src="" frameBorder="0"></iframe></div>' +
                 '<div data-view="GroovyConsoleSession" title="Console"><iframe src="" frameBorder="0"></iframe></div>')
 
+                $("#bmotion-navigation-model").append('<li><a href="#" id="bt_show_event"> Show Click Handler</a></li>')
+
+                $("body").prepend('<div id="fade-wrapper"></div>')
+
                 $("#bmotion-navigation").append('<li class="dropdown">' +
                 '                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Open View <span class="caret"></span></a>' +
                 '                        <ul class="dropdown-menu" role="menu">' +
@@ -172,6 +189,36 @@ define(['require', 'bmotion', 'css!prob-css'], function (require, bmotion) {
                 '                            <li><a href="#" id="bt_open_ModelCheckingUI"><i class="glyphicon glyphicon-ok"></i> Model Checking</a></li>' +
                 '                         </ul>' +
                 '                    </li>')
+
+                var remove = false;
+                $("#bt_show_event").click(function () {
+
+                    if (!remove) {
+
+                        //bmotion.socket.emit('getEnabledEvents', function (data) {
+                        //    console.log(data)
+
+                        $('#fade-wrapper').fadeIn();
+                        $(document).trigger({
+                            type: "eventHighlight"
+                        });
+
+                        //});
+                        remove = true
+
+                    } else {
+                        $(".overlay").remove()
+                        $('#fade-wrapper').fadeOut();
+                        remove = false
+                    }
+
+                })
+
+                $('#fade-wrapper').click(function () {
+                    $(".overlay").remove()
+                    $(this).fadeOut();
+                    remove = false
+                });
 
                 // Initialise dialogs
                 $.each($("div[data-view]"), function (i, e) {
@@ -277,7 +324,8 @@ define(['require', 'bmotion', 'css!prob-css'], function (require, bmotion) {
 
     });
 
-});
+})
+;
 
 function fixSizeDialog(dialog, obj, ox, oy) {
     var newwidth = dialog.parent().width() - ox
