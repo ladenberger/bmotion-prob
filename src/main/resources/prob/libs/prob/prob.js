@@ -11,8 +11,62 @@ require.config({
 });
 define(['require', 'bmotion', 'css!prob-css'], function (require, bmotion) {
 
+    var observePredicateHandler = function (tf, el, data) {
+        if (Object.prototype.toString.call(tf) === '[object Array]') {
+            $.each(tf, function (i, v) {
+                el.attr(v.attr, v.value)
+            });
+        } else if (isFunction(tf)) {
+            d.call(this, el, data)
+        }
+    }
+
     // --------------------- Extend jQuery
     $.extend(bmotion, {
+        observePredicate: function (options, origin) {
+            var settings = normalize($.extend({
+                predicate: "",
+                selector: null,
+                true: [],
+                false: [],
+                cause: "AnimationChanged",
+                callback: function () {
+                }
+            }, options), ["callback"], origin);
+            $(document).bind("checkObserver_" + settings.cause, function () {
+                bmotion.socket.emit("evalFormula", {data: {formula: settings.predicate}}, function (data) {
+                    var el = settings.selector !== null ? $(settings.selector) : origin
+                    if (data.result === "TRUE") {
+                        observePredicateHandler(settings.true, el, data)
+                    } else if (data.result === "FALSE") {
+                        observePredicateHandler(settings.false, el, data)
+                    }
+                    el !== undefined ? settings.callback.call(this, el, data) : settings.callback.call(this, data)
+                });
+            });
+        },
+        observeExpression: function (options, origin) {
+            var settings = normalize($.extend({
+                expression: "",
+                selector: null,
+                cause: "AnimationChanged",
+                callback: function () {
+                }
+            }, options), ["callback"], origin);
+            $(document).bind("checkObserver_" + settings.cause, function () {
+                bmotion.socket.emit("evalFormula", {data: {formula: settings.expression}}, function (data) {
+                    var el = settings.selector !== null ? $(settings.selector) : origin
+                    $.each(settings.transform, function (i, v) {
+                        if (v.result === data.result) {
+                            $.each(v.set, function (i2, v2) {
+                                el.attr(v2.attr, v2.value)
+                            });
+                        }
+                    });
+                    el !== undefined ? settings.callback.call(this, el, data) : settings.callback.call(this, data)
+                });
+            });
+        },
         observeRefinement: function (options, origin) {
             var settings = normalize($.extend({
                 refinements: [],
@@ -37,11 +91,23 @@ define(['require', 'bmotion', 'css!prob-css'], function (require, bmotion) {
 
     $.fn.observeRefinement = function (options) {
         bmotion.observeRefinement(options, this)
+        return this
+    }
+
+    $.fn.observePredicate = function (options) {
+        bmotion.observePredicate(options, this)
+        return this
+    }
+
+    $.fn.observeExpression = function (options) {
+        bmotion.observeExpression(options, this)
+        return this
     }
 
     $.fn.executeEvent = function (options) {
         var settings = $.extend({
             events: [],
+            tooltip: true,
             callback: function () {
             }
         }, options)
@@ -59,48 +125,50 @@ define(['require', 'bmotion', 'css!prob-css'], function (require, bmotion) {
         this.click(function (e) {
             bmotion.executeEvent(options, e.target)
         }).css('cursor', 'pointer')
-        this.tooltipster({
-            position: "bottom-right",
-            animation: "fade",
-            hideOnClick: true,
-            updateAnimation: false,
-            offsetY: 15,
-            delay: 500,
-            content: 'Loading...',
-            theme: 'tooltipster-shadow',
-            interactive: true,
-            functionBefore: function (origin, continueTooltip) {
+        if (settings.tooltip) {
+            this.tooltipster({
+                position: "bottom-right",
+                animation: "fade",
+                hideOnClick: true,
+                updateAnimation: false,
+                offsetY: 15,
+                delay: 500,
+                content: 'Loading...',
+                theme: 'tooltipster-shadow',
+                interactive: true,
+                functionBefore: function (origin, continueTooltip) {
 
-                continueTooltip();
-                bmotion.socket.emit('initTooltip', {
-                    data: normalize(settings, ["callback"], origin)
-                }, function (data) {
+                    continueTooltip();
+                    bmotion.socket.emit('initTooltip', {
+                        data: normalize(settings, ["callback"], origin)
+                    }, function (data) {
 
-                    var container = $('<ul></ul>')
-                    $.each(data.events, function (i, v) {
-                        var spanClass = v.canExecute ? 'glyphicon glyphicon-ok-circle' : 'glyphicon glyphicon-remove-circle'
-                        var span = $('<span aria-hidden="true"></span>').addClass(spanClass)
-                        var link = $('<span> ' + v.name + ' ' + v.predicate + '</span>')
-                        if (v.canExecute) {
-                            link = $('<a href="#"> ' + v.name + '(' + v.predicate + ')</a>').click(function () {
-                                bmotion.executeEvent({
-                                    events: [{name: v.name, predicate: v.predicate}],
-                                    callback: function () {
-                                        // Update tooltip
-                                        origin.tooltipster('hide')
-                                        origin.tooltipster('show')
-                                    }
-                                })
-                            });
-                        }
-                        container.append($('<li></li>').addClass(v.canExecute ? 'enabled' : 'disabled').append(span, link))
+                        var container = $('<ul></ul>')
+                        $.each(data.events, function (i, v) {
+                            var spanClass = v.canExecute ? 'glyphicon glyphicon-ok-circle' : 'glyphicon glyphicon-remove-circle'
+                            var span = $('<span aria-hidden="true"></span>').addClass(spanClass)
+                            var link = $('<span> ' + v.name + ' ' + v.predicate + '</span>')
+                            if (v.canExecute) {
+                                link = $('<a href="#"> ' + v.name + '(' + v.predicate + ')</a>').click(function () {
+                                    bmotion.executeEvent({
+                                        events: [{name: v.name, predicate: v.predicate}],
+                                        callback: function () {
+                                            // Update tooltip
+                                            origin.tooltipster('hide')
+                                            origin.tooltipster('show')
+                                        }
+                                    })
+                                });
+                            }
+                            container.append($('<li></li>').addClass(v.canExecute ? 'enabled' : 'disabled').append(span, link))
+                        });
+                        origin.tooltipster('content', container)
+
                     });
-                    origin.tooltipster('content', container)
 
-                });
-
-            }
-        });
+                }
+            });
+        }
         return this
     }
     // ---------------------

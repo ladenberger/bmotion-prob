@@ -63,6 +63,22 @@ public class ProBServerFactory {
                         }
                     }
                 });
+        server.socketServer.getServer().
+                addEventListener("evalFormula", JsonObject.class, new DataListener<JsonObject>() {
+                    @Override
+                    public void onData(final SocketIOClient client, JsonObject d,
+                                       final AckRequest ackRequest) {
+                        String path = server.socketServer.clients.get(client)
+                        def BMotion bmotion = server.socketServer.sessions.get(path) ?: null
+                        if (bmotion != null) {
+                            def result = bmotion.eval(d.data.formula)
+                            if (ackRequest.isAckRequested()) {
+                                ackRequest.sendAckData([result: result.value]);
+                            }
+                        }
+                    }
+                });
+
         return server
     }
 
