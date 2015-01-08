@@ -71,7 +71,6 @@ public abstract class ProBVisualisation extends BMotion implements IAnimationCha
     @Override
     public void loadModel(File modelFile, boolean force) {
         if (currentTrace != null) {
-            animations.changeCurrentAnimation(currentTrace)
             if (force || !currentTrace?.getModel()?.getModelFile()?.getCanonicalPath()?.
                     equals(modelFile.getCanonicalPath())) {
                 // If a current trace is set and a load was forced, add a new trace
@@ -80,6 +79,8 @@ public abstract class ProBVisualisation extends BMotion implements IAnimationCha
                 this.currentTrace = createNewModelTrace(modelFile.getCanonicalPath())
                 animations.addNewAnimation(this.currentTrace)
                 animations.removeTrace(oldTrace)
+            } else {
+                animations.changeCurrentAnimation(currentTrace)
             }
         } else {
             // If no trace exists yet, check if the current trace in the AnimationSelector
