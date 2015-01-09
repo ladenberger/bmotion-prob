@@ -16,8 +16,6 @@ define(['ngBMotion', 'jquery-cookie', 'jquery-ui', "css!jquery-ui-css", "css!jqu
                         $scope.openView = function (type) {
                             $scope.$broadcast('open' + type);
                         }
-                        $scope.modal.show()
-                        $scope.modal.setLabel("Loading visualisation ...")
 
                         initSession.then(function (standalone) {
                             if (standalone) {
@@ -34,7 +32,6 @@ define(['ngBMotion', 'jquery-cookie', 'jquery-ui', "css!jquery-ui-css", "css!jqu
                                     '<prob-view type="GroovyConsoleSession"></prob-view>' +
                                     '<prob-view type="ModelCheckingUI"></prob-view></div>')
                                     element.find("body").append($compile(probViews)($scope))
-                                    $scope.modal.hide()
                                 })
                             }
                         })
