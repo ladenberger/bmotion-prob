@@ -20,7 +20,7 @@ define(['ngProB', 'bms', 'angularAMD', 'jquery', 'tooltipster', 'css!prob-css', 
             callback: function () {
             }
         }, options), ["callback"], origin);
-        $(document).bind("checkObserver_" + settings.cause, function () {
+        bms.addObserver(settings.cause, function () {
             bms.socket.emit("evalFormula", {data: {formula: settings.predicate}}, function (data) {
                 var el = settings.selector !== null ? $(settings.selector) : origin;
                 if (data.result === "TRUE") {
@@ -28,7 +28,14 @@ define(['ngProB', 'bms', 'angularAMD', 'jquery', 'tooltipster', 'css!prob-css', 
                 } else if (data.result === "FALSE") {
                     observePredicateHandler(settings.false, el, data)
                 }
-                el !== undefined ? settings.callback.call(this, el, data) : settings.callback.call(this, data)
+                if (origin === undefined) {
+                    settings.callback.call(this, data)
+                } else {
+                    var el = settings.selector !== null ? $(settings.selector) : origin;
+                    el.each(function (i, v) {
+                        settings.callback.call(this, $(v), data)
+                    });
+                }
             });
         });
     };
@@ -41,7 +48,7 @@ define(['ngProB', 'bms', 'angularAMD', 'jquery', 'tooltipster', 'css!prob-css', 
             disable: function () {
             }
         }, options), ["enable", "disable"], origin);
-        $(document).bind("checkObserver_ModelChanged", function () {
+        bms.addObserver("checkObserver_ModelChanged", function () {
             bms.socket.emit("observeRefinement", {data: settings}, function (data) {
                 $.each(settings.refinements, function (i, v) {
                     if ($.inArray(v, data.refinements) > -1) {
