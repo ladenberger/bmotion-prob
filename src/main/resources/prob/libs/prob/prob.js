@@ -107,7 +107,7 @@ define(['ngProB', 'bms', 'angularAMD', 'jquery', 'tooltipster', 'css!prob-css', 
                 $('body').append(d)
             });
             this.click(function (e) {
-                bms.executeEvent(options, e.target)
+                bms.executeEvent(options, $(e.target))
             }).css('cursor', 'pointer')
             if (settings.tooltip) {
                 this.tooltipster({
