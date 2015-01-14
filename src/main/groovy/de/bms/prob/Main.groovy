@@ -3,7 +3,6 @@ package de.bms.prob
 import com.corundumstudio.socketio.AckRequest
 import com.corundumstudio.socketio.SocketIOClient
 import com.corundumstudio.socketio.listener.DataListener
-import de.bms.DesktopApi
 import de.bms.server.BMotionServer
 import de.prob.webconsole.WebConsole
 
@@ -32,13 +31,6 @@ public class Main {
             }
         }).start();
 
-        openBrowser(server)
-
-    }
-
-    static def openBrowser(BMotionServer server) {
-        java.net.URI uri = new java.net.URI("http://" + server.host + ":" + server.port + "/bms/")
-        DesktopApi.browse(uri)
     }
 
 }
