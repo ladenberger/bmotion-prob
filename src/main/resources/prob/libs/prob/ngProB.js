@@ -5,7 +5,7 @@ define(['ngBMotion', 'jquery-cookie', 'jquery-ui', "css!jquery-ui-css", "css!jqu
                 var defer = $q.defer();
                 ws.emit('initProB', "", function (data) {
                     defer.resolve(data)
-                })
+                });
                 return defer.promise;
             }])
             .directive('bmsApp', ['$compile', 'initProB', 'initSession', function ($compile, initProB, initSession) {
@@ -15,14 +15,14 @@ define(['ngBMotion', 'jquery-cookie', 'jquery-ui', "css!jquery-ui-css", "css!jqu
 
                         $scope.openView = function (type) {
                             $scope.$broadcast('open' + type);
-                        }
+                        };
 
                         initSession.then(function (standalone) {
                             if (standalone) {
                                 initProB.then(function (data) {
-                                    $scope.host = data.host
-                                    $scope.port = data.port
-                                    var bmsNavigation = angular.element('<prob-navigation></prob-navigation>')
+                                    $scope.host = data.host;
+                                    $scope.port = data.port;
+                                    var bmsNavigation = angular.element('<prob-navigation></prob-navigation>');
                                     element.find("body").append($compile(bmsNavigation)($scope))
                                     var probViews = angular.element('<div><prob-view type="CurrentTrace"></prob-view>' +
                                     '<prob-view type="Events"></prob-view>' +
@@ -30,7 +30,7 @@ define(['ngBMotion', 'jquery-cookie', 'jquery-ui', "css!jquery-ui-css", "css!jqu
                                     '<prob-view type="CurrentAnimations"></prob-view>' +
                                     '<prob-view type="Log"></prob-view>' +
                                     '<prob-view type="GroovyConsoleSession"></prob-view>' +
-                                    '<prob-view type="ModelCheckingUI"></prob-view></div>')
+                                    '<prob-view type="ModelCheckingUI"></prob-view></div>');
                                     element.find("body").append($compile(probViews)($scope))
                                 })
                             }

@@ -48,7 +48,7 @@ public class BVisualisation extends ProBVisualisation {
         try {
             StateSpace space = trace.getStateSpace();
             IEvalElement e = formulas.get(formula);
-            if (e == null) {
+            if (e == null || e instanceof AbstractEvalElement) {
                 e = new TranslateFormula(formula as EventB)
                 formulas.put(formula, e);
             }
@@ -84,6 +84,20 @@ public class BVisualisation extends ProBVisualisation {
             }
         }
         return errors;
+    }
+
+    @Override
+    public Object observe(final d) {
+        def formulas = d.data.formulas
+        if (!{d.data.translate ?: false}) {
+            return formulas.collect {
+                eval(it)
+            }
+        } else {
+            return formulas.collect {
+                translate(it)
+            }
+        }
     }
 
     @Override

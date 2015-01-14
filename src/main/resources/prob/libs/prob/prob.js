@@ -6,9 +6,15 @@ define(['ngProB', 'bms', 'angularAMD', 'jquery', 'tooltipster', 'css!prob-css', 
                 el.attr(v.attr, v.value)
             });
         } else if (isFunction(tf)) {
-            d.call(this, el, data)
+            if (el === undefined) {
+                tf.call(this, data)
+            } else {
+                el.each(function (i, v) {
+                    tf.call(this, $(v), data)
+                });
+            }
         }
-    }
+    };
 
     var observePredicate = function (options, origin) {
         var settings = normalize($.extend({
@@ -19,19 +25,18 @@ define(['ngProB', 'bms', 'angularAMD', 'jquery', 'tooltipster', 'css!prob-css', 
             cause: "AnimationChanged",
             callback: function () {
             }
-        }, options), ["callback"], origin);
+        }, options), ["callback", "false", "true"], origin);
         bms.addObserver(settings.cause, function () {
-            bms.socket.emit("evalFormula", {data: {formula: settings.predicate}}, function (data) {
+            bms.socket.emit("eval", {data: {formula: settings.predicate}}, function (data) {
                 var el = settings.selector !== null ? $(settings.selector) : origin;
-                if (data.result === "TRUE") {
-                    observePredicateHandler(settings.true, el, data)
-                } else if (data.result === "FALSE") {
-                    observePredicateHandler(settings.false, el, data)
+                if (data.value === "TRUE") {
+                    observePredicateHandler(settings.true, el, data.value)
+                } else if (data.value === "FALSE") {
+                    observePredicateHandler(settings.false, el, data.value)
                 }
-                if (origin === undefined) {
+                if (el === undefined) {
                     settings.callback.call(this, data)
                 } else {
-                    var el = settings.selector !== null ? $(settings.selector) : origin;
                     el.each(function (i, v) {
                         settings.callback.call(this, $(v), data)
                     });

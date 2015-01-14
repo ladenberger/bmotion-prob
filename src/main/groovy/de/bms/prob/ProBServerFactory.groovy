@@ -4,7 +4,6 @@ import com.corundumstudio.socketio.AckRequest
 import com.corundumstudio.socketio.SocketIOClient
 import com.corundumstudio.socketio.listener.DataListener
 import com.google.common.io.Resources
-import de.bms.BMotion
 import de.bms.server.BMotionServer
 import de.bms.server.JsonObject
 import de.prob.model.eventb.EventBMachine
@@ -21,10 +20,9 @@ public class ProBServerFactory {
                     @Override
                     public void onData(final SocketIOClient client, JsonObject d,
                                        final AckRequest ackRequest) {
-                        String path = server.socketServer.clients.get(client)
-                        def BMotion bmotion = server.socketServer.sessions.get(path) ?: null
-                        if (bmotion != null) {
-                            Trace t = bmotion.getTrace()
+                        def ProBVisualisation bms = server.socketServer.getSession(client)
+                        if (bms != null) {
+                            Trace t = bms.getTrace()
                             def eventMap = d.data.events.collect {
                                 def p = it.predicate == null ? [] : it.predicate
                                 [name: it.name, predicate: p, canExecute: t.canExecuteEvent(it.name, p)]
@@ -40,10 +38,9 @@ public class ProBServerFactory {
                     @Override
                     public void onData(final SocketIOClient client, JsonObject d,
                                        final AckRequest ackRequest) {
-                        String path = server.socketServer.clients.get(client)
-                        def BMotion bmotion = server.socketServer.sessions.get(path) ?: null
-                        if (bmotion != null) {
-                            Trace t = bmotion.getTrace()
+                        def ProBVisualisation bms = server.socketServer.getSession(client)
+                        if (bms != null) {
+                            Trace t = bms.getTrace()
                             def EventBMachine eventBMachine = t.getModel().getMainComponent()
                             def _getrefs
                             _getrefs = { refines ->
@@ -59,21 +56,6 @@ public class ProBServerFactory {
                             if (ackRequest.isAckRequested()) {
                                 ackRequest.sendAckData([refinements: _getrefs(eventBMachine.refines).
                                         reverse() << eventBMachine.toString()]);
-                            }
-                        }
-                    }
-                });
-        server.socketServer.getServer().
-                addEventListener("evalFormula", JsonObject.class, new DataListener<JsonObject>() {
-                    @Override
-                    public void onData(final SocketIOClient client, JsonObject d,
-                                       final AckRequest ackRequest) {
-                        String path = server.socketServer.clients.get(client)
-                        def BMotion bmotion = server.socketServer.sessions.get(path) ?: null
-                        if (bmotion != null) {
-                            def result = bmotion.eval(d.data.formula)
-                            if (ackRequest.isAckRequested()) {
-                                ackRequest.sendAckData([result: result.value]);
                             }
                         }
                     }
