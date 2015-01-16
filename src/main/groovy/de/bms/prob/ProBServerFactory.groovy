@@ -6,8 +6,10 @@ import com.corundumstudio.socketio.listener.DataListener
 import com.google.common.io.Resources
 import de.bms.server.BMotionServer
 import de.bms.server.JsonObject
+import de.prob.animator.domainobjects.EvalResult
 import de.prob.model.eventb.EventBMachine
 import de.prob.statespace.Trace
+import de.prob.statespace.Transition
 
 public class ProBServerFactory {
 
@@ -60,8 +62,97 @@ public class ProBServerFactory {
                         }
                     }
                 });
+        server.socketServer.getServer().
+                addEventListener("observeCSPTrace", JsonObject.class, new DataListener<JsonObject>() {
+                    @Override
+                    public void onData(final SocketIOClient client, JsonObject d,
+                                       final AckRequest ackRequest) {
+                        def ProBVisualisation bms = server.socketServer.getSession(client)
+                        if (bms != null) {
+
+                            def values = [:]
+                            def order = []
+
+                            def Trace newTrace = bms.getTrace()
+                            def Transition currentTransition = newTrace.getCurrent().getTransition()
+                            //def Transition headTransition = newTrace.getHead().getTransition()
+                            //TODO: Backtrack provides a wrong current element! This is a workaround!
+                            //if (!currentTransition.equals(headTransition)) {
+                            //    currentTransition = newTrace.getTransitionList().get(newTrace.getCurrent().getIndex())
+                            //}
+
+                            def boolean stop = false
+                            def list = newTrace.getTransitionList(true)
+                            for (Transition op : list) {
+
+                                if (currentTransition.equals(op)) {
+                                    stop = true
+                                }
+
+                                def fullOp = getOpString(op)
+                                d.data.observers.each { o ->
+
+                                    def events = bms.eval(o.exp)
+
+                                    if (events instanceof EvalResult) {
+                                        def eventNames = events.value.replace("{", "").replace("}", "").split(",")
+                                        if (eventNames.contains(fullOp)) {
+                                            o.actions.each { a ->
+                                                def String selector = replaceParameter(a.selector, op)
+                                                def String attr = replaceParameter(a.attr, op)
+                                                def String value = replaceParameter(a.value, op)
+                                                order << selector
+                                                def attrs = values.get(selector)
+                                                if (attrs == null) {
+                                                    attrs = [:]
+                                                    values.put(selector, attrs)
+                                                }
+                                                attrs.put(attr, value)
+                                            }
+                                        }
+                                    }
+
+                                }
+
+                                if (stop == true)
+                                    break;
+
+                            }
+
+                            if (ackRequest.isAckRequested()) {
+                                ackRequest.sendAckData([values: values, order: order]);
+                            }
+
+                        }
+                    }
+                });
 
         return server
+    }
+
+    def static String replaceParameter(String str, Transition op) {
+        op.getParams().eachWithIndex { item, index -> str = str.replace("{{a" + (index + 1) + "}}", item)
+        }
+        return str;
+    }
+
+    def static String getOpString(Transition op) {
+        def String opName = op.getName()
+        def String AsImplodedString = ""
+        def List<String> opParameter = op.getParams()
+        if (opParameter.size() > 0) {
+            String[] inputArray = opParameter.toArray(new String[opParameter
+                    .size()]);
+            StringBuffer sb = new StringBuffer();
+            sb.append(inputArray[0]);
+            for (int i = 1; i < inputArray.length; i++) {
+                sb.append(".");
+                sb.append(inputArray[i]);
+            }
+            AsImplodedString = "." + sb.toString();
+        }
+        String opNameWithParameter = opName + AsImplodedString;
+        return opNameWithParameter;
     }
 
 }

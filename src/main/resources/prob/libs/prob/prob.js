@@ -45,6 +45,37 @@ define(['ngProB', 'bms', 'angularAMD', 'jquery', 'tooltipster', 'css!prob-css', 
         });
     };
 
+    var observeCSPTrace = function (options, origin) {
+
+        var settings = normalize($.extend({
+            observers: [],
+            selector: "",
+            cause: "AnimationChanged"
+        }, options), [], origin);
+
+        var element = origin !== undefined ? origin : $(settings.selector);
+        if (element !== undefined) {
+
+            element.attr("bms-visualisation", "");
+            var $injector = angular.injector(['ng', 'bmsModule']);
+            $injector.invoke(function ($rootScope, $compile) {
+                $compile(element)($rootScope);
+            });
+
+            bms.addObserver(settings.cause, function () {
+                bms.socket.emit("observeCSPTrace", {data: settings}, function (data) {
+                    var scope = angular.element(element).scope();
+                    scope.$apply(function () {
+                        scope.setOrder(data.order);
+                        scope.setValues(data.values);
+                    });
+                });
+            });
+
+        }
+
+    };
+
     var observeRefinement = function (options, origin) {
         var settings = normalize($.extend({
             refinements: [],
@@ -53,7 +84,7 @@ define(['ngProB', 'bms', 'angularAMD', 'jquery', 'tooltipster', 'css!prob-css', 
             disable: function () {
             }
         }, options), ["enable", "disable"], origin);
-        bms.addObserver("checkObserver_ModelChanged", function () {
+        bms.addObserver("ModelChanged", function () {
             bms.socket.emit("observeRefinement", {data: settings}, function (data) {
                 $.each(settings.refinements, function (i, v) {
                     if ($.inArray(v, data.refinements) > -1) {
@@ -66,7 +97,7 @@ define(['ngProB', 'bms', 'angularAMD', 'jquery', 'tooltipster', 'css!prob-css', 
         });
     };
 
-    var oldObserveFn = bms.observe
+    var oldObserveFn = bms.observe;
     var probObserveFn = function (what, options, origin) {
         oldObserveFn(what, options, origin);
         if (what === "refinement") {
@@ -74,6 +105,9 @@ define(['ngProB', 'bms', 'angularAMD', 'jquery', 'tooltipster', 'css!prob-css', 
         }
         if (what === "predicate") {
             return observePredicate(options, origin)
+        }
+        if (what === "csp-trace") {
+            return observeCSPTrace(options, origin)
         }
     };
     bms.observe = probObserveFn
@@ -86,7 +120,7 @@ define(['ngProB', 'bms', 'angularAMD', 'jquery', 'tooltipster', 'css!prob-css', 
         $.fn.observe = function (what, options) {
             probObserveFn(what, options, this);
             return this
-        }
+        };
 
         $.fn.executeEvent = function (options) {
             var settings = $.extend({
@@ -94,21 +128,21 @@ define(['ngProB', 'bms', 'angularAMD', 'jquery', 'tooltipster', 'css!prob-css', 
                 tooltip: true,
                 callback: function () {
                 }
-            }, options)
-            var obj = this
+            }, options);
+            var obj = this;
             $(document).bind("eventHighlight", function () {
                 var offset = obj.offset();
-                var width = obj[0].getBoundingClientRect().width
-                var height = obj[0].getBoundingClientRect().height
-                var max = Math.max(width, height)
-                var centerX = width > max ? offset.left : offset.left - (max - width) / 2
-                var centerY = height > max ? offset.top : offset.top - (max - height) / 2
-                var d = $('<div class="overlay" style="width:' + max + 'px;height:' + max + 'px;top:' + centerY + 'px;left:' + centerX + 'px"></div>')
+                var width = obj[0].getBoundingClientRect().width;
+                var height = obj[0].getBoundingClientRect().height;
+                var max = Math.max(width, height);
+                var centerX = width > max ? offset.left : offset.left - (max - width) / 2;
+                var centerY = height > max ? offset.top : offset.top - (max - height) / 2;
+                var d = $('<div class="overlay" style="width:' + max + 'px;height:' + max + 'px;top:' + centerY + 'px;left:' + centerX + 'px"></div>');
                 $('body').append(d)
             });
             this.click(function (e) {
                 bms.executeEvent(options, $(e.target))
-            }).css('cursor', 'pointer')
+            }).css('cursor', 'pointer');
             if (settings.tooltip) {
                 this.tooltipster({
                     position: "top-left",

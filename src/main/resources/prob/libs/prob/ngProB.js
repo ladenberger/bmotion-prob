@@ -1,4 +1,4 @@
-define(['ngBMotion', 'jquery-cookie', 'jquery-ui', "css!jquery-ui-css", "css!jquery-ui-theme-css"], function (ngBMotion) {
+define(['ngBMotion', 'jquery', 'jquery-cookie', 'jquery-ui', "css!jquery-ui-css", "css!jquery-ui-theme-css"], function (ngBMotion) {
 
         return ngBMotion
             .factory('initProB', ['$q', 'ws', function ($q, ws) {
@@ -127,4 +127,4 @@ define(['ngBMotion', 'jquery-cookie', 'jquery-ui', "css!jquery-ui-css", "css!jqu
             });
 
     }
-)
+);
