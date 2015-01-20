@@ -106,7 +106,7 @@ define(['ngProB', 'bms', 'angularAMD', 'jquery', 'tooltipster', 'css!prob-css', 
         if (what === "predicate") {
             return observePredicate(options, origin)
         }
-        if (what === "csp-trace") {
+        if (what === "csp-event") {
             return observeCSPTrace(options, origin)
         }
     };
