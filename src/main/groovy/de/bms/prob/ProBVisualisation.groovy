@@ -45,13 +45,14 @@ public abstract class ProBVisualisation extends BMotion implements IAnimationCha
     @Override
     public void traceChange(final Trace changeTrace, final boolean currentAnimationChanged) {
 
+        this.currentTrace = changeTrace
+
         // TODO: Is there a better way to check that the current transition is the initialise machine event?
         if (changeTrace.getCurrentTransition().toString().startsWith("\$initialise_machine")) {
             checkObserver(TRIGGER_MODEL_INITIALISED)
         }
         def modelFileName = changeTrace.getModel().getModelFile().getName()
         if (getModel()?.getModelFile()?.getName()?.equals(modelFileName)) {
-            this.currentTrace = changeTrace
             if (changeTrace.getCurrentState().
                     isInitialised())
                 checkObserver(BMotion.TRIGGER_ANIMATION_CHANGED)

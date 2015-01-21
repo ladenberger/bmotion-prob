@@ -29,7 +29,6 @@ public class BVisualisation extends ProBVisualisation {
                 e = trace.getModel().parseFormula(formula);
                 formulas.put(formula, e);
                 space.subscribe(this, e);
-
             }
             State sId = space.getState(getCurrentState());
             IEvalResult result = sId.getValues().get(formulas.get(formula));
@@ -88,16 +87,18 @@ public class BVisualisation extends ProBVisualisation {
 
     @Override
     public Object observe(final d) {
-        def formulas = d.data.formulas
-        if (!{d.data.translate ?: false}) {
-            return formulas.collect {
-                eval(it)
-            }
-        } else {
-            return formulas.collect {
-                translate(it)
-            }
+        def map = [:]
+        d.data.each { k, v ->
+            def t = v.translate ?: false
+            map.put(k, v.formulas.collect { String formula ->
+                if (!t) {
+                    eval(formula)
+                } else {
+                    translate(formula)
+                }
+            })
         }
+        return map
     }
 
     @Override
