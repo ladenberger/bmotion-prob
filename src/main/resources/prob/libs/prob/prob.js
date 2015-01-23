@@ -19,7 +19,6 @@ define(['ngProB', 'bms', 'angularAMD', 'jquery', 'tooltipster', 'css!prob-css', 
     var observePredicate = function (options, origin) {
         var settings = normalize($.extend({
             predicate: "",
-            selector: null,
             true: [],
             false: [],
             cause: "AnimationChanged",
@@ -28,19 +27,12 @@ define(['ngProB', 'bms', 'angularAMD', 'jquery', 'tooltipster', 'css!prob-css', 
         }, options), ["callback", "false", "true"], origin);
         bms.addObserver(settings.cause, function () {
             bms.socket.emit("eval", {data: {formula: settings.predicate}}, function (data) {
-                var el = settings.selector !== null ? $(settings.selector) : origin;
                 if (data.value === "TRUE") {
-                    observePredicateHandler(settings.true, el, data.value)
+                    observePredicateHandler(settings.true, origin, data.value)
                 } else if (data.value === "FALSE") {
-                    observePredicateHandler(settings.false, el, data.value)
+                    observePredicateHandler(settings.false, origin, data.value)
                 }
-                if (el === undefined) {
-                    settings.callback.call(this, data)
-                } else {
-                    el.each(function (i, v) {
-                        settings.callback.call(this, $(v), data)
-                    });
-                }
+                origin !== undefined ? settings.callback.call(this, $(origin), data) : settings.callback.call(this, data)
             });
         });
     };
@@ -118,7 +110,9 @@ define(['ngProB', 'bms', 'angularAMD', 'jquery', 'tooltipster', 'css!prob-css', 
     (function ($) {
 
         $.fn.observe = function (what, options) {
-            probObserveFn(what, options, this);
+            this.each(function (i, v) {
+                probObserveFn(what, options, v);
+            });
             return this
         };
 

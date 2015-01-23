@@ -90,12 +90,10 @@ public class BVisualisation extends ProBVisualisation {
         def map = [:]
         d.data.each { k, v ->
             def t = v.translate ?: false
+            def s = v.solutions ?: false
             map.put(k, v.formulas.collect { String formula ->
-                if (!t) {
-                    eval(formula)
-                } else {
-                    translate(formula)
-                }
+                def res = !t ? eval(formula) : translate(formula)
+                return s ? res : res.value
             })
         }
         return map
