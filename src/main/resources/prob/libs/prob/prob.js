@@ -28,9 +28,9 @@ define(['ngProB', 'bms', 'angularAMD', 'jquery', 'tooltipster', 'css!prob-css', 
         bms.addObserver(settings.cause, function () {
             bms.socket.emit("eval", {data: {formula: settings.predicate}}, function (data) {
                 if (data.value === "TRUE") {
-                    observePredicateHandler(settings.true, origin, data.value)
+                    observePredicateHandler(settings.true, $(origin), data.value)
                 } else if (data.value === "FALSE") {
-                    observePredicateHandler(settings.false, origin, data.value)
+                    observePredicateHandler(settings.false, $(origin), data.value)
                 }
                 origin !== undefined ? settings.callback.call(this, $(origin), data) : settings.callback.call(this, data)
             });
