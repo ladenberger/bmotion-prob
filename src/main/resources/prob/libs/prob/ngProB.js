@@ -20,7 +20,7 @@ define(['ngBMotion', 'jquery', 'jquery-cookie', 'jquery-ui', "css!jquery-ui-css"
                         initSession.then(function (standalone) {
                             if (standalone) {
                                 initProB.then(function (data) {
-                                    $scope.host = data.host;
+                                    //$scope.host = data.host;
                                     $scope.port = data.port;
                                     var bmsNavigation = angular.element('<prob-navigation></prob-navigation>');
                                     element.find("body").append($compile(bmsNavigation)($scope))
@@ -100,7 +100,7 @@ define(['ngBMotion', 'jquery', 'jquery-cookie', 'jquery-ui', "css!jquery-ui-css"
                             },
                             open: function () {
                                 $.cookie("open_" + viewtype, true);
-                                iframe.attr("src", "http://" + $scope.host + ":" + $scope.port +
+                                iframe.attr("src", document.location.protocol + '//' + document.location.hostname + ":" + $scope.port +
                                 "/sessions/" + viewtype);
                                 fixSizeDialog($(element), iframe, 0, 0);
                                 element.css('overflow', 'hidden'); //this line does the actual hiding

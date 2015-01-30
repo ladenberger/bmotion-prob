@@ -19,7 +19,7 @@ public class Main {
                 public void onData(final SocketIOClient client, String str,
                                    final AckRequest ackRequest) {
                     if (ackRequest.isAckRequested())
-                        ackRequest.sendAckData([host: "localhost", port: WebConsole.getPort()]);
+                        ackRequest.sendAckData([port: WebConsole.getPort()]);
                 }
             });
         }
