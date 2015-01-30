@@ -98,6 +98,9 @@ public abstract class ProBVisualisation extends BMotion implements IAnimationCha
     }
 
     private Trace createNewModelTrace(String modelPath) {
+        if (System.getProperty("os.name").toLowerCase().indexOf("win") >= 0) {
+            modelPath = modelPath.replace("\\", "\\\\")
+        }
         def formalism = getFormalism(modelPath)
         def model = Eval.x(api, "x.${formalism}_load('$modelPath')")
         return new Trace(model);
