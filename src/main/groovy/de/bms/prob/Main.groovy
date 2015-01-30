@@ -26,7 +26,7 @@ public class Main {
 
         new Thread(new Runnable() {
             public void run() {
-                String[] probargs = ["-local", "-s"]
+                String[] probargs = args.contains("-local") ? ["-local", "-s"] : ["-s"]
                 de.prob.Main.main(probargs)
             }
         }).start();
