@@ -20,7 +20,7 @@ public class BVisualisation extends ProBVisualisation {
     @Override
     public Object eval(final String formula) throws IllegalFormulaException {
         if (trace == null) {
-            log.error "BMotion Studio: No currentTrace exists."
+            log.error "BMotion Studio: No trace exists."
         }
         try {
             StateSpace space = trace.getStateSpace();
@@ -42,7 +42,7 @@ public class BVisualisation extends ProBVisualisation {
 
     public TranslatedEvalResult translate(String formula) throws IllegalFormulaException {
         if (trace == null) {
-            throw new IllegalFormulaException("BMotion Studio: No currentTrace exists.");
+            log.error "BMotion Studio: No trace exists."
         }
         try {
             StateSpace space = trace.getStateSpace();
@@ -55,34 +55,10 @@ public class BVisualisation extends ProBVisualisation {
             def result = sId.eval(e)
             return result;
         } catch (EvaluationException e) {
-            throw new IllegalFormulaException(
-                    "BMotion Studio: Formula " + formula + " could not be parsed: " + e.getMessage());
+            log.error "BMotion Studio: Formula " + formula + " could not be parsed: " + e.getMessage()
         } catch (Exception e) {
-            throw new IllegalFormulaException("BMotion Studio: " + e.getClass() + " thrown: " + e.getMessage());
+            log.error "BMotion Studio: " + e.getClass() + " thrown: " + e.getMessage()
         }
-    }
-
-    public List<String> getErrors(final String state, final String formula) {
-        List<String> errors = new ArrayList<String>();
-        if (trace != null) {
-            try {
-                IEvalElement e = trace.getModel().parseFormula(formula);
-                StateSpace space = trace.getStateSpace();
-                State sId = space.getState(state);
-                if (!sId.isExplored()) {
-                    sId.explore();
-                }
-                if (!sId.isInitialised()) {
-                    errors.add("State not initialized");
-                }
-                sId.eval(e);
-            } catch (EvaluationException e) {
-                errors.add("Could not parse: " + e.getMessage());
-            } catch (Exception e) {
-                errors.add(e.getClass() + " thrown: " + e.getMessage());
-            }
-        }
-        return errors;
     }
 
     @Override

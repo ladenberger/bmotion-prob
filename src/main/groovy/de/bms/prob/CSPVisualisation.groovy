@@ -20,7 +20,7 @@ public class CSPVisualisation extends ProBVisualisation {
     @Override
     public Object eval(final String formula) throws IllegalFormulaException {
         if (trace == null) {
-            return null;
+            log.error "BMotion Studio: No trace exists."
         }
         if (!formulaCache.containsKey(formula)) {
             IEvalElement e = trace.getModel().parseFormula(formula);
@@ -31,23 +31,6 @@ public class CSPVisualisation extends ProBVisualisation {
             }
         }
         return formulaCache.get(formula);
-    }
-
-    public List<String> getErrors(final String state, final String formula) {
-        List<String> errors = new ArrayList<String>();
-        if (trace != null) {
-            try {
-                IEvalElement e = trace.getModel().parseFormula(formula);
-                StateSpace space = trace.getStateSpace();
-                State state2 = space.getState(state);
-                state2.eval(e);
-            } catch (EvaluationException e) {
-                errors.add("parse error : " + e.getMessage());
-            } catch (Exception e) {
-                errors.add("thrown " + e.getClass() + " because " + e.getMessage());
-            }
-        }
-        return errors;
     }
 
     @Override
