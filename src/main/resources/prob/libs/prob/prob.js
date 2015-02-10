@@ -37,6 +37,277 @@ define(['ngProB', 'bms', 'angularAMD', 'jquery', 'tooltipster', 'css!prob-css', 
         });
     };
 
+    var removeBlanks = function (context, canvas, imgWidth, imgHeight) {
+
+        var imageData = context.getImageData(0, 0, imgWidth, imgHeight),
+            data = imageData.data,
+            getRBG = function (x, y) {
+                var offset = imgWidth * y + x;
+                return {
+                    red: data[offset * 4],
+                    green: data[offset * 4 + 1],
+                    blue: data[offset * 4 + 2],
+                    opacity: data[offset * 4 + 3]
+                };
+            },
+            isWhite = function (rgb) {
+                // many images contain noise, as the white is not a pure #fff white
+                return rgb.red > 200 && rgb.green > 200 && rgb.blue > 200;
+            },
+            scanY = function (fromTop) {
+                var offset = fromTop ? 1 : -1;
+
+                // loop through each row
+                for (var y = fromTop ? 0 : imgHeight - 1; fromTop ? (y < imgHeight) : (y > -1); y += offset) {
+
+                    // loop through each column
+                    for (var x = 0; x < imgWidth; x++) {
+                        var rgb = getRBG(x, y);
+                        if (!isWhite(rgb)) {
+                            return y;
+                        }
+                    }
+                }
+                return null; // all image is white
+            },
+            scanX = function (fromLeft) {
+                var offset = fromLeft ? 1 : -1;
+
+                // loop through each column
+                for (var x = fromLeft ? 0 : imgWidth - 1; fromLeft ? (x < imgWidth) : (x > -1); x += offset) {
+
+                    // loop through each row
+                    for (var y = 0; y < imgHeight; y++) {
+                        var rgb = getRBG(x, y);
+                        if (!isWhite(rgb)) {
+                            return x;
+                        }
+                    }
+                }
+                return null; // all image is white
+            };
+
+        var cropTop = scanY(true),
+            cropBottom = scanY(false),
+            cropLeft = scanX(true),
+            cropRight = scanX(false),
+            cropWidth = cropRight - cropLeft,
+            cropHeight = cropBottom - cropTop;
+
+        var $croppedCanvas = $("<canvas>").attr({width: cropWidth, height: cropHeight});
+        $croppedCanvas[0].getContext("2d").drawImage(canvas,
+            cropLeft, cropTop, cropWidth, cropHeight,
+            0, 0, cropWidth, cropHeight);
+
+        return $croppedCanvas[0];
+
+    };
+
+    var _createDiagram = function (data) {
+
+        $(function () { // on dom ready
+
+            var cy = cytoscape({
+
+                container: document.getElementById('cy'),
+                style: cytoscape.stylesheet()
+                    .selector('node')
+                    .css({
+                        'shape': 'rectangle',
+                        'width': 'data(width)',
+                        'height': 'data(height)',
+                        'content': 'data(labels)',
+                        'background-color': 'white',
+                        'border-width': 2,
+                        'border-color': 'data(color)',
+                        'font-size': '11px',
+                        'text-valign': 'top',
+                        'text-halign': 'center',
+                        'background-repeat': 'no-repeat',
+                        'background-image': 'data(svg)',
+                        'background-fit': 'none',
+                        'background-position-x': '15px',
+                        'background-position-y': '15px'
+                    })
+                    .selector('edge')
+                    .css({
+                        'content': 'data(label)',
+                        'target-arrow-shape': 'triangle',
+                        'width': 1,
+                        'line-color': 'data(color)',
+                        'line-style': 'data(style)',
+                        'target-arrow-color': 'data(color)',
+                        'font-size': '11px',
+                        'control-point-distance': 60
+                    }),
+                layout: {
+                    name: 'cose',
+                    animate: false,
+                    fit: true,
+                    padding: 25,
+                    directed: true,
+                    roots: '#1',
+                    //nodeOverlap: 100, // Node repulsion (overlapping) multiplier
+                    nodeRepulsion: 3000000 // Node repulsion (non overlapping) multiplier
+                },
+                elements: {
+                    nodes: data.nodes,
+                    edges: data.edges
+                }
+
+            });
+
+        }); // on dom ready
+
+    };
+
+    var _loadImage2 = function (property, felements, mcanvas, mcontext, v) {
+
+        var deferred = $.Deferred();
+
+        // Prepare data
+        var ele = felements[property].clone;
+        var count = felements[property].count;
+        var ffval = [];
+        $.each(count, function (i2, v2) {
+            var trans = v.data.translated[0];
+            if (trans != null) {
+                ffval.push(trans[v2]);
+            }
+        });
+
+        var image = new Image(),
+            canvas = document.createElement('canvas'),
+            context;
+        image.crossOrigin = "anonymous";
+
+        // Trigger trigger function that modifies element according to the attached observer
+        ele.trigger('trigger', [ffval]);
+
+        // Build image
+        // TODO: Get correct initial width and height
+        canvas.width = 1000;
+        canvas.height = 1000;
+        context = canvas.getContext("2d");
+
+        image.onload = function () {
+            if (context) {
+                context.drawImage(this, 0, 0, this.width, this.height);
+                var croppedCanvas = removeBlanks(context, canvas, this.width, this.height);
+                v.data["canvas"].push(croppedCanvas);
+                deferred.resolve();
+            } else {
+                // alert('Get a real browser!');
+            }
+        };
+
+        if (ele.prop("tagName") === 'image') {
+            image.src = ele.attr('xlink:href');
+        }
+        else {
+            var html = $('<div>').append(ele).html();
+            image.src = 'data:image/svg+xml;base64,' + window.btoa('<svg xmlns="http://www.w3.org/2000/svg" style="background-color:white" xmlns:xlink="http://www.w3.org/1999/xlink" width="1000" height="1000">' + html + '</svg>');
+        }
+
+        return deferred.promise();
+
+    };
+
+    var _loadImage = function (v, felements) {
+
+        var deferred = $.Deferred();
+
+        // Set default width and height of node
+        v.data['width'] = 0;
+        v.data['height'] = 0;
+
+        // Create a new image for the node
+        var mcanvas = document.createElement('canvas'),
+            mcontext = mcanvas.getContext("2d"),
+            val = v.data.labels[0];
+
+        if (val !== "<< undefined >>") {
+
+            v.data["canvas"] = [];
+
+            var loaders = [];
+            for (var property in felements) {
+                loaders.push(_loadImage2(property, felements, mcanvas, mcontext, v));
+            }
+
+            $.when.apply(null, loaders).done(function () {
+
+                var fwidth = 0;
+                var fheight = 0;
+                var yoffset = 0;
+                $.each(v.data.canvas, function (i, v) {
+                    fwidth = fwidth < v.width ? v.width : fwidth;
+                    fheight = v.height + fheight + 15;
+                });
+                mcanvas.width = fwidth;
+                mcanvas.height = fheight;
+                $.each(v.data.canvas, function (i, v) {
+                    mcontext.drawImage(v, 0, yoffset);
+                    yoffset = v.height + yoffset + 15;
+                });
+                v.data['width'] = fwidth + 30;
+                v.data['height'] = yoffset + 15;
+                v.data['svg'] = mcanvas.toDataURL('image/png');
+                deferred.resolve();
+
+            });
+
+        }
+        else {
+            v.data['svg'] = 'data:image/svg+xml;base64,' + window.btoa('<svg xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg"></svg>');
+        }
+
+        return deferred.promise();
+
+    };
+
+    var createTransitionDiagram = function (options, origin) {
+
+        var settings = normalize($.extend({
+            elements: []
+        }, options), [], origin);
+
+        var formulas = [];
+        var felements = {};
+        var count = 0;
+        $.each(settings.elements, function (i, v) {
+            felements[v] = {
+                count: [],
+                clone: $(v).clone(true)
+            };
+            $.each($(v).data("formulas"), function () {
+                felements[v]['count'].push(count);
+                count++;
+            });
+            formulas = formulas.concat($(v).data("formulas"));
+        });
+
+        bms.callMethod({
+            name: "getTransitionDiagram",
+            expressions: formulas,
+            callback: function (data) {
+
+                var loaders = [];
+
+                $.each(data.nodes, function (i, v) {
+                    loaders.push(_loadImage(v, felements));
+                });
+
+                $.when.apply(null, loaders).done(function () {
+                    _createDiagram(data);
+                });
+
+            }
+
+        });
+
+    };
+
     var observeCSPTrace = function (options, origin) {
 
         var settings = normalize($.extend({
@@ -80,9 +351,9 @@ define(['ngProB', 'bms', 'angularAMD', 'jquery', 'tooltipster', 'css!prob-css', 
             bms.socket.emit("observeRefinement", {data: settings}, function (data) {
                 $.each(settings.refinements, function (i, v) {
                     if ($.inArray(v, data.refinements) > -1) {
-                        origin !== undefined ? settings.enable.call(this, origin, data) : settings.enable.call(this, data)
+                        origin !== undefined ? settings.enable.call(this, $(origin), data) : settings.enable.call(this, data)
                     } else {
-                        origin !== undefined ? settings.disable.call(this, origin, data) : settings.disable.call(this, data)
+                        origin !== undefined ? settings.disable.call(this, $(origin), data) : settings.disable.call(this, data)
                     }
                 });
             });
@@ -188,6 +459,7 @@ define(['ngProB', 'bms', 'angularAMD', 'jquery', 'tooltipster', 'css!prob-css', 
 
     return $.extend({
         observe: probObserveFn,
+        createTransitionDiagram: createTransitionDiagram,
         ng: angularAMD.bootstrap(ngProB)
     }, bms);
 

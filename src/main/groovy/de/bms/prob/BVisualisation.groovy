@@ -69,7 +69,11 @@ public class BVisualisation extends ProBVisualisation {
             def s = v.solutions ?: false
             map.put(k, v.formulas.collect { String formula ->
                 def res = !t ? eval(formula) : translate(formula)
-                return s ? res : res.value
+                if(res != null) {
+                    return s ? res : res.value
+                } else {
+                    return ""
+                }
             })
         }
         return map
