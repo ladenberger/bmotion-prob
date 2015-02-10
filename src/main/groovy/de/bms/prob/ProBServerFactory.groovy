@@ -6,8 +6,10 @@ import com.corundumstudio.socketio.listener.DataListener
 import com.google.common.io.Resources
 import de.bms.server.BMotionServer
 import de.bms.server.JsonObject
-import de.prob.animator.domainobjects.EvalResult
+import de.prob.animator.command.GetTransitionDiagramCommand
+import de.prob.animator.domainobjects.*
 import de.prob.model.eventb.EventBMachine
+import de.prob.statespace.StateSpace
 import de.prob.statespace.Trace
 import de.prob.statespace.Transition
 
@@ -59,6 +61,67 @@ public class ProBServerFactory {
                                 ackRequest.sendAckData([refinements: _getrefs(eventBMachine.refines).
                                         reverse() << eventBMachine.toString()]);
                             }
+                        }
+                    }
+                });
+        server.socketServer.getServer().
+                addEventListener("createCustomTransitionDiagram", JsonObject.class, new DataListener<JsonObject>() {
+                    @Override
+                    public void onData(final SocketIOClient client, JsonObject d,
+                                       final AckRequest ackRequest) {
+
+                        def ProBVisualisation bms = server.socketServer.getSession(client)
+                        if (bms != null) {
+
+                            def _getResults
+                            _getResults = { t ->
+                                def list = []
+                                if (t.first instanceof Tuple) {
+                                    list += _getResults(t.first)
+                                } else {
+                                    list << t.first
+                                }
+                                list << t.second
+                                return list
+                            }
+
+                            String joinExp = d.data.expressions.join("|->")
+                            IEvalElement eval = bms.getTrace().getModel().parseFormula(joinExp)
+
+                            GetTransitionDiagramCommand cmd = new GetTransitionDiagramCommand(eval)
+                            def StateSpace statespace = bms.getStateSpace()
+                            statespace.execute(cmd)
+
+                            def nodes = cmd.getNodes().collect {
+                                def nn = it.value.properties
+                                nn["translated"] = it.value.labels.collect { str ->
+                                    if (str != "<< undefined >>" && !d.data.expressions.contains(str)) {
+                                        def formula = new TranslateFormula(str as EventB)
+                                        def res = bms.getStateSpace().getRoot().eval(formula)
+                                        if (res instanceof TranslatedEvalResult) {
+                                            if (res.value instanceof Tuple) {
+                                                return _getResults(res.value)
+                                            } else {
+                                                return [res.value]
+                                            }
+                                        }
+                                    } else {
+                                        return []
+                                    }
+                                }
+                                [data: nn]
+                            }
+
+                            def edges = cmd.getEdges().collect {
+                                def en = it.value.properties
+                                en['id'] = it.value.source + it.value.target
+                                [data: en]
+                            }
+
+                            if (ackRequest.isAckRequested()) {
+                                ackRequest.sendAckData([nodes: nodes.reverse(), edges: edges.reverse()]);
+                            }
+
                         }
                     }
                 });

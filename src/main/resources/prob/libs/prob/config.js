@@ -11,7 +11,9 @@ require.config({
         "jquery-ui": "/bms/libs/jquery-ui/jquery-ui.min",
         "jquery-cookie": "/bms/libs/jquery-cookie/jquery.cookie",
         "cytoscape": "/bms/libs/cytoscape/cytoscape.min",
-        "cola": "/bms/libs/cytoscape/cola.v3.min"
+        "cola": "/bms/libs/cytoscape/cola.v3.min",
+        "xeditable": "/bms/libs/xeditable/xeditable.min",
+        "xeditable-css": "/bms/libs/xeditable/xeditable"
     },
     shim: {
         'jquery-ui': ['jquery'],

@@ -103,61 +103,66 @@ define(['ngProB', 'bms', 'angularAMD', 'jquery', 'tooltipster', 'css!prob-css', 
 
     };
 
-    var _createDiagram = function (data) {
+    var _createDiagram = function (data, origin) {
 
-        $(function () { // on dom ready
+        if (origin === undefined) {
+            // TODO: return some useful error message
+            console.error("No element defined for custom transition diagram!")
+        } else {
+            $(function () { // on dom ready
 
-            var cy = cytoscape({
+                var cy = cytoscape({
 
-                container: document.getElementById('cy'),
-                style: cytoscape.stylesheet()
-                    .selector('node')
-                    .css({
-                        'shape': 'rectangle',
-                        'width': 'data(width)',
-                        'height': 'data(height)',
-                        'content': 'data(labels)',
-                        'background-color': 'white',
-                        'border-width': 2,
-                        'border-color': 'data(color)',
-                        'font-size': '11px',
-                        'text-valign': 'top',
-                        'text-halign': 'center',
-                        'background-repeat': 'no-repeat',
-                        'background-image': 'data(svg)',
-                        'background-fit': 'none',
-                        'background-position-x': '15px',
-                        'background-position-y': '15px'
-                    })
-                    .selector('edge')
-                    .css({
-                        'content': 'data(label)',
-                        'target-arrow-shape': 'triangle',
-                        'width': 1,
-                        'line-color': 'data(color)',
-                        'line-style': 'data(style)',
-                        'target-arrow-color': 'data(color)',
-                        'font-size': '11px',
-                        'control-point-distance': 60
-                    }),
-                layout: {
-                    name: 'cose',
-                    animate: false,
-                    fit: true,
-                    padding: 25,
-                    directed: true,
-                    roots: '#1',
-                    //nodeOverlap: 100, // Node repulsion (overlapping) multiplier
-                    nodeRepulsion: 3000000 // Node repulsion (non overlapping) multiplier
-                },
-                elements: {
-                    nodes: data.nodes,
-                    edges: data.edges
-                }
+                    container: origin,
+                    style: cytoscape.stylesheet()
+                        .selector('node')
+                        .css({
+                            'shape': 'rectangle',
+                            'width': 'data(width)',
+                            'height': 'data(height)',
+                            'content': 'data(labels)',
+                            'background-color': 'white',
+                            'border-width': 2,
+                            'border-color': 'data(color)',
+                            'font-size': '11px',
+                            'text-valign': 'top',
+                            'text-halign': 'center',
+                            'background-repeat': 'no-repeat',
+                            'background-image': 'data(svg)',
+                            'background-fit': 'none',
+                            'background-position-x': '15px',
+                            'background-position-y': '15px'
+                        })
+                        .selector('edge')
+                        .css({
+                            'content': 'data(label)',
+                            'target-arrow-shape': 'triangle',
+                            'width': 1,
+                            'line-color': 'data(color)',
+                            'line-style': 'data(style)',
+                            'target-arrow-color': 'data(color)',
+                            'font-size': '11px',
+                            'control-point-distance': 60
+                        }),
+                    layout: {
+                        name: 'cose',
+                        animate: false,
+                        fit: true,
+                        padding: 25,
+                        directed: true,
+                        roots: '#1',
+                        //nodeOverlap: 100, // Node repulsion (overlapping) multiplier
+                        nodeRepulsion: 3000000 // Node repulsion (non overlapping) multiplier
+                    },
+                    elements: {
+                        nodes: data.nodes,
+                        edges: data.edges
+                    }
 
-            });
-
-        }); // on dom ready
+                });
+                $(origin).data("cy", cy);
+            }); // on dom ready
+        }
 
     };
 
@@ -266,7 +271,7 @@ define(['ngProB', 'bms', 'angularAMD', 'jquery', 'tooltipster', 'css!prob-css', 
 
     };
 
-    var createTransitionDiagram = function (options, origin) {
+    var _createTransitionDiagram = function (options, origin) {
 
         var settings = normalize($.extend({
             elements: []
@@ -287,23 +292,16 @@ define(['ngProB', 'bms', 'angularAMD', 'jquery', 'tooltipster', 'css!prob-css', 
             formulas = formulas.concat($(v).data("formulas"));
         });
 
-        bms.callMethod({
-            name: "getTransitionDiagram",
-            expressions: formulas,
-            callback: function (data) {
-
-                var loaders = [];
-
-                $.each(data.nodes, function (i, v) {
-                    loaders.push(_loadImage(v, felements));
-                });
-
-                $.when.apply(null, loaders).done(function () {
-                    _createDiagram(data);
-                });
-
-            }
-
+        bms.socket.emit('createCustomTransitionDiagram', {
+            data: {expressions: formulas}
+        }, function (data) {
+            var loaders = [];
+            $.each(data.nodes, function (i, v) {
+                loaders.push(_loadImage(v, felements));
+            });
+            $.when.apply(null, loaders).done(function () {
+                _createDiagram(data, origin);
+            });
         });
 
     };
@@ -387,6 +385,13 @@ define(['ngProB', 'bms', 'angularAMD', 'jquery', 'tooltipster', 'css!prob-css', 
             return this
         };
 
+        $.fn.createTransitionDiagram = function (options) {
+            this.each(function (i, v) {
+                _createTransitionDiagram(options, v);
+            });
+            return this
+        };
+
         $.fn.executeEvent = function (options) {
             var settings = $.extend({
                 events: [],
@@ -426,18 +431,18 @@ define(['ngProB', 'bms', 'angularAMD', 'jquery', 'tooltipster', 'css!prob-css', 
                             data: normalize(settings, ["callback"], origin)
                         }, function (data) {
 
-                            var container = $('<ul></ul>')
+                            var container = $('<ul></ul>');
                             $.each(data.events, function (i, v) {
                                 var spanClass = v.canExecute ? 'glyphicon glyphicon-ok-circle' : 'glyphicon glyphicon-remove-circle'
-                                var span = $('<span aria-hidden="true"></span>').addClass(spanClass)
-                                var link = $('<span> ' + v.name + ' ' + v.predicate + '</span>')
+                                var span = $('<span aria-hidden="true"></span>').addClass(spanClass);
+                                var link = $('<span> ' + v.name + ' ' + v.predicate + '</span>');
                                 if (v.canExecute) {
                                     link = $('<a href="#"> ' + v.name + '(' + v.predicate + ')</a>').click(function () {
                                         bms.executeEvent({
                                             events: [{name: v.name, predicate: v.predicate}],
                                             callback: function () {
                                                 // Update tooltip
-                                                origin.tooltipster('hide')
+                                                origin.tooltipster('hide');
                                                 origin.tooltipster('show')
                                             }
                                         })
@@ -459,7 +464,6 @@ define(['ngProB', 'bms', 'angularAMD', 'jquery', 'tooltipster', 'css!prob-css', 
 
     return $.extend({
         observe: probObserveFn,
-        createTransitionDiagram: createTransitionDiagram,
         ng: angularAMD.bootstrap(ngProB)
     }, bms);
 
