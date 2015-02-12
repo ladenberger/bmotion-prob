@@ -18,9 +18,12 @@ require.config({
     shim: {
         'jquery-ui': ['jquery'],
         'tooltipster': ["jquery"],
-        'ngProB': ["ngBMotion", 'jquery-cookie', 'jquery-ui'],
+        'ngProB': ["ngBMotion", 'jquery-cookie', 'jquery-ui', 'cytoscape'],
         'prob': ['ngProB', 'bms', 'angularAMD', 'tooltipster'],
         'cytoscape': {exports: 'cy', deps: ['jquery', 'cola']}
-    },
-    deps: ['/bms/libs/bmotion/config.js']
+    }
+    //,deps: ['/bms/libs/bmotion/config.js']
+});
+define(['/bms/libs/bmotion/config.js'], function (config) {
+    return config
 });

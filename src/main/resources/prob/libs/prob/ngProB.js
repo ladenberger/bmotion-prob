@@ -1,4 +1,4 @@
-define(['ngBMotion', 'jquery', 'jquery-cookie', 'jquery-ui', "css!jquery-ui-css", "css!jquery-ui-theme-css", "xeditable", "css!xeditable-css"], function () {
+define(['ngBMotion', 'jquery', 'jquery-cookie', 'jquery-ui', "css!jquery-ui-css", "css!jquery-ui-theme-css", "xeditable", "css!xeditable-css", 'cytoscape'], function () {
 
         return angular.module('probModule', ['bmsModule', 'xeditable'])
             .run(function (editableOptions, $rootScope) {
@@ -33,7 +33,7 @@ define(['ngBMotion', 'jquery', 'jquery-cookie', 'jquery-ui', "css!jquery-ui-css"
                                     '<prob-view type="CurrentAnimations"></prob-view>' +
                                     '<prob-view type="Log"></prob-view>' +
                                     '<prob-view type="GroovyConsoleSession"></prob-view>' +
-                                    '<element-projection-view type="ElementProjection"></element-projection-view>' +
+                                    //'<element-projection-view type="ElementProjection"></element-projection-view>' +
                                     '<prob-view type="ModelCheckingUI"></prob-view></div>');
                                     element.find("body").append($compile(probViews)($scope))
                                 })
