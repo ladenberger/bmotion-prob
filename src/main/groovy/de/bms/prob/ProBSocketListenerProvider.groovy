@@ -24,8 +24,12 @@ class ProBSocketListenerProvider implements BMotionSocketListenerProvider {
                 @Override
                 public void onData(final SocketIOClient client, String str,
                                    final AckRequest ackRequest) {
-                    if (ackRequest.isAckRequested())
-                        ackRequest.sendAckData([port: WebConsole.getPort()]);
+                    def ProBVisualisation bms = server.getSession(client)
+                    if (bms != null) {
+                        if (ackRequest.isAckRequested()) {
+                            ackRequest.sendAckData([port: WebConsole.getPort(), traceId: bms.getTraceId()]);
+                        }
+                    }
                 }
             });
         }

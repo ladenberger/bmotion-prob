@@ -45,7 +45,9 @@ public abstract class ProBVisualisation extends BMotion implements IAnimationCha
     }
 
     @Override
-    public void traceChange(final Trace changeTrace, final boolean currentAnimationChanged) {
+    public void traceChange(final Trace ct, final boolean currentAnimationChanged) {
+
+        def changeTrace = animations.getTrace(traceId)
 
         if (changeTrace != null) {
 

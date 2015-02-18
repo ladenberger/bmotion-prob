@@ -12,7 +12,8 @@ public class Main {
 
         new Thread(new Runnable() {
             public void run() {
-                String[] probargs = args.contains("-local") ? ["-local", "-s"] : ["-s"]
+                String[] probargs = args.contains("-local") ? ["-local", "-s", "-multianimation"] :
+                        ["-s", "-multianimation"]
                 de.prob.Main.main(probargs)
             }
         }).start();

@@ -25,16 +25,18 @@ define(['ngBMotion', 'jquery', 'jquery-cookie', 'jquery-ui', "css!jquery-ui-css"
                                 initProB.then(function (data) {
                                     //$scope.host = data.host;
                                     $scope.port = data.port;
+                                    $scope.traceId = data.traceId;
                                     var bmsNavigation = angular.element('<prob-navigation></prob-navigation>');
                                     element.find("body").append($compile(bmsNavigation)($scope));
-                                    var probViews = angular.element('<div><prob-view type="CurrentTrace"></prob-view>' +
-                                    '<prob-view type="Events"></prob-view>' +
-                                    '<prob-view type="StateInspector"></prob-view>' +
-                                    '<prob-view type="CurrentAnimations"></prob-view>' +
-                                    '<prob-view type="Log"></prob-view>' +
-                                    '<prob-view type="GroovyConsoleSession"></prob-view>' +
-                                    //'<element-projection-view type="ElementProjection"></element-projection-view>' +
-                                    '<prob-view type="ModelCheckingUI"></prob-view></div>');
+                                    var probViews = angular.element('<div><prob-view type="CurrentTrace" traceid="' + data.traceId + '" port="' + data.port + '"></prob-view>' +
+                                    '<prob-view type="Events" traceid="' + data.traceId + '" port="' + data.port + '"></prob-view>' +
+                                    '<prob-view type="StateInspector" traceid="' + data.traceId + '" port="' + data.port + '"></prob-view>' +
+                                    '<prob-view type="CurrentAnimations" traceid="' + data.traceId + '" port="' + data.port + '"></prob-view>' +
+                                    '<prob-view type="Log" traceid="' + data.traceId + '" port="' + data.port + '"></prob-view>' +
+                                    '<prob-view type="GroovyConsoleSession" traceid="' + data.traceId + '" port="' + data.port + '"></prob-view>' +
+                                        //'<element-projection-view
+                                        // type="ElementProjection"></element-projection-view>' +
+                                    '<prob-view type="ModelCheckingUI" traceid="' + data.traceId + '" port="' + data.port + '"></prob-view></div>');
                                     element.find("body").append($compile(probViews)($scope))
                                 })
                             }
@@ -68,6 +70,8 @@ define(['ngBMotion', 'jquery', 'jquery-cookie', 'jquery-ui', "css!jquery-ui-css"
                     link: function ($scope, element, attrs) {
 
                         var viewtype = attrs.type;
+                        var traceid = attrs.traceid;
+                        var port = attrs.port;
                         var iframe = $(element.find("iframe"));
                         var aopen = $.cookie("open_" + viewtype) === undefined ? false : $.cookie("open_" + viewtype);
 
@@ -103,8 +107,8 @@ define(['ngBMotion', 'jquery', 'jquery-cookie', 'jquery-ui', "css!jquery-ui-css"
                             },
                             open: function () {
                                 $.cookie("open_" + viewtype, true);
-                                iframe.attr("src", document.location.protocol + '//' + document.location.hostname + ":" + $scope.port +
-                                "/sessions/" + viewtype);
+                                iframe.attr("src", document.location.protocol + '//' + document.location.hostname + ":" + port +
+                                "/sessions/" + viewtype + "/" + traceid);
                                 $scope.fixSize($(element), iframe, 0, 0);
                                 element.css('overflow', 'hidden'); //this line does the actual hiding
                                 var toppos = $.cookie("position_top_" + viewtype);

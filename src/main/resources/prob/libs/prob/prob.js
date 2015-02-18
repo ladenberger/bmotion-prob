@@ -435,7 +435,7 @@ define(['ngProB', 'bms', 'angularAMD', 'jquery', 'tooltipster', 'css!prob-css', 
                             $.each(data.events, function (i, v) {
                                 var spanClass = v.canExecute ? 'glyphicon glyphicon-ok-circle' : 'glyphicon glyphicon-remove-circle'
                                 var span = $('<span aria-hidden="true"></span>').addClass(spanClass);
-                                var link = $('<span> ' + v.name + ' ' + v.predicate + '</span>');
+                                var link = $('<span> ' + v.name + '(' + v.predicate + ')</span>');
                                 if (v.canExecute) {
                                     link = $('<a href="#"> ' + v.name + '(' + v.predicate + ')</a>').click(function () {
                                         bms.executeEvent({
