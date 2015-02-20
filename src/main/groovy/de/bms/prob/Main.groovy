@@ -18,6 +18,8 @@ public class Main {
             }
         }).start();
 
+        server.openBrowser();
+
     }
 
 }
