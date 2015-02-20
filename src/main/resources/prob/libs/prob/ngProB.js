@@ -1,9 +1,28 @@
 define(['ngBMotion', 'jquery', 'jquery-cookie', 'jquery-ui', "css!jquery-ui-css", "css!jquery-ui-theme-css", "xeditable", "css!xeditable-css", 'cytoscape'], function () {
 
         return angular.module('probModule', ['bmsModule', 'xeditable'])
-            .run(function (editableOptions, $rootScope) {
+            .run(["$rootScope", 'editableOptions', function ($rootScope, editableOptions) {
+
+                $rootScope.formulaElements = [];
+                $rootScope.loadElements = function () {
+                    $('[data-formulaobserver]').each(function (i, v) {
+                        var el = $(v);
+                        if (el.parents('svg').length) {
+                            var id = $(v).attr("id");
+                            if (id !== undefined) {
+                                $rootScope.formulaElements.push({
+                                    value: $rootScope.formulaElements.length + 1,
+                                    text: '#' + id
+                                })
+                            }
+                        }
+                    });
+                };
+                $rootScope.getFormulaElements = function () {
+                    return $rootScope.formulaElements;
+                };
                 editableOptions.theme = 'bs3'; // bootstrap3 theme. Can be also 'bs2', 'default'
-            })
+            }])
             .factory('initProB', ['$q', 'ws', function ($q, ws) {
                 var defer = $q.defer();
                 ws.emit('initProB', "", function (data) {
@@ -34,8 +53,7 @@ define(['ngBMotion', 'jquery', 'jquery-cookie', 'jquery-ui', "css!jquery-ui-css"
                                     '<prob-view type="CurrentAnimations" traceid="' + data.traceId + '" port="' + data.port + '"></prob-view>' +
                                     '<prob-view type="Log" traceid="' + data.traceId + '" port="' + data.port + '"></prob-view>' +
                                     '<prob-view type="GroovyConsoleSession" traceid="' + data.traceId + '" port="' + data.port + '"></prob-view>' +
-                                        //'<element-projection-view
-                                        // type="ElementProjection"></element-projection-view>' +
+                                    //'<element-projection-view type="ElementProjection"></element-projection-view>' +
                                     '<prob-view type="ModelCheckingUI" traceid="' + data.traceId + '" port="' + data.port + '"></prob-view></div>');
                                     element.find("body").append($compile(probViews)($scope))
                                 })
@@ -140,9 +158,9 @@ define(['ngBMotion', 'jquery', 'jquery-cookie', 'jquery-ui', "css!jquery-ui-css"
                     elementProjectionGraph.refresh()
                 };
 
-                ws.on('checkObserver', function (trigger) {
-                    // TODO: Force user to reload graph
-                });
+                /*ws.on('checkObserver', function (trigger) {
+                 // TODO: Force user to reload graph
+                 });*/
 
                 $scope.isOpen = false;
 
@@ -154,12 +172,12 @@ define(['ngBMotion', 'jquery', 'jquery-cookie', 'jquery-ui', "css!jquery-ui-css"
 
                     if ($scope.isOpen && $scope.user.status.length > 0) {
                         var elements = [];
-                        angular.forEach($scope.formulaElements, function (s) {
+                        angular.forEach($scope.getFormulaElements(), function (s) {
                             if ($scope.user.status.indexOf(s.value) >= 0) {
                                 elements.push(s.text);
                             }
                         });
-                        elementProjectionGraph(elements).then(function () {
+                        elementProjectionGraph.build(elements).then(function () {
                             $scope.cyLoaded = true;
                         });
                     }
@@ -172,7 +190,7 @@ define(['ngBMotion', 'jquery', 'jquery-cookie', 'jquery-ui', "css!jquery-ui-css"
 
                 $scope.showStatus = function () {
                     var selected = [];
-                    angular.forEach($scope.formulaElements, function (s) {
+                    angular.forEach($scope.getFormulaElements(), function (s) {
                         if ($scope.user.status.indexOf(s.value) >= 0) {
                             selected.push(s.text);
                         }
@@ -258,6 +276,7 @@ define(['ngBMotion', 'jquery', 'jquery-cookie', 'jquery-ui', "css!jquery-ui-css"
                     // Prepare data
                     var ele = felements[property].clone;
                     var count = felements[property].count;
+                    var type = felements[property].type;
                     var ffval = [];
                     $.each(count, function (i2, v2) {
                         var trans = v.data.translated[0];
@@ -293,17 +312,21 @@ define(['ngBMotion', 'jquery', 'jquery-cookie', 'jquery-ui', "css!jquery-ui-css"
                         ele.trigger('trigger', [ffval]);
                         if (ele.prop("tagName") === 'image') {
                             image.src = ele.attr('xlink:href');
+                        } else {
+                            var html = $('<div>').append(ele);
+                            if (type === 'svg') {
+                                image.src = 'data:image/svg+xml;base64,' + window.btoa('<svg xmlns="http://www.w3.org/2000/svg" style="background-color:white" xmlns:xlink="http://www.w3.org/1999/xlink" width="1000" height="1000">' + html.html() + '</svg>');
+                            } else {
+                                /*ws.emit('renderHtml', {data: {html: html.html()}},
+                                 function (data) {
+                                 image.src = data;
+                                 }
+                                 );*/
+                            }
                         }
-                        else {
-                            var html = $('<div>').append(ele).html();
-                            image.src = 'data:image/svg+xml;base64,' + window.btoa('<svg xmlns="http://www.w3.org/2000/svg" style="background-color:white" xmlns:xlink="http://www.w3.org/1999/xlink" width="1000" height="1000">' + html + '</svg>');
-                        }
-
                     } else {
                         image.src = 'data:image/svg+xml;base64,' + window.btoa('<svg xmlns="http://www.w3.org/2000/svg" style="background-color:white" xmlns:xlink="http://www.w3.org/1999/xlink"></svg>');
                     }
-
-
                     return deferred.promise();
 
                 };
@@ -318,8 +341,7 @@ define(['ngBMotion', 'jquery', 'jquery-cookie', 'jquery-ui', "css!jquery-ui-css"
 
                     // Create a new image for the node
                     var mcanvas = document.createElement('canvas'),
-                        mcontext = mcanvas.getContext("2d"),
-                        val = v.data.labels[0];
+                        mcontext = mcanvas.getContext("2d");
 
                     // if (val !== "<< undefined >>") {
 
@@ -362,96 +384,107 @@ define(['ngBMotion', 'jquery', 'jquery-cookie', 'jquery-ui', "css!jquery-ui-css"
 
                 };
 
-                var elementProjectionGraph = function (elements) {
+                var elementProjectionGraph = {
 
-                    var deferred = $q.defer();
+                    build: function (elements) {
 
-                    var felements = {};
-                    var formulas = [];
-                    var count = 0;
-                    $.each(elements, function (i, v) {
-                        felements[v] = {
-                            count: [],
-                            clone: $(v).clone(true)
-                        };
-                        $.each($(v).data("formulas"), function () {
-                            felements[v]['count'].push(count);
-                            count++;
+                        var deferred = $q.defer();
+
+                        var felements = {};
+                        var formulas = [];
+                        var count = 0;
+                        $.each(elements, function (i, v) {
+                            var el = $(v);
+                            felements[v] = {
+                                count: [],
+                                clone: el.clone(true),
+                                type: el.parents('svg').length ? 'svg' : 'html'
+                            };
+                            $.each($(v).data("formulas"), function () {
+                                felements[v]['count'].push(count);
+                                count++;
+                            });
+                            formulas = formulas.concat($(v).data("formulas"));
                         });
-                        formulas = formulas.concat($(v).data("formulas"));
-                    });
 
-                    ws.emit('createCustomTransitionDiagram', {
-                        data: {expressions: formulas}
-                    }, function (data) {
-                        var loaders = [];
-                        $.each(data.nodes, function (i, v) {
-                            loaders.push(_loadImage(v, felements));
+                        ws.emit('createCustomTransitionDiagram', {
+                            data: {expressions: formulas}
+                        }, function (data) {
+
+                            var loaders = [];
+                            $.each(data.nodes, function (i, v) {
+                                loaders.push(_loadImage(v, felements));
+                            });
+                            $.when.apply(null, loaders).done(function () {
+
+                                $(function () { // on dom ready
+
+                                    cy = cytoscape({
+
+                                        container: $('#cy')[0],
+                                        style: cytoscape.stylesheet()
+                                            .selector('node')
+                                            .css({
+                                                'shape': 'rectangle',
+                                                'width': 'data(width)',
+                                                'height': 'data(height)',
+                                                'content': 'data(labels)',
+                                                'background-color': 'white',
+                                                'border-width': 2,
+                                                'border-color': 'data(color)',
+                                                'font-size': '11px',
+                                                'text-valign': 'top',
+                                                'text-halign': 'center',
+                                                'background-repeat': 'no-repeat',
+                                                'background-image': 'data(svg)',
+                                                'background-fit': 'none',
+                                                'background-position-x': '15px',
+                                                'background-position-y': '15px'
+                                            })
+                                            .selector('edge')
+                                            .css({
+                                                'content': 'data(label)',
+                                                'target-arrow-shape': 'triangle',
+                                                'width': 1,
+                                                'line-color': 'data(color)',
+                                                'line-style': 'data(style)',
+                                                'target-arrow-color': 'data(color)',
+                                                'font-size': '11px',
+                                                'control-point-distance': 60
+                                            }),
+                                        layout: {
+                                            name: 'cose',
+                                            animate: false,
+                                            fit: true,
+                                            padding: 25,
+                                            directed: true,
+                                            roots: '#1',
+                                            //nodeOverlap: 100, // Node repulsion (overlapping) multiplier
+                                            nodeRepulsion: 3000000 // Node repulsion (non overlapping) multiplier
+                                        },
+                                        elements: {
+                                            nodes: data.nodes,
+                                            edges: data.edges
+                                        }
+
+                                    });
+
+                                    deferred.resolve();
+
+                                }); // on dom ready
+
+                            });
+
                         });
-                        $.when.apply(null, loaders).done(function () {
 
-                            $(function () { // on dom ready
+                        return deferred.promise;
 
-                                cy = cytoscape({
+                    },
 
-                                    container: $('#cy')[0],
-                                    style: cytoscape.stylesheet()
-                                        .selector('node')
-                                        .css({
-                                            'shape': 'rectangle',
-                                            'width': 'data(width)',
-                                            'height': 'data(height)',
-                                            'content': 'data(labels)',
-                                            'background-color': 'white',
-                                            'border-width': 2,
-                                            'border-color': 'data(color)',
-                                            'font-size': '11px',
-                                            'text-valign': 'top',
-                                            'text-halign': 'center',
-                                            'background-repeat': 'no-repeat',
-                                            'background-image': 'data(svg)',
-                                            'background-fit': 'none',
-                                            'background-position-x': '15px',
-                                            'background-position-y': '15px'
-                                        })
-                                        .selector('edge')
-                                        .css({
-                                            'content': 'data(label)',
-                                            'target-arrow-shape': 'triangle',
-                                            'width': 1,
-                                            'line-color': 'data(color)',
-                                            'line-style': 'data(style)',
-                                            'target-arrow-color': 'data(color)',
-                                            'font-size': '11px',
-                                            'control-point-distance': 60
-                                        }),
-                                    layout: {
-                                        name: 'cose',
-                                        animate: false,
-                                        fit: true,
-                                        padding: 25,
-                                        directed: true,
-                                        roots: '#1',
-                                        //nodeOverlap: 100, // Node repulsion (overlapping) multiplier
-                                        nodeRepulsion: 3000000 // Node repulsion (non overlapping) multiplier
-                                    },
-                                    elements: {
-                                        nodes: data.nodes,
-                                        edges: data.edges
-                                    }
+                    refresh: function () {
+                        cy.load(cy.elements().jsons())
+                    }
 
-                                });
-                            }); // on dom ready
-
-                        });
-                    });
-
-                    return deferred.promise;
-
-                };
-
-                elementProjectionGraph.refresh = function () {
-                    cy.load(cy.elements().jsons())
                 };
 
                 return elementProjectionGraph;

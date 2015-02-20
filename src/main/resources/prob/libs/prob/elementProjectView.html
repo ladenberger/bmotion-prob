@@ -1,7 +1,7 @@
 <div ng-controller="elementProjectionCtrl">
-    <div>
+    <div style="width:100%;height:100%;">
         <div>
-            <a href="#" editable-select="user.status" e-multiple e-ng-options="s.value as s.text for s in formulaElements">
+            <a href="#" editable-select="user.status" onshow="loadElements()" e-multiple e-ng-options="s.value as s.text for s in getFormulaElements()">
                 {{ showStatus() }}
             </a>
         </div>

@@ -1,5 +1,77 @@
 define(['ngProB', 'bms', 'angularAMD', 'jquery', 'tooltipster', 'css!prob-css', 'css!tooltipster-css', 'css!tooltipster-shadow-css'], function (ngProB, bms, angularAMD) {
 
+    var observers = {};
+    var formulaObservers = {};
+
+    bms.socket.on('checkObserver', function (trigger) {
+
+        if (observers[trigger] !== undefined) {
+            $.each(observers[trigger], function (i, v) {
+                v.call(this)
+            });
+        }
+
+        if (formulaObservers[trigger] !== undefined) {
+            bms.socket.emit("observe", {data: formulaObservers[trigger]}, function (data) {
+                $.each(formulaObservers[trigger], function (i, v) {
+                    v.observer.call(this, data[i])
+                });
+            });
+        }
+
+    });
+
+    bms.socket.on('applyTransformers', function (data) {
+        var d1 = JSON.parse(data);
+        var i1 = 0;
+        for (; i1 < d1.length; i1++) {
+            var t = d1[i1];
+            if (t.selector) {
+                var selector = $(t.selector);
+                var content = t.content;
+                if (content != undefined) selector.html(content);
+                selector.attr(t.attributes);
+                selector.css(t.styles)
+            }
+        }
+    });
+
+    var guid = (function () {
+        function s4() {
+            return Math.floor((1 + Math.random()) * 0x10000)
+                .toString(16)
+                .substring(1);
+        }
+
+        return function () {
+            return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
+                s4() + '-' + s4() + s4() + s4();
+        };
+    })();
+
+    var addObserver = function (cause, observer) {
+        if (observers[cause] === undefined) observers[cause] = [];
+        observers[cause].push(observer)
+    };
+
+    var addFormulaObserver = function (cause, settings, observer) {
+        if (formulaObservers[cause] === undefined) formulaObservers[cause] = {};
+        settings.observer = observer;
+        formulaObservers[cause][guid()] = settings
+    };
+
+    var executeEvent = function (options, origin) {
+        var settings = normalize($.extend({
+            events: [],
+            callback: function () {
+            }
+        }, options), ["callback"], origin);
+        bms.socket.emit("executeEvent", {data: normalize(settings, ["callback"], origin)}, function (data) {
+            origin !== undefined ? settings.callback.call(this, origin, data) : settings.callback.call(this, data)
+        });
+        return settings
+    };
+
     var observePredicateHandler = function (tf, el, data) {
         if (Object.prototype.toString.call(tf) === '[object Array]') {
             $.each(tf, function (i, v) {
@@ -25,7 +97,7 @@ define(['ngProB', 'bms', 'angularAMD', 'jquery', 'tooltipster', 'css!prob-css', 
             callback: function () {
             }
         }, options), ["callback", "false", "true"], origin);
-        bms.addObserver(settings.cause, function () {
+        addObserver(settings.cause, function () {
             bms.socket.emit("eval", {data: {formula: settings.predicate}}, function (data) {
                 if (data.value === "TRUE") {
                     observePredicateHandler(settings.true, $(origin), data.value)
@@ -104,6 +176,8 @@ define(['ngProB', 'bms', 'angularAMD', 'jquery', 'tooltipster', 'css!prob-css', 
     };
 
     var _createDiagram = function (data, origin) {
+
+        console.log(data)
 
         if (origin === undefined) {
             // TODO: return some useful error message
@@ -317,13 +391,13 @@ define(['ngProB', 'bms', 'angularAMD', 'jquery', 'tooltipster', 'css!prob-css', 
         var element = origin !== undefined ? origin : $(settings.selector);
         if (element !== undefined) {
 
-            element.attr("bms-visualisation", "");
+            $(element).attr("bms-visualisation", "");
             var $injector = angular.injector(['ng', 'bmsModule']);
             $injector.invoke(function ($rootScope, $compile) {
                 $compile(element)($rootScope);
             });
 
-            bms.addObserver(settings.cause, function () {
+            addObserver(settings.cause, function () {
                 bms.socket.emit("observeCSPTrace", {data: settings}, function (data) {
                     var scope = angular.element(element).scope();
                     scope.$apply(function () {
@@ -345,7 +419,7 @@ define(['ngProB', 'bms', 'angularAMD', 'jquery', 'tooltipster', 'css!prob-css', 
             disable: function () {
             }
         }, options), ["enable", "disable"], origin);
-        bms.addObserver("ModelChanged", function () {
+        addObserver("ModelChanged", function () {
             bms.socket.emit("observeRefinement", {data: settings}, function (data) {
                 $.each(settings.refinements, function (i, v) {
                     if ($.inArray(v, data.refinements) > -1) {
@@ -358,32 +432,89 @@ define(['ngProB', 'bms', 'angularAMD', 'jquery', 'tooltipster', 'css!prob-css', 
         });
     };
 
-    var oldObserveFn = bms.observe;
-    var probObserveFn = function (what, options, origin) {
-        oldObserveFn(what, options, origin);
+    var observeMethod = function (options, origin) {
+        var settings = normalize($.extend({
+            name: "",
+            cause: "AnimationChanged",
+            trigger: function () {
+            }
+        }, options), ["trigger"], origin);
+        addObserver(settings.cause, function () {
+            bms.socket.emit("callMethod", {data: settings}, function (data) {
+                origin !== undefined ? settings.trigger.call(this, $(origin), data) : settings.trigger.call(this, data)
+            });
+        });
+        return settings
+    };
+
+    var observeFormulas = function (options, origin) {
+
+        var settings = normalize($.extend({
+            formulas: [],
+            cause: "AnimationChanged",
+            trigger: function () {
+            }
+        }, options), ["trigger"], origin);
+
+        if (origin != null) {
+            $(origin).attr("data-formulaobserver", "");
+            $(origin).on("trigger", function (event, data) {
+                settings.trigger.call(this, $(this), data)
+            });
+        }
+
+        addFormulaObserver(settings.cause, settings, function (data) {
+            origin !== undefined ? settings.trigger.call(this, $(origin), data) : settings.trigger.call(this, data)
+        });
+
+    };
+
+    //var oldObserveFn = bms.observe;
+    //var probObserveFn = function (what, options, origin) {
+    var observe = function (what, options, origin) {
+        //oldObserveFn(what, options, origin);
+        if (what === "formula") {
+            observeFormulas(options, origin)
+        }
+        if (what === "method") {
+            observeMethod(options, origin)
+        }
         if (what === "refinement") {
-            return observeRefinement(options, origin)
+            observeRefinement(options, origin)
         }
         if (what === "predicate") {
-            return observePredicate(options, origin)
+            observePredicate(options, origin)
         }
         if (what === "csp-event") {
-            return observeCSPTrace(options, origin)
+            observeCSPTrace(options, origin)
         }
     };
-    bms.observe = probObserveFn
+    //bms.observe = probObserveFn;
 
-        // ---------------------
-        // jQuery extension
-        // ---------------------
+    // ---------------------
+    // jQuery extension
+    // ---------------------
     (function ($) {
 
         $.fn.observe = function (what, options) {
             this.each(function (i, v) {
-                probObserveFn(what, options, v);
+                observe(what, options, v);
             });
             return this
         };
+
+        $.fn.executeEvent = function (options) {
+            return this.click(function (e) {
+                executeEvent(options, e.target)
+            }).css('cursor', 'pointer')
+        };
+
+        /*$.fn.observe = function (what, options) {
+         this.each(function (i, v) {
+         probObserveFn(what, options, v);
+         });
+         return this
+         };*/
 
         $.fn.createTransitionDiagram = function (options) {
             this.each(function (i, v) {
@@ -411,7 +542,7 @@ define(['ngProB', 'bms', 'angularAMD', 'jquery', 'tooltipster', 'css!prob-css', 
                 $('body').append(d)
             });
             this.click(function (e) {
-                bms.executeEvent(options, $(e.target))
+                executeEvent(options, $(e.target))
             }).css('cursor', 'pointer');
             if (settings.tooltip) {
                 this.tooltipster({
@@ -438,7 +569,7 @@ define(['ngProB', 'bms', 'angularAMD', 'jquery', 'tooltipster', 'css!prob-css', 
                                 var link = $('<span> ' + v.name + '(' + v.predicate + ')</span>');
                                 if (v.canExecute) {
                                     link = $('<a href="#"> ' + v.name + '(' + v.predicate + ')</a>').click(function () {
-                                        bms.executeEvent({
+                                        executeEvent({
                                             events: [{name: v.name, predicate: v.predicate}],
                                             callback: function () {
                                                 // Update tooltip
@@ -463,7 +594,11 @@ define(['ngProB', 'bms', 'angularAMD', 'jquery', 'tooltipster', 'css!prob-css', 
     }(jQuery));
 
     return $.extend({
-        observe: probObserveFn,
+        executeEvent: executeEvent,
+        observeFormulas: observeFormulas,
+        observeMethod: observeMethod,
+        observe: observe,
+        addObserver: addObserver,
         ng: angularAMD.bootstrap(ngProB)
     }, bms);
 

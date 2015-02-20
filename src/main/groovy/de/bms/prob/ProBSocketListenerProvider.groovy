@@ -3,6 +3,7 @@ package de.bms.prob
 import com.corundumstudio.socketio.AckRequest
 import com.corundumstudio.socketio.SocketIOClient
 import com.corundumstudio.socketio.listener.DataListener
+import de.bms.BMotion
 import de.bms.BMotionSocketListenerProvider
 import de.bms.server.BMotionSocketServer
 import de.bms.server.JsonObject
@@ -33,7 +34,47 @@ class ProBSocketListenerProvider implements BMotionSocketListenerProvider {
                 }
             });
         }
+        server.getServer().addEventListener("executeEvent", JsonObject.class,
+                new DataListener<JsonObject>() {
+                    @Override
+                    public void onData(final SocketIOClient client, JsonObject d,
+                                       final AckRequest ackRequest) {
+                        def BMotion bmotion = server.getSession(client)
+                        if (bmotion != null) {
+                            def returnValue = bmotion.executeEvent(d.data)
+                            if (ackRequest.isAckRequested()) {
+                                ackRequest.sendAckData(returnValue);
+                            }
+                        }
+                    }
+                });
 
+        server.getServer().addEventListener("observe", JsonObject.class,
+                new DataListener<JsonObject>() {
+                    @Override
+                    public void onData(final SocketIOClient client, JsonObject d,
+                                       final AckRequest ackRequest) {
+                        def BMotion bmotion = server.getSession(client)
+                        if (bmotion != null) {
+                            if (ackRequest.isAckRequested()) {
+                                ackRequest.sendAckData(bmotion.observe(d));
+                            }
+                        }
+                    }
+                });
+
+        server.getServer().addEventListener("eval", JsonObject.class, new DataListener<JsonObject>() {
+            @Override
+            public void onData(final SocketIOClient client, JsonObject d,
+                               final AckRequest ackRequest) {
+                def BMotion bmotion = server.getSession(client)
+                if (bmotion != null) {
+                    if (ackRequest.isAckRequested()) {
+                        ackRequest.sendAckData([bmotion.eval(d.data.formula)]);
+                    }
+                }
+            }
+        });
         server.getServer().addEventListener("initTooltip", JsonObject.class, new DataListener<JsonObject>() {
             @Override
             public void onData(final SocketIOClient client, JsonObject d,
