@@ -139,7 +139,18 @@ class ProBSocketListenerProvider implements BMotionSocketListenerProvider {
                                 return list
                             }
 
-                            String joinExp = d.data.expressions.join("|->")
+                            def expressions = d.data.expressions.collect {
+
+                                IEvalElement e = bms.getTrace().getModel().parseFormula(it);
+                                if (e.getKind() == EvalElementType.PREDICATE.toString()) {
+                                    return 'bool(' + e.getCode() + ')';
+                                } else {
+                                    return e.getCode();
+                                }
+
+                            }
+
+                            String joinExp = expressions.join("|->")
                             IEvalElement eval = bms.getTrace().getModel().parseFormula(joinExp)
 
                             GetTransitionDiagramCommand cmd = new GetTransitionDiagramCommand(eval)
@@ -148,22 +159,27 @@ class ProBSocketListenerProvider implements BMotionSocketListenerProvider {
 
                             def nodes = cmd.getNodes().collect {
                                 def nn = it.value.properties
-                                nn["translated"] = it.value.labels.collect { str ->
-                                    if (str != "<< undefined >>" && !d.data.expressions.contains(str)) {
+                                nn["translated"] = []
+
+                                if (!it.value.labels.contains("<< undefined >>") && it.value.id != "1") {
+                                    it.value.labels.each { str ->
                                         def formula = new TranslateFormula(str as EventB)
                                         def res = bms.getStateSpace().getRoot().eval(formula)
                                         if (res instanceof TranslatedEvalResult) {
                                             if (res.value instanceof Tuple) {
-                                                return _getResults(res.value)
+                                                nn["translated"] += _getResults(res.value)
                                             } else {
-                                                return [res.value]
+                                                nn["translated"] << res.value
                                             }
                                         }
-                                    } else {
-                                        return []
                                     }
                                 }
+
+                                nn["results"] = nn["translated"].collect {
+                                    reTranslate(it)
+                                }
                                 [data: nn]
+
                             }
 
                             def edges = cmd.getEdges().collect {
@@ -268,6 +284,16 @@ class ProBSocketListenerProvider implements BMotionSocketListenerProvider {
         }
         String opNameWithParameter = opName + AsImplodedString;
         return opNameWithParameter;
+    }
+
+    def static String reTranslate(obj) {
+        if (obj == true) {
+            return "TRUE";
+        } else if (obj == false) {
+            return "FALSE";
+        } else {
+            return obj.toString();
+        }
     }
 
 }

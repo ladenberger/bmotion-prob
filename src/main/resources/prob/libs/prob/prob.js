@@ -457,10 +457,12 @@ define(['ngProB', 'bms', 'angularAMD', 'jquery', 'tooltipster', 'css!prob-css', 
         }, options), ["trigger"], origin);
 
         if (origin != null) {
-            $(origin).attr("data-formulaobserver", "");
-            $(origin).on("trigger", function (event, data) {
+            var ele = $(origin);
+            ele.attr("data-formulaobserver", "");
+            ele.on("trigger", function (event, data) {
                 settings.trigger.call(this, $(this), data)
             });
+            ele.data("clone", ele.clone(true));
         }
 
         addFormulaObserver(settings.cause, settings, function (data) {

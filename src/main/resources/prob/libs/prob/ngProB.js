@@ -2,9 +2,9 @@ define(['ngBMotion', 'jquery', 'jquery-cookie', 'jquery-ui', "css!jquery-ui-css"
 
         return angular.module('probModule', ['bmsModule', 'xeditable'])
             .run(["$rootScope", 'editableOptions', function ($rootScope, editableOptions) {
-
                 $rootScope.formulaElements = [];
                 $rootScope.loadElements = function () {
+                    $rootScope.formulaElements = [];
                     $('[data-formulaobserver]').each(function (i, v) {
                         var el = $(v);
                         if (el.parents('svg').length) {
@@ -53,7 +53,7 @@ define(['ngBMotion', 'jquery', 'jquery-cookie', 'jquery-ui', "css!jquery-ui-css"
                                     '<prob-view type="CurrentAnimations" traceid="' + data.traceId + '" port="' + data.port + '"></prob-view>' +
                                     '<prob-view type="Log" traceid="' + data.traceId + '" port="' + data.port + '"></prob-view>' +
                                     '<prob-view type="GroovyConsoleSession" traceid="' + data.traceId + '" port="' + data.port + '"></prob-view>' +
-                                    //'<element-projection-view type="ElementProjection"></element-projection-view>' +
+                                    '<element-projection-view type="ElementProjection"></element-projection-view>' +
                                     '<prob-view type="ModelCheckingUI" traceid="' + data.traceId + '" port="' + data.port + '"></prob-view></div>');
                                     element.find("body").append($compile(probViews)($scope))
                                 })
@@ -275,13 +275,15 @@ define(['ngBMotion', 'jquery', 'jquery-cookie', 'jquery-ui', "css!jquery-ui-css"
 
                     // Prepare data
                     var ele = felements[property].clone;
-                    var count = felements[property].count;
                     var type = felements[property].type;
                     var ffval = [];
-                    $.each(count, function (i2, v2) {
-                        var trans = v.data.translated[0];
-                        if (trans != null && trans.length > 0) {
-                            ffval.push(trans[v2]);
+
+                    $.each(felements[property].count, function (i2, v2) {
+                        var trans = v.data.translated;
+                        var res = v.data.results;
+                        var fres = felements[property].translate ? trans[v2] : res[v2];
+                        if (fres !== undefined) {
+                            ffval.push(fres);
                         }
                     });
 
@@ -316,12 +318,6 @@ define(['ngBMotion', 'jquery', 'jquery-cookie', 'jquery-ui', "css!jquery-ui-css"
                             var html = $('<div>').append(ele);
                             if (type === 'svg') {
                                 image.src = 'data:image/svg+xml;base64,' + window.btoa('<svg xmlns="http://www.w3.org/2000/svg" style="background-color:white" xmlns:xlink="http://www.w3.org/1999/xlink" width="1000" height="1000">' + html.html() + '</svg>');
-                            } else {
-                                /*ws.emit('renderHtml', {data: {html: html.html()}},
-                                 function (data) {
-                                 image.src = data;
-                                 }
-                                 );*/
                             }
                         }
                     } else {
@@ -342,8 +338,6 @@ define(['ngBMotion', 'jquery', 'jquery-cookie', 'jquery-ui', "css!jquery-ui-css"
                     // Create a new image for the node
                     var mcanvas = document.createElement('canvas'),
                         mcontext = mcanvas.getContext("2d");
-
-                    // if (val !== "<< undefined >>") {
 
                     v.data["canvas"] = [];
 
@@ -374,12 +368,6 @@ define(['ngBMotion', 'jquery', 'jquery-cookie', 'jquery-ui', "css!jquery-ui-css"
 
                     });
 
-                    //}
-                    //else {
-                    //    v.data['svg'] = 'data:image/svg+xml;base64,' + window.btoa('<svg
-                    // xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg"></svg>');
-                    // deferred.resolve(); }
-
                     return deferred.promise();
 
                 };
@@ -397,8 +385,9 @@ define(['ngBMotion', 'jquery', 'jquery-cookie', 'jquery-ui', "css!jquery-ui-css"
                             var el = $(v);
                             felements[v] = {
                                 count: [],
-                                clone: el.clone(true),
-                                type: el.parents('svg').length ? 'svg' : 'html'
+                                clone: el.data('clone'),
+                                type: el.parents('svg').length ? 'svg' : 'html',
+                                translate: el.data('translate')
                             };
                             $.each($(v).data("formulas"), function () {
                                 felements[v]['count'].push(count);
@@ -482,7 +471,9 @@ define(['ngBMotion', 'jquery', 'jquery-cookie', 'jquery-ui', "css!jquery-ui-css"
                     },
 
                     refresh: function () {
-                        cy.load(cy.elements().jsons())
+                        if(cy) {
+                            cy.load(cy.elements().jsons())
+                        }
                     }
 
                 };
