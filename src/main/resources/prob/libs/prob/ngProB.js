@@ -35,10 +35,6 @@ define(['ngBMotion', 'jquery', 'jquery-cookie', 'jquery-ui', "css!jquery-ui-css"
                     priority: 2,
                     link: function ($scope, element) {
 
-                        $scope.openView = function (type) {
-                            $scope.$broadcast('open' + type);
-                        };
-
                         initSession.then(function (standalone) {
                             if (standalone) {
                                 initProB.then(function (data) {
@@ -47,14 +43,16 @@ define(['ngBMotion', 'jquery', 'jquery-cookie', 'jquery-ui', "css!jquery-ui-css"
                                     $scope.traceId = data.traceId;
                                     var bmsNavigation = angular.element('<prob-navigation></prob-navigation>');
                                     element.find("body").append($compile(bmsNavigation)($scope));
-                                    var probViews = angular.element('<div><prob-view type="CurrentTrace" traceid="' + data.traceId + '" port="' + data.port + '"></prob-view>' +
-                                    '<prob-view type="Events" traceid="' + data.traceId + '" port="' + data.port + '"></prob-view>' +
-                                    '<prob-view type="StateInspector" traceid="' + data.traceId + '" port="' + data.port + '"></prob-view>' +
-                                    '<prob-view type="CurrentAnimations" traceid="' + data.traceId + '" port="' + data.port + '"></prob-view>' +
-                                    '<prob-view type="Log" traceid="' + data.traceId + '" port="' + data.port + '"></prob-view>' +
-                                    '<prob-view type="GroovyConsoleSession" traceid="' + data.traceId + '" port="' + data.port + '"></prob-view>' +
-                                    '<element-projection-view type="ElementProjection"></element-projection-view>' +
-                                    '<prob-view type="ModelCheckingUI" traceid="' + data.traceId + '" port="' + data.port + '"></prob-view></div>');
+                                    var probViews = angular.element('<div ng-controller="proBViewCtrl">' +
+                                    '<div bms-dialog type="CurrentTrace"><div prob-view></div></div>' +
+                                    '<div bms-dialog type="Events"><div prob-view></div></div>' +
+                                    '<div bms-dialog type="StateInspector"><div prob-view></div></div>' +
+                                    '<div bms-dialog type="CurrentAnimations"><div prob-view></div></div>' +
+                                    '<div bms-dialog type="Log"><div prob-view></div></prob-view>' +
+                                    '<div bms-dialog type="GroovyConsoleSession"><div prob-view></div></div>' +
+                                    '<div bms-dialog type="ElementProjection"><div diagram-element-projection-view></div></div>' +
+                                    '<div bms-dialog type="ModelCheckingUI"><div prob-view></div></div>' +
+                                    '</div>');
                                     element.find("body").append($compile(probViews)($scope))
                                 })
                             }
@@ -69,6 +67,9 @@ define(['ngBMotion', 'jquery', 'jquery-cookie', 'jquery-ui', "css!jquery-ui-css"
                     replace: true,
                     templateUrl: '/bms/libs/prob/probNavigation.html',
                     controller: function ($scope) {
+                        $scope.openView = function (type) {
+                            $scope.$broadcast('open' + type);
+                        };
                         $scope.reloadModel = function () {
                             $scope.modal.setLabel("Reloading model ...");
                             $scope.modal.show();
@@ -81,125 +82,130 @@ define(['ngBMotion', 'jquery', 'jquery-cookie', 'jquery-ui', "css!jquery-ui-css"
                     }
                 }
             }])
+            .factory('bmsDialogService', function () {
+                return {
+                    isOpen: function (type) {
+                        return $.cookie("open_" + type) === undefined ? false : $.cookie("open_" + type);
+                    },
+                    open: function (element, type) {
+                        $.cookie("open_" + type, true);
+                        var toppos = $.cookie("position_top_" + type);
+                        var leftpos = $.cookie("position_left_" + type);
+                        var width = $.cookie("width_" + type);
+                        var height = $.cookie("height_" + type);
+                        if (toppos !== undefined && leftpos !== undefined) {
+                            element.parent().css("top", toppos + "px").css("left", leftpos + "px")
+                        }
+                        if (width !== undefined && height !== undefined) {
+                            element.parent().css("width", width + "px").css("height", height + "px")
+                        }
+                    },
+                    close: function (type) {
+                        $.removeCookie("open_" + type);
+                        $.removeCookie("position_top" + type);
+                        $.removeCookie("position_left_" + type);
+                        $.removeCookie("width_" + type);
+                        $.removeCookie("height_" + type);
+                    },
+                    dragStop: function (ui, type) {
+                        $.cookie("position_top_" + type, ui.position.top);
+                        $.cookie("position_left_" + type, ui.position.left)
+                    },
+                    resizeStop: function (ui, type) {
+                        $.cookie("width_" + type, ui.size.width);
+                        $.cookie("height_" + type, ui.size.height);
+                    },
+                    fixSize: function (dialog, ox, oy) {
+                        var newwidth = dialog.parent().width() - ox;
+                        var newheight = dialog.parent().height() - oy;
+                        dialog.children().attr("style", "width:" + (newwidth) + "px;height:" + (newheight - 50) + "px");
+                    }
+                }
+            })
+            .controller('proBViewCtrl', ['$scope', function ($scope) {
+                $scope.isOpen = false;
+            }])
             .directive('probView', function () {
                 return {
                     replace: true,
-                    template: '<div><iframe src="" frameBorder="0"></iframe></div>',
+                    scope: true,
+                    template: '<iframe src="" frameBorder="0"></iframe>',
+                    link: function ($scope, element, attrs) {
+                        var iframe = $(element);
+                        $scope.$on('dragStart', function () {
+                            iframe.hide();
+                        });
+                        $scope.$on('dragStop', function () {
+                            iframe.show();
+                        });
+                        $scope.$on('resize', function () {
+                            iframe.hide();
+                        });
+                        $scope.$on('resizeStart', function () {
+                            iframe.hide();
+                        });
+                        $scope.$on('resizeStop', function () {
+                            iframe.show();
+                        });
+                        $scope.$on('open', function () {
+                            iframe.attr("src", document.location.protocol + '//' + document.location.hostname + ":" + $scope.port +
+                            "/sessions/" + $scope.type + "/" + $scope.traceid);
+                        });
+                    }
+                }
+            })
+            .directive('bmsDialog', ['bmsDialogService', '$rootScope', function (bmsDialogService, $rootScope) {
+                return {
+                    scope: true,
                     link: function ($scope, element, attrs) {
 
-                        var viewtype = attrs.type;
-                        var traceid = attrs.traceid;
-                        var port = attrs.port;
-                        var iframe = $(element.find("iframe"));
-                        var aopen = $.cookie("open_" + viewtype) === undefined ? false : $.cookie("open_" + viewtype);
-
-                        $scope.fixSize = function (dialog, obj, ox, oy) {
-                            var newwidth = dialog.parent().width() - ox;
-                            var newheight = dialog.parent().height() - oy;
-                            obj.attr("style", "width:" + (newwidth) + "px;height:" + (newheight - 50) + "px");
-                        };
-
-                        $scope.$on('open' + viewtype, function () {
+                        $scope.type = attrs.type;
+                        $scope.isOpen = bmsDialogService.isOpen($scope.type);
+                        $scope.$on('open' + $scope.type, function () {
                             $(element).dialog("open");
                         });
 
                         $(element).dialog({
 
                             dragStart: function () {
-                                iframe.hide();
+                                $scope.$broadcast('dragStart');
                             },
                             dragStop: function (event, ui) {
-                                iframe.show();
-                                $.cookie("position_top_" + viewtype, ui.position.top);
-                                $.cookie("position_left_" + viewtype, ui.position.left)
+                                $scope.$broadcast('dragStop');
+                                bmsDialogService.dragStop(ui, $scope.type);
                             },
                             resize: function () {
-                                iframe.hide();
+                                $scope.$broadcast('resize');
                             },
                             resizeStart: function () {
-                                iframe.hide();
+                                $scope.$broadcast('resizeStart');
                             },
-                            resizeStop: function () {
-                                iframe.show();
-                                $scope.fixSize($(element), iframe, 0, 0);
+                            resizeStop: function (event, ui) {
+                                $scope.$broadcast('resizeStop');
+                                bmsDialogService.resizeStop(ui, $scope.type);
+                                bmsDialogService.fixSize($(element), 0, 0);
                             },
                             open: function () {
-                                $.cookie("open_" + viewtype, true);
-                                iframe.attr("src", document.location.protocol + '//' + document.location.hostname + ":" + port +
-                                "/sessions/" + viewtype + "/" + traceid);
-                                $scope.fixSize($(element), iframe, 0, 0);
-                                element.css('overflow', 'hidden'); //this line does the actual hiding
-                                var toppos = $.cookie("position_top_" + viewtype);
-                                var leftpos = $.cookie("position_left_" + viewtype);
-                                if (toppos !== undefined && leftpos !== undefined) {
-                                    element.parent().css("top", toppos + "px").css("left", leftpos + "px")
-                                }
+                                $scope.$broadcast('open');
+                                bmsDialogService.open(element, $scope.type);
+                                bmsDialogService.fixSize($(element), 0, 0);
+                                $scope.isOpen = true;
                             },
                             close: function () {
-                                $.removeCookie("open_" + viewtype);
-                                $.removeCookie("position_top" + viewtype);
-                                $.removeCookie("position_left_" + viewtype);
+                                bmsDialogService.close($scope.type);
+                                $scope.isOpen = false;
                             },
-                            autoOpen: aopen,
+                            autoOpen: $scope.isOpen,
                             width: 350,
                             height: 400,
-                            title: viewtype
+                            title: $scope.type
 
                         });
 
                     }
                 }
-            })
-            .controller('elementProjectionCtrl', ['$scope', 'ws', 'elementProjectionGraph', function ($scope, ws, elementProjectionGraph) {
-
-                $scope.cyLoaded = false;
-
-                $scope.refresh = function () {
-                    elementProjectionGraph.refresh()
-                };
-
-                /*ws.on('checkObserver', function (trigger) {
-                 // TODO: Force user to reload graph
-                 });*/
-
-                $scope.isOpen = false;
-
-                $scope.user = {
-                    status: []
-                };
-
-                $scope.init = function () {
-
-                    if ($scope.isOpen && $scope.user.status.length > 0) {
-                        var elements = [];
-                        angular.forEach($scope.getFormulaElements(), function (s) {
-                            if ($scope.user.status.indexOf(s.value) >= 0) {
-                                elements.push(s.text);
-                            }
-                        });
-                        elementProjectionGraph.build(elements).then(function () {
-                            $scope.cyLoaded = true;
-                        });
-                    }
-
-                };
-
-                $scope.$watch('user.status', function () {
-                    $scope.init();
-                });
-
-                $scope.showStatus = function () {
-                    var selected = [];
-                    angular.forEach($scope.getFormulaElements(), function (s) {
-                        if ($scope.user.status.indexOf(s.value) >= 0) {
-                            selected.push(s.text);
-                        }
-                    });
-                    return selected.length ? selected.join(', ') : 'Not set';
-                };
-
             }])
-            .factory('elementProjectionGraph', ['$q', 'ws', function ($q, ws) {
+            .factory('diagramElementProjectionGraph', ['$q', 'ws', function ($q, ws) {
 
                 var cy;
 
@@ -471,7 +477,7 @@ define(['ngBMotion', 'jquery', 'jquery-cookie', 'jquery-ui', "css!jquery-ui-css"
                     },
 
                     refresh: function () {
-                        if(cy) {
+                        if (cy) {
                             cy.load(cy.elements().jsons())
                         }
                     }
@@ -481,64 +487,73 @@ define(['ngBMotion', 'jquery', 'jquery-cookie', 'jquery-ui', "css!jquery-ui-css"
                 return elementProjectionGraph;
 
             }])
-            .directive('elementProjectionView', function () {
+            .directive('diagramElementProjectionView', ['diagramElementProjectionGraph', function (diagramElementProjectionGraph) {
                 return {
                     replace: true,
+                    scope: true,
                     templateUrl: '/bms/libs/prob/elementProjectView.html',
-                    link: function ($scope, element, attrs) {
+                    controller: function ($scope, $element) {
 
-                        var viewtype = attrs.type;
-                        var aopen = $.cookie("open_" + viewtype) === undefined ? false : $.cookie("open_" + viewtype);
-                        var diagramElement = $(element).find(".diagram");
+                        $scope.cyLoaded = false;
 
-                        $scope.fixSize = function (dialog, obj, ox, oy) {
-                            var newwidth = dialog.parent().width() - ox;
-                            var newheight = dialog.parent().height() - oy;
-                            obj.attr("style", "width:" + (newwidth) + "px;height:" + (newheight - 50) + "px");
+                        $scope.refresh = function () {
+                            diagramElementProjectionGraph.refresh()
                         };
 
-                        $scope.$on('open' + viewtype, function () {
-                            $(element).dialog("open");
+                        $scope.elements = {
+                            selected: []
+                        };
+
+                        $scope.init = function () {
+
+                            if ($scope.isOpen && $scope.elements.selected.length > 0) {
+                                var elements = [];
+                                angular.forEach($scope.getFormulaElements(), function (s) {
+                                    if ($scope.elements.selected.indexOf(s.value) >= 0) {
+                                        elements.push(s.text);
+                                    }
+                                });
+                                diagramElementProjectionGraph.build(elements).then(function () {
+                                    $scope.cyLoaded = true;
+                                });
+                            }
+
+                        };
+
+                        $scope.$watch('elements.selected', function () {
+                            $scope.init();
                         });
 
-                        $(element).dialog({
+                        $scope.showStatus = function () {
+                            var selected = [];
+                            angular.forEach($scope.getFormulaElements(), function (s) {
+                                if ($scope.elements.selected.indexOf(s.value) >= 0) {
+                                    selected.push(s.text);
+                                }
+                            });
+                            return selected.length ? selected.join(', ') : 'Not set';
+                        };
 
-                            dragStart: function () {
-                            },
-                            dragStop: function (event, ui) {
-                                $.cookie("position_top_" + viewtype, ui.position.top);
-                                $.cookie("position_left_" + viewtype, ui.position.left)
-                            },
-                            resize: function () {
-                            },
-                            resizeStart: function () {
-                            },
-                            resizeStop: function () {
-                                $scope.fixSize($(element), diagramElement, 0, 0);
-                                $scope.refresh();
-                            },
-                            open: function () {
-                                $.cookie("open_" + viewtype, true);
-                                $scope.fixSize($(element), diagramElement, 0, 0);
-                                $scope.isOpen = true;
-                                $scope.init();
-                            },
-                            close: function () {
-                                $.removeCookie("open_" + viewtype);
-                                $.removeCookie("position_top" + viewtype);
-                                $.removeCookie("position_left_" + viewtype);
-                                $scope.isOpen = false;
-                            },
-                            autoOpen: aopen,
-                            width: 350,
-                            height: 400,
-                            title: viewtype
-
+                    },
+                    link: function ($scope, element, attrs) {
+                        $scope.$on('dragStart', function () {
                         });
-
+                        $scope.$on('dragStop', function () {
+                        });
+                        $scope.$on('resize', function () {
+                        });
+                        $scope.$on('resizeStart', function () {
+                        });
+                        $scope.$on('resizeStop', function () {
+                            $scope.refresh();
+                        });
+                        $scope.$on('open', function () {
+                            $scope.init();
+                        });
                     }
                 }
-            });
+
+            }]);
 
     }
 );
