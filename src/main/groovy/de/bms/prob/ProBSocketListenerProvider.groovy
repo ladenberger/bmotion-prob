@@ -119,6 +119,38 @@ class ProBSocketListenerProvider implements BMotionSocketListenerProvider {
             }
         });
         server.getServer().
+                addEventListener("createTraceDiagram", JsonObject.class, new DataListener<JsonObject>() {
+                    @Override
+                    public void onData(final SocketIOClient client, JsonObject d,
+                                       final AckRequest ackRequest) {
+                        def ProBVisualisation bms = server.getSession(client)
+                        if (bms != null) {
+
+                            def nodes = []
+                            def edges = []
+
+                            bms.getCurrentTrace().getTransitionList().each { Transition op ->
+
+                                def sId = op.getSource().getId()
+                                def dId = op.getDestination().getId()
+                                nodes.push([group: 'nodes', data: [id: sId, label: sId]]);
+                                nodes.push([group: 'nodes', data: [id: dId, label: dId]]);
+                                edges.push(
+                                        [group: 'edges', data: [id: 'e' + sId + '' + dId, source: sId, target: dId, label: op.
+                                                getName()]]);
+
+                            }
+
+                            if (ackRequest.isAckRequested()) {
+                                ackRequest.sendAckData([nodes: nodes, edges: edges]);
+                            }
+
+                        }
+                    }
+                }
+
+                );
+        server.getServer().
                 addEventListener("createCustomTransitionDiagram", JsonObject.class, new DataListener<JsonObject>() {
                     @Override
                     public void onData(final SocketIOClient client, JsonObject d,

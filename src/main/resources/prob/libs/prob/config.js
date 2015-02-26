@@ -1,7 +1,7 @@
 require.config({
     paths: {
+        "probFunctions": "/bms/libs/prob/probFunctions",
         "prob": "/bms/libs/prob/prob",
-        "ngProB": "/bms/libs/prob/ngProB",
         'prob-css': "/bms/libs/prob/prob",
         "jquery-ui-css": "/bms/libs/jquery-ui/jquery-ui.min",
         "jquery-ui-theme-css": "/bms/libs/jquery-ui/jquery-ui.theme.min",
@@ -18,8 +18,8 @@ require.config({
     shim: {
         'jquery-ui': ['jquery'],
         'tooltipster': ["jquery"],
-        'ngProB': ["ngBMotion", 'jquery-cookie', 'jquery-ui', 'cytoscape'],
-        'prob': ['ngProB', 'bms', 'angularAMD', 'tooltipster'],
+        'prob': ['probFunctions', 'angularAMD', "ngBMotion", 'jquery-cookie', 'jquery-ui', 'cytoscape'],
+        'probFunctions': ['bms', 'tooltipster'],
         'cytoscape': {exports: 'cy', deps: ['jquery', 'cola']}
     }
     //,deps: ['/bms/libs/bmotion/config.js']

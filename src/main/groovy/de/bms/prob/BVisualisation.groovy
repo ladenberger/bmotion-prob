@@ -19,6 +19,10 @@ public class BVisualisation extends ProBVisualisation {
 
     @Override
     public Object eval(final String formula) throws IllegalFormulaException {
+        return eval(formula, getCurrentState());
+    }
+
+    public Object eval(final String formula, final String stateid) throws IllegalFormulaException {
         if (trace == null) {
             log.error "BMotion Studio: No trace exists."
         }
@@ -30,7 +34,7 @@ public class BVisualisation extends ProBVisualisation {
                 formulas.put(formula, e);
                 space.subscribe(this, e);
             }
-            State sId = space.getState(getCurrentState());
+            State sId = space.getState(stateid);
             IEvalResult result = sId.getValues().get(formulas.get(formula));
             return result;
         } catch (EvaluationException e) {
@@ -41,6 +45,10 @@ public class BVisualisation extends ProBVisualisation {
     }
 
     public TranslatedEvalResult translate(String formula) throws IllegalFormulaException {
+        return translate(formula, getCurrentState());
+    }
+
+    public TranslatedEvalResult translate(String formula, String stateId) throws IllegalFormulaException {
         if (trace == null) {
             log.error "BMotion Studio: No trace exists."
         }
@@ -51,7 +59,7 @@ public class BVisualisation extends ProBVisualisation {
                 e = new TranslateFormula(formula as EventB)
                 formulas.put(formula, e);
             }
-            State sId = space.getState(getCurrentState());
+            State sId = space.getState(stateId);
             def result = sId.eval(e)
             return result;
         } catch (EvaluationException e) {
@@ -64,12 +72,13 @@ public class BVisualisation extends ProBVisualisation {
     @Override
     public Object observe(final d) {
         def map = [:]
-        d.data.each { k, v ->
-            def t = v.translate ?: false
-            def s = v.solutions ?: false
-            map.put(k, v.formulas.collect { String formula ->
-                def res = !t ? eval(formula) : translate(formula)
-                if(res != null) {
+        def stateId = d.data.stateId ?: getCurrentState()
+        d.data.formulas.each { k, v ->
+            def t = v.observer.translate ?: false
+            def s = v.observer.solutions ?: false
+            map.put(k, v.observer.formulas.collect { String formula ->
+                def res = !t ? eval(formula, stateId) : translate(formula, stateId)
+                if (res != null && !(res instanceof IdentifierNotInitialised)) {
                     return s ? res : res.value
                 } else {
                     return ""
