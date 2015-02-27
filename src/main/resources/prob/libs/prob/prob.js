@@ -132,6 +132,105 @@ define(['probFunctions', 'angularAMD', '/bms/libs/bmotion/config.js', 'ngBMotion
                     }
                 }
             })
+            .factory('renderingService', function () {
+
+                var renderingService = {
+
+                    removeBlanks: function (context, canvas, imgWidth, imgHeight) {
+
+                        var imageData = context.getImageData(0, 0, imgWidth, imgHeight),
+                            data = imageData.data,
+                            getRBG = function (x, y) {
+                                var offset = imgWidth * y + x;
+                                return {
+                                    red: data[offset * 4],
+                                    green: data[offset * 4 + 1],
+                                    blue: data[offset * 4 + 2],
+                                    opacity: data[offset * 4 + 3]
+                                };
+                            },
+                            isWhite = function (rgb) {
+                                // many images contain noise, as the white is not a pure #fff white
+                                return rgb.red > 200 && rgb.green > 200 && rgb.blue > 200;
+                            },
+                            scanY = function (fromTop) {
+                                var offset = fromTop ? 1 : -1;
+
+                                // loop through each row
+                                for (var y = fromTop ? 0 : imgHeight - 1; fromTop ? (y < imgHeight) : (y > -1); y += offset) {
+
+                                    // loop through each column
+                                    for (var x = 0; x < imgWidth; x++) {
+                                        var rgb = getRBG(x, y);
+                                        if (!isWhite(rgb)) {
+                                            return y;
+                                        }
+                                    }
+                                }
+                                return null; // all image is white
+                            },
+                            scanX = function (fromLeft) {
+                                var offset = fromLeft ? 1 : -1;
+
+                                // loop through each column
+                                for (var x = fromLeft ? 0 : imgWidth - 1; fromLeft ? (x < imgWidth) : (x > -1); x += offset) {
+
+                                    // loop through each row
+                                    for (var y = 0; y < imgHeight; y++) {
+                                        var rgb = getRBG(x, y);
+                                        if (!isWhite(rgb)) {
+                                            return x;
+                                        }
+                                    }
+                                }
+                                return null; // all image is white
+                            };
+
+                        var cropTop = scanY(true),
+                            cropBottom = scanY(false),
+                            cropLeft = scanX(true),
+                            cropRight = scanX(false),
+                            cropWidth = cropRight - cropLeft,
+                            cropHeight = cropBottom - cropTop;
+
+                        var $croppedCanvas = $("<canvas>").attr({width: cropWidth, height: cropHeight});
+                        $croppedCanvas[0].getContext("2d").drawImage(canvas,
+                            cropLeft, cropTop, cropWidth, cropHeight,
+                            0, 0, cropWidth, cropHeight);
+
+                        return $croppedCanvas[0];
+
+                    },
+                    getStyle: function (path) {
+                        var deferred = $.Deferred();
+                        $.when($.get(path)).done(function (response) {
+                            deferred.resolve(response);
+                        });
+                        return deferred.promise();
+                    },
+                    getStyles: function () {
+                        var deferred = $.Deferred();
+                        var bmsStyles = $('head').find('[data-bms-style]');
+                        var styleLoaders = [];
+                        $.each(bmsStyles, function (i, v) {
+                            var href = $(v).attr('href');
+                            styleLoaders.push(renderingService.getStyle(href));
+                        });
+                        $.when.apply(null, styleLoaders).done(function () {
+                            var styles = '';
+                            $.each(arguments, function (i, css) {
+                                styles = styles + '\n' + css;
+                            });
+                            deferred.resolve('<style type="text/css">\n<![CDATA[\n' + styles + '\n]]>\n</style>');
+                        });
+                        return deferred.promise();
+                    }
+
+                };
+
+                return renderingService;
+
+            })
             .controller('bmsDialogCtrl', ['$scope', function ($scope) {
                 $scope.isOpen = false;
             }])
@@ -217,77 +316,11 @@ define(['probFunctions', 'angularAMD', '/bms/libs/bmotion/config.js', 'ngBMotion
                     }
                 }
             }])
-            .factory('diagramElementProjectionGraph', ['$q', 'ws', function ($q, ws) {
+            .factory('diagramElementProjectionGraph', ['$q', 'ws', 'renderingService', function ($q, ws, renderingService) {
 
                 var cy;
 
-                var removeBlanks = function (context, canvas, imgWidth, imgHeight) {
-
-                    var imageData = context.getImageData(0, 0, imgWidth, imgHeight),
-                        data = imageData.data,
-                        getRBG = function (x, y) {
-                            var offset = imgWidth * y + x;
-                            return {
-                                red: data[offset * 4],
-                                green: data[offset * 4 + 1],
-                                blue: data[offset * 4 + 2],
-                                opacity: data[offset * 4 + 3]
-                            };
-                        },
-                        isWhite = function (rgb) {
-                            // many images contain noise, as the white is not a pure #fff white
-                            return rgb.red > 200 && rgb.green > 200 && rgb.blue > 200;
-                        },
-                        scanY = function (fromTop) {
-                            var offset = fromTop ? 1 : -1;
-
-                            // loop through each row
-                            for (var y = fromTop ? 0 : imgHeight - 1; fromTop ? (y < imgHeight) : (y > -1); y += offset) {
-
-                                // loop through each column
-                                for (var x = 0; x < imgWidth; x++) {
-                                    var rgb = getRBG(x, y);
-                                    if (!isWhite(rgb)) {
-                                        return y;
-                                    }
-                                }
-                            }
-                            return null; // all image is white
-                        },
-                        scanX = function (fromLeft) {
-                            var offset = fromLeft ? 1 : -1;
-
-                            // loop through each column
-                            for (var x = fromLeft ? 0 : imgWidth - 1; fromLeft ? (x < imgWidth) : (x > -1); x += offset) {
-
-                                // loop through each row
-                                for (var y = 0; y < imgHeight; y++) {
-                                    var rgb = getRBG(x, y);
-                                    if (!isWhite(rgb)) {
-                                        return x;
-                                    }
-                                }
-                            }
-                            return null; // all image is white
-                        };
-
-                    var cropTop = scanY(true),
-                        cropBottom = scanY(false),
-                        cropLeft = scanX(true),
-                        cropRight = scanX(false),
-                        cropWidth = cropRight - cropLeft,
-                        cropHeight = cropBottom - cropTop;
-
-                    var $croppedCanvas = $("<canvas>").attr({width: cropWidth, height: cropHeight});
-                    $croppedCanvas[0].getContext("2d").drawImage(canvas,
-                        cropLeft, cropTop, cropWidth, cropHeight,
-                        0, 0, cropWidth, cropHeight);
-
-                    return $croppedCanvas[0];
-
-                };
-
-                var _loadImage2 = function (property, felements, mcanvas, mcontext, v) {
+                var _loadImage2 = function (property, felements, mcanvas, mcontext, v, styleTag) {
 
                     var deferred = $.Deferred();
 
@@ -319,7 +352,7 @@ define(['probFunctions', 'angularAMD', '/bms/libs/bmotion/config.js', 'ngBMotion
                     image.onload = function () {
                         if (context) {
                             context.drawImage(this, 0, 0, this.width, this.height);
-                            var croppedCanvas = removeBlanks(context, canvas, this.width, this.height);
+                            var croppedCanvas = renderingService.removeBlanks(context, canvas, this.width, this.height);
                             v.data["canvas"].push(croppedCanvas);
                             deferred.resolve();
                         } else {
@@ -339,7 +372,7 @@ define(['probFunctions', 'angularAMD', '/bms/libs/bmotion/config.js', 'ngBMotion
                         } else {
                             var html = $('<div>').append(ele);
                             if (type === 'svg') {
-                                image.src = 'data:image/svg+xml;base64,' + window.btoa('<svg xmlns="http://www.w3.org/2000/svg" style="background-color:white" xmlns:xlink="http://www.w3.org/1999/xlink" width="1000" height="1000">' + html.html() + '</svg>');
+                                image.src = 'data:image/svg+xml;base64,' + window.btoa('<svg xmlns="http://www.w3.org/2000/svg" style="background-color:white" xmlns:xlink="http://www.w3.org/1999/xlink" width="1000" height="1000">\n' + styleTag + '\n' + html.html() + '</svg>');
                             }
                         }
                     } else {
@@ -349,7 +382,7 @@ define(['probFunctions', 'angularAMD', '/bms/libs/bmotion/config.js', 'ngBMotion
 
                 };
 
-                var _loadImage = function (v, felements) {
+                var _loadImage = function (v, felements, styleTag) {
 
                     var deferred = $.Deferred();
 
@@ -365,7 +398,7 @@ define(['probFunctions', 'angularAMD', '/bms/libs/bmotion/config.js', 'ngBMotion
 
                     var loaders = [];
                     for (var property in felements) {
-                        loaders.push(_loadImage2(property, felements, mcanvas, mcontext, v));
+                        loaders.push(_loadImage2(property, felements, mcanvas, mcontext, v, styleTag));
                     }
 
                     $.when.apply(null, loaders).done(function () {
@@ -422,67 +455,71 @@ define(['probFunctions', 'angularAMD', '/bms/libs/bmotion/config.js', 'ngBMotion
                             data: {expressions: formulas}
                         }, function (data) {
 
-                            var loaders = [];
-                            $.each(data.nodes, function (i, v) {
-                                loaders.push(_loadImage(v, felements));
-                            });
-                            $.when.apply(null, loaders).done(function () {
+                            renderingService.getStyles().done(function (css) {
 
-                                $(function () { // on dom ready
+                                var loaders = [];
+                                $.each(data.nodes, function (i, v) {
+                                    loaders.push(_loadImage(v, felements, css));
+                                });
+                                $.when.apply(null, loaders).done(function () {
 
-                                    cy = cytoscape({
+                                    $(function () { // on dom ready
 
-                                        container: $('#cy')[0],
-                                        style: cytoscape.stylesheet()
-                                            .selector('node')
-                                            .css({
-                                                'shape': 'rectangle',
-                                                'width': 'data(width)',
-                                                'height': 'data(height)',
-                                                'content': 'data(labels)',
-                                                'background-color': 'white',
-                                                'border-width': 2,
-                                                'border-color': 'data(color)',
-                                                'font-size': '11px',
-                                                'text-valign': 'top',
-                                                'text-halign': 'center',
-                                                'background-repeat': 'no-repeat',
-                                                'background-image': 'data(svg)',
-                                                'background-fit': 'none',
-                                                'background-position-x': '15px',
-                                                'background-position-y': '15px'
-                                            })
-                                            .selector('edge')
-                                            .css({
-                                                'content': 'data(label)',
-                                                'target-arrow-shape': 'triangle',
-                                                'width': 1,
-                                                'line-color': 'data(color)',
-                                                'line-style': 'data(style)',
-                                                'target-arrow-color': 'data(color)',
-                                                'font-size': '11px',
-                                                'control-point-distance': 60
-                                            }),
-                                        layout: {
-                                            name: 'cose',
-                                            animate: false,
-                                            fit: true,
-                                            padding: 25,
-                                            directed: true,
-                                            roots: '#1',
-                                            //nodeOverlap: 100, // Node repulsion (overlapping) multiplier
-                                            nodeRepulsion: 3000000 // Node repulsion (non overlapping) multiplier
-                                        },
-                                        elements: {
-                                            nodes: data.nodes,
-                                            edges: data.edges
-                                        }
+                                        cy = cytoscape({
 
-                                    });
+                                            container: $('#cy')[0],
+                                            style: cytoscape.stylesheet()
+                                                .selector('node')
+                                                .css({
+                                                    'shape': 'rectangle',
+                                                    'width': 'data(width)',
+                                                    'height': 'data(height)',
+                                                    'content': 'data(labels)',
+                                                    'background-color': 'white',
+                                                    'border-width': 2,
+                                                    'border-color': 'data(color)',
+                                                    'font-size': '11px',
+                                                    'text-valign': 'top',
+                                                    'text-halign': 'center',
+                                                    'background-repeat': 'no-repeat',
+                                                    'background-image': 'data(svg)',
+                                                    'background-fit': 'none',
+                                                    'background-position-x': '15px',
+                                                    'background-position-y': '15px'
+                                                })
+                                                .selector('edge')
+                                                .css({
+                                                    'content': 'data(label)',
+                                                    'target-arrow-shape': 'triangle',
+                                                    'width': 1,
+                                                    'line-color': 'data(color)',
+                                                    'line-style': 'data(style)',
+                                                    'target-arrow-color': 'data(color)',
+                                                    'font-size': '11px',
+                                                    'control-point-distance': 60
+                                                }),
+                                            layout: {
+                                                name: 'cose',
+                                                animate: false,
+                                                fit: true,
+                                                padding: 25,
+                                                directed: true,
+                                                roots: '#1',
+                                                //nodeOverlap: 100, // Node repulsion (overlapping) multiplier
+                                                nodeRepulsion: 3000000 // Node repulsion (non overlapping) multiplier
+                                            },
+                                            elements: {
+                                                nodes: data.nodes,
+                                                edges: data.edges
+                                            }
 
-                                    deferred.resolve();
+                                        });
 
-                                }); // on dom ready
+                                        deferred.resolve();
+
+                                    }); // on dom ready
+
+                                });
 
                             });
 
@@ -570,75 +607,9 @@ define(['probFunctions', 'angularAMD', '/bms/libs/bmotion/config.js', 'ngBMotion
                 }
 
             }])
-            .factory('diagramTraceGraph', ['$q', 'ws', function ($q, ws) {
+            .factory('diagramTraceGraph', ['$q', 'ws', 'renderingService', function ($q, ws, renderingService) {
 
                 var cy;
-
-                var removeBlanks = function (context, canvas, imgWidth, imgHeight) {
-
-                    var imageData = context.getImageData(0, 0, imgWidth, imgHeight),
-                        data = imageData.data,
-                        getRBG = function (x, y) {
-                            var offset = imgWidth * y + x;
-                            return {
-                                red: data[offset * 4],
-                                green: data[offset * 4 + 1],
-                                blue: data[offset * 4 + 2],
-                                opacity: data[offset * 4 + 3]
-                            };
-                        },
-                        isWhite = function (rgb) {
-                            // many images contain noise, as the white is not a pure #fff white
-                            return rgb.red > 200 && rgb.green > 200 && rgb.blue > 200;
-                        },
-                        scanY = function (fromTop) {
-                            var offset = fromTop ? 1 : -1;
-
-                            // loop through each row
-                            for (var y = fromTop ? 0 : imgHeight - 1; fromTop ? (y < imgHeight) : (y > -1); y += offset) {
-
-                                // loop through each column
-                                for (var x = 0; x < imgWidth; x++) {
-                                    var rgb = getRBG(x, y);
-                                    if (!isWhite(rgb)) {
-                                        return y;
-                                    }
-                                }
-                            }
-                            return null; // all image is white
-                        },
-                        scanX = function (fromLeft) {
-                            var offset = fromLeft ? 1 : -1;
-
-                            // loop through each column
-                            for (var x = fromLeft ? 0 : imgWidth - 1; fromLeft ? (x < imgWidth) : (x > -1); x += offset) {
-
-                                // loop through each row
-                                for (var y = 0; y < imgHeight; y++) {
-                                    var rgb = getRBG(x, y);
-                                    if (!isWhite(rgb)) {
-                                        return x;
-                                    }
-                                }
-                            }
-                            return null; // all image is white
-                        };
-
-                    var cropTop = scanY(true),
-                        cropBottom = scanY(false),
-                        cropLeft = scanX(true),
-                        cropRight = scanX(false),
-                        cropWidth = cropRight - cropLeft,
-                        cropHeight = cropBottom - cropTop;
-
-                    var $croppedCanvas = $("<canvas>").attr({width: cropWidth, height: cropHeight});
-                    $croppedCanvas[0].getContext("2d").drawImage(canvas,
-                        cropLeft, cropTop, cropWidth, cropHeight,
-                        0, 0, cropWidth, cropHeight);
-
-                    return $croppedCanvas[0];
-
-                };
 
                 var _loadImage2 = function (v, html, width, height) {
 
@@ -657,7 +628,7 @@ define(['probFunctions', 'angularAMD', '/bms/libs/bmotion/config.js', 'ngBMotion
                     image.onload = function () {
                         if (context) {
                             context.drawImage(this, 0, 0, this.width, this.height);
-                            var croppedCanvas = removeBlanks(context, canvas, this.width, this.height);
+                            var croppedCanvas = renderingService.removeBlanks(context, canvas, this.width, this.height);
                             v.data['svg'] = croppedCanvas.toDataURL('image/png');
                             v.data['width'] = croppedCanvas.width;
                             v.data['height'] = croppedCanvas.height;
@@ -687,8 +658,9 @@ define(['probFunctions', 'angularAMD', '/bms/libs/bmotion/config.js', 'ngBMotion
                         });
                     } else {
                         var clonedElement = element.clone();
+                        clonedElement.find('svg').attr("width", "50").attr("height", "50");
                         clonedElement.find('svg').empty();
-                        _loadImage2(v, clonedElement.html(), width, height).done(function () {
+                        _loadImage2(v, clonedElement.html(), 50, 50).done(function () {
                             deferred.resolve();
                         });
                     }
@@ -705,68 +677,77 @@ define(['probFunctions', 'angularAMD', '/bms/libs/bmotion/config.js', 'ngBMotion
 
                         ws.emit('createTraceDiagram', {}, function (data) {
 
-                            var svgElement = $('svg').clone(true);
-                            var loaders = [];
-                            var wrapper = $('<div>').append(svgElement);
-                            $.each(data.nodes, function (i, v) {
-                                loaders.push(_loadImage(v, wrapper, svgElement.attr("width"), svgElement.attr("height")));
-                            });
-                            $.when.apply(null, loaders).done(function () {
+                            renderingService.getStyles().done(function (css) {
 
-                                $(function () { // on dom ready
+                                var svgElement = $('svg').clone(true);
+                                svgElement.prepend($(css));
+                                var loaders = [];
+                                var wrapper = $('<div>').append(svgElement);
+                                $.each(data.nodes, function (i, v) {
+                                    loaders.push(_loadImage(v, wrapper, svgElement.attr("width"), svgElement.attr("height")));
+                                });
+                                $.when.apply(null, loaders).done(function () {
 
-                                    cy = cytoscape({
+                                    $(function () { // on dom ready
 
-                                        container: $('#cys')[0],
-                                        style: cytoscape.stylesheet()
-                                            .selector('node')
-                                            .css({
-                                                'shape': 'rectangle',
-                                                'content': 'data(label)',
-                                                'width': 'data(width)',
-                                                'height': 'data(height)',
-                                                'background-color': 'white',
-                                                'border-width': 2,
-                                                'font-size': '11px',
-                                                'text-valign': 'top',
-                                                'text-halign': 'center',
-                                                'background-repeat': 'no-repeat',
-                                                'background-image': 'data(svg)',
-                                                'background-fit': 'none',
-                                                'background-position-x': '15px',
-                                                'background-position-y': '15px'
-                                            })
-                                            .selector('edge')
-                                            .css({
-                                                'content': 'data(label)',
-                                                'target-arrow-shape': 'triangle',
-                                                'width': 1,
-                                                'font-size': '11px',
-                                                'control-point-distance': 60
-                                            }),
-                                        layout: {
-                                            name: 'grid',
-                                            animate: false,
-                                            fit: true,
-                                            padding: 25,
-                                            directed: true,
-                                            avoidOverlap: true,
-                                            roots: '#root'
-                                        },
-                                        elements: {
-                                            nodes: data.nodes,
-                                            edges: data.edges
-                                        }
+                                        cy = cytoscape({
 
-                                    });
+                                            container: $('#cys')[0],
+                                            style: cytoscape.stylesheet()
+                                                .selector('node')
+                                                .css({
+                                                    'shape': 'rectangle',
+                                                    'content': 'data(label)',
+                                                    'width': 'data(width)',
+                                                    'height': 'data(height)',
+                                                    'background-color': 'white',
+                                                    'border-width': 2,
+                                                    'font-size': '11px',
+                                                    'text-valign': 'top',
+                                                    'text-halign': 'center',
+                                                    'background-repeat': 'no-repeat',
+                                                    'background-image': 'data(svg)',
+                                                    'background-fit': 'none',
+                                                    'background-position-x': '15px',
+                                                    'background-position-y': '15px'
+                                                })
+                                                .selector('edge')
+                                                .css({
+                                                    'content': 'data(label)',
+                                                    'target-arrow-shape': 'triangle',
+                                                    'width': 1,
+                                                    'line-color': 'black',
+                                                    'target-arrow-color': 'black',
+                                                    'color': 'black',
+                                                    'font-size': '20px',
+                                                    'control-point-distance': 60
+                                                }),
+                                            layout: {
+                                                name: 'circle',
+                                                animate: false,
+                                                fit: true,
+                                                padding: 30,
+                                                directed: true,
+                                                avoidOverlap: true,
+                                                roots: '#root'
+                                            },
+                                            elements: {
+                                                nodes: data.nodes,
+                                                edges: data.edges
+                                            }
 
-                                    deferred.resolve();
+                                        });
 
-                                }); // on dom ready
+                                        deferred.resolve();
+
+                                    }); // on dom ready
+
+                                });
 
                             });
 
                         });
+
 
                         return deferred.promise;
 
@@ -830,4 +811,5 @@ define(['probFunctions', 'angularAMD', '/bms/libs/bmotion/config.js', 'ngBMotion
         return probFunctions;
 
     }
-);
+)
+;
