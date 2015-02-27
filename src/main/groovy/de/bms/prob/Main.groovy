@@ -12,9 +12,15 @@ public class Main {
 
         new Thread(new Runnable() {
             public void run() {
-                String[] probargs = args.contains("-local") ? ["-local", "-s", "-multianimation"] :
-                        ["-s", "-multianimation"]
-                de.prob.Main.main(probargs)
+                def probargs = ["-s", "-multianimation"]
+                if (server.cmdLine.hasOption("local")) {
+                    probargs << "-local"
+                }
+                if (server.cmdLine.hasOption("probPort")) {
+                    probargs << "-port"
+                    probargs << server.cmdLine.getOptionValue("probPort")
+                }
+                de.prob.Main.main(probargs.toArray(new String[probargs.size()]))
             }
         }).start();
 

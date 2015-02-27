@@ -1,4 +1,4 @@
-define(['probFunctions', 'angularAMD', '/bms/libs/bmotion/config.js', 'ngBMotion', 'jquery', 'jquery-cookie', 'jquery-ui', 'css!jquery-ui-css', 'css!jquery-ui-theme-css', 'xeditable', 'css!xeditable-css', 'cytoscape', 'css!prob-css'], function (probFunctions, angularAMD, config) {
+define(['probFunctions', 'angularAMD', '/bms/libs/bmotion/config.js', 'ngBMotion', 'jquery', 'jquery-cookie', 'jquery-ui', 'css!jquery-ui-css', 'css!jquery-ui-theme-css', 'xeditable', 'css!xeditable-css', 'cytoscape', 'cytoscape-navigator', 'css!prob-css'], function (probFunctions, angularAMD, config) {
 
         var probModule = angular.module('probModule', ['bmsModule', 'xeditable'])
             .run(["$rootScope", 'editableOptions', function ($rootScope, editableOptions) {
@@ -258,7 +258,7 @@ define(['probFunctions', 'angularAMD', '/bms/libs/bmotion/config.js', 'ngBMotion
                         });
                         $scope.$on('open', function () {
                             iframe.attr("src", document.location.protocol + '//' + document.location.hostname + ":" + $scope.port +
-                            "/sessions/" + $scope.type + "/" + $scope.traceid);
+                            "/sessions/" + $scope.type + "/" + $scope.traceId);
                         });
                     }
                 }
@@ -609,7 +609,7 @@ define(['probFunctions', 'angularAMD', '/bms/libs/bmotion/config.js', 'ngBMotion
             }])
             .factory('diagramTraceGraph', ['$q', 'ws', 'renderingService', function ($q, ws, renderingService) {
 
-                var cy;
+                var cy
 
                 var _loadImage2 = function (v, html, width, height) {
 
@@ -690,9 +690,11 @@ define(['probFunctions', 'angularAMD', '/bms/libs/bmotion/config.js', 'ngBMotion
 
                                     $(function () { // on dom ready
 
-                                        cy = cytoscape({
+                                        $('#cys').cytoscape({
 
-                                            container: $('#cys')[0],
+                                            ready: function() {
+                                                cy = this;
+                                            },
                                             style: cytoscape.stylesheet()
                                                 .selector('node')
                                                 .css({
@@ -736,6 +738,11 @@ define(['probFunctions', 'angularAMD', '/bms/libs/bmotion/config.js', 'ngBMotion
                                                 edges: data.edges
                                             }
 
+                                        }).cy(function () {
+                                            $('#cys').cyNavigator({
+                                                container: '#cys_navigator'
+                                            });
+                                            $('#cys').cytoscapeNavigator('resize')
                                         });
 
                                         deferred.resolve();

@@ -11,6 +11,8 @@ require.config({
         "jquery-ui": "/bms/libs/jquery-ui/jquery-ui.min",
         "jquery-cookie": "/bms/libs/jquery-cookie/jquery.cookie",
         "cytoscape": "/bms/libs/cytoscape/cytoscape.min",
+        "cytoscape-navigator": "/bms/libs/cytoscape/cytoscape.js-navigator",
+        "cytoscape-navigator-css": "/bms/libs/cytoscape/cytoscape.js-navigator",
         "cola": "/bms/libs/cytoscape/cola.v3.min",
         "xeditable": "/bms/libs/xeditable/xeditable.min",
         "xeditable-css": "/bms/libs/xeditable/xeditable"
@@ -20,7 +22,8 @@ require.config({
         'tooltipster': ["jquery"],
         'prob': ['probFunctions', 'angularAMD', "ngBMotion", 'jquery-cookie', 'jquery-ui', 'cytoscape'],
         'probFunctions': ['bms', 'tooltipster'],
-        'cytoscape': {exports: 'cy', deps: ['jquery', 'cola']}
+        'cytoscape': {exports: 'cy', deps: ['jquery', 'cola']},
+        'cytoscape-navigator': ['cytoscape']
     }
     //,deps: ['/bms/libs/bmotion/config.js']
 });
