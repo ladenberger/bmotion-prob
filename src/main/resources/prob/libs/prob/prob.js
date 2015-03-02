@@ -464,74 +464,79 @@ define(['probFunctions', 'angularAMD', '/bms/libs/bmotion/config.js', 'ngBMotion
                                 });
                                 $.when.apply(null, loaders).done(function () {
 
-                                    $(function () { // on dom ready
+                                    if (!cy) {
 
-                                        var containerEle = $('#project_diagram_graph');
-                                        graphEle = containerEle.find(".graph");
-                                        navigatorEle = containerEle.find(".navigator");
+                                        $(function () { // on dom ready
 
-                                        graphEle.cytoscape({
+                                            var containerEle = $('#project_diagram_graph');
+                                            graphEle = containerEle.find(".graph");
+                                            navigatorEle = containerEle.find(".navigator");
 
-                                            ready: function () {
-                                                cy = this;
-                                            },
+                                            graphEle.cytoscape({
 
-                                            container: $('#cy')[0],
-                                            style: cytoscape.stylesheet()
-                                                .selector('node')
-                                                .css({
-                                                    'shape': 'rectangle',
-                                                    'width': 'data(width)',
-                                                    'height': 'data(height)',
-                                                    'content': 'data(labels)',
-                                                    'background-color': 'white',
-                                                    'border-width': 2,
-                                                    'border-color': 'data(color)',
-                                                    'font-size': '11px',
-                                                    'text-valign': 'top',
-                                                    'text-halign': 'center',
-                                                    'background-repeat': 'no-repeat',
-                                                    'background-image': 'data(svg)',
-                                                    'background-fit': 'none',
-                                                    'background-position-x': '15px',
-                                                    'background-position-y': '15px'
-                                                })
-                                                .selector('edge')
-                                                .css({
-                                                    'content': 'data(label)',
-                                                    'target-arrow-shape': 'triangle',
-                                                    'width': 1,
-                                                    'line-color': 'data(color)',
-                                                    'line-style': 'data(style)',
-                                                    'target-arrow-color': 'data(color)',
-                                                    'font-size': '11px',
-                                                    'control-point-distance': 60
-                                                }),
-                                            layout: {
-                                                name: 'cose',
-                                                animate: false,
-                                                fit: true,
-                                                padding: 25,
-                                                directed: true,
-                                                roots: '#1',
-                                                //nodeOverlap: 100, // Node repulsion (overlapping) multiplier
-                                                nodeRepulsion: 3000000 // Node repulsion (non overlapping) multiplier
-                                            },
-                                            elements: {
-                                                nodes: data.nodes,
-                                                edges: data.edges
-                                            }
+                                                ready: function () {
+                                                    cy = this;
+                                                },
 
-                                        }).cy(function () {
-                                            graphEle.cyNavigator({
-                                                container: navigatorEle
+                                                container: $('#cy')[0],
+                                                style: cytoscape.stylesheet()
+                                                    .selector('node')
+                                                    .css({
+                                                        'shape': 'rectangle',
+                                                        'width': 'data(width)',
+                                                        'height': 'data(height)',
+                                                        'content': 'data(labels)',
+                                                        'background-color': 'white',
+                                                        'border-width': 2,
+                                                        'border-color': 'data(color)',
+                                                        'font-size': '11px',
+                                                        'text-valign': 'top',
+                                                        'text-halign': 'center',
+                                                        'background-repeat': 'no-repeat',
+                                                        'background-image': 'data(svg)',
+                                                        'background-fit': 'none',
+                                                        'background-position-x': '15px',
+                                                        'background-position-y': '15px'
+                                                    })
+                                                    .selector('edge')
+                                                    .css({
+                                                        'content': 'data(label)',
+                                                        'target-arrow-shape': 'triangle',
+                                                        'width': 1,
+                                                        'line-color': 'data(color)',
+                                                        'line-style': 'data(style)',
+                                                        'target-arrow-color': 'data(color)',
+                                                        'font-size': '11px',
+                                                        'control-point-distance': 60
+                                                    }),
+                                                layout: {
+                                                    name: 'cose',
+                                                    animate: false,
+                                                    fit: true,
+                                                    padding: 25,
+                                                    directed: true,
+                                                    roots: '#1',
+                                                    //nodeOverlap: 100, // Node repulsion (overlapping) multiplier
+                                                    nodeRepulsion: 3000000 // Node repulsion (non overlapping)
+                                                                           // multiplier
+                                                },
+                                                elements: {
+                                                    nodes: data.nodes,
+                                                    edges: data.edges
+                                                }
+
+                                            }).cy(function () {
+                                                graphEle.cyNavigator({
+                                                    container: navigatorEle
+                                                });
                                             });
-                                        });
 
-                                        deferred.resolve();
+                                        }); // on dom ready
 
-                                    }); // on dom ready
-
+                                    } else {
+                                        cy.load(data);
+                                    }
+                                    deferred.resolve();
                                 });
 
                             });
@@ -647,9 +652,15 @@ define(['probFunctions', 'angularAMD', '/bms/libs/bmotion/config.js', 'ngBMotion
                         if (context) {
                             context.drawImage(this, 0, 0, this.width, this.height);
                             var croppedCanvas = renderingService.removeBlanks(context, canvas, this.width, this.height);
-                            v.data['svg'] = croppedCanvas.toDataURL('image/png');
-                            v.data['width'] = croppedCanvas.width;
+                            var uri = croppedCanvas.toDataURL('image/png');
+                            v.data['svg'] = uri;
+                            v.data['width'] = croppedCanvas.width + 30;
                             v.data['height'] = croppedCanvas.height;
+                            elementProjectionGraph.cache[v.data['id']] = {
+                                svg: uri,
+                                width: croppedCanvas.width + 30,
+                                height: croppedCanvas.height
+                            };
                             deferred.resolve();
                         } else {
                             // alert('Get a real browser!');
@@ -688,99 +699,97 @@ define(['probFunctions', 'angularAMD', '/bms/libs/bmotion/config.js', 'ngBMotion
                 };
 
                 var elementProjectionGraph = {
-
+                    cache: {},
                     build: function () {
-
                         var deferred = $q.defer();
-
                         ws.emit('createTraceDiagram', {}, function (data) {
-
                             renderingService.getStyles().done(function (css) {
-
                                 var svgElement = $('svg').clone(true);
                                 svgElement.prepend($(css));
                                 var loaders = [];
                                 var wrapper = $('<div>').append(svgElement);
                                 $.each(data.nodes, function (i, v) {
-                                    loaders.push(_loadImage(v, wrapper, svgElement.attr("width"), svgElement.attr("height")));
+                                    var d = elementProjectionGraph.cache[v.data['id']];
+                                    if (d === undefined) {
+                                        loaders.push(_loadImage(v, wrapper, svgElement.attr("width"), svgElement.attr("height")));
+                                    } else {
+                                        v.data['svg'] = d.svg;
+                                        v.data['width'] = d.width;
+                                        v.data['height'] = d.height;
+                                    }
                                 });
                                 $.when.apply(null, loaders).done(function () {
 
-                                    $(function () { // on dom ready
+                                    if (!cy) {
 
-                                        var containerEle = $('#trace_diagram_graph');
-                                        graphEle = containerEle.find(".graph");
-                                        navigatorEle = containerEle.find(".navigator");
-
-                                        graphEle.cytoscape({
-
-                                            ready: function () {
-                                                cy = this;
-                                            },
-                                            style: cytoscape.stylesheet()
-                                                .selector('node')
-                                                .css({
-                                                    'shape': 'rectangle',
-                                                    'content': 'data(label)',
-                                                    'width': 'data(width)',
-                                                    'height': 'data(height)',
-                                                    'background-color': 'white',
-                                                    'border-width': 2,
-                                                    'font-size': '11px',
-                                                    'text-valign': 'top',
-                                                    'text-halign': 'center',
-                                                    'background-repeat': 'no-repeat',
-                                                    'background-image': 'data(svg)',
-                                                    'background-fit': 'none',
-                                                    'background-position-x': '15px',
-                                                    'background-position-y': '15px'
-                                                })
-                                                .selector('edge')
-                                                .css({
-                                                    'content': 'data(label)',
-                                                    'target-arrow-shape': 'triangle',
-                                                    'width': 1,
-                                                    'line-color': 'black',
-                                                    'target-arrow-color': 'black',
-                                                    'color': 'black',
-                                                    'font-size': '20px',
-                                                    'control-point-distance': 60
-                                                }),
-                                            layout: {
-                                                name: 'circle',
-                                                animate: false,
-                                                fit: true,
-                                                padding: 30,
-                                                directed: true,
-                                                avoidOverlap: true,
-                                                roots: '#root'
-                                            },
-                                            elements: {
-                                                nodes: data.nodes,
-                                                edges: data.edges
-                                            }
-
-                                        }).cy(function () {
-                                            graphEle.cyNavigator({
-                                                container: navigatorEle
+                                        $(function () { // on dom ready
+                                            var containerEle = $('#trace_diagram_graph');
+                                            graphEle = containerEle.find(".graph");
+                                            navigatorEle = containerEle.find(".navigator");
+                                            graphEle.cytoscape({
+                                                ready: function () {
+                                                    cy = this;
+                                                },
+                                                style: cytoscape.stylesheet()
+                                                    .selector('node')
+                                                    .css({
+                                                        'shape': 'rectangle',
+                                                        'content': 'data(label)',
+                                                        'width': 'data(width)',
+                                                        'height': 'data(height)',
+                                                        'background-color': 'white',
+                                                        'border-width': 2,
+                                                        'font-size': '11px',
+                                                        'text-valign': 'top',
+                                                        'text-halign': 'center',
+                                                        'background-repeat': 'no-repeat',
+                                                        'background-image': 'data(svg)',
+                                                        'background-fit': 'none',
+                                                        'background-position-x': '15px',
+                                                        'background-position-y': '15px'
+                                                    })
+                                                    .selector('edge')
+                                                    .css({
+                                                        'content': 'data(label)',
+                                                        'target-arrow-shape': 'triangle',
+                                                        'width': 1,
+                                                        'line-color': 'black',
+                                                        'target-arrow-color': 'black',
+                                                        'color': 'black',
+                                                        'font-size': '20px',
+                                                        'control-point-distance': 60
+                                                    }),
+                                                layout: {
+                                                    name: 'circle',
+                                                    animate: false,
+                                                    fit: true,
+                                                    padding: 30,
+                                                    directed: true,
+                                                    avoidOverlap: true,
+                                                    roots: '#root'
+                                                },
+                                                elements: {
+                                                    nodes: data.nodes,
+                                                    edges: data.edges
+                                                }
+                                            }).cy(function () {
+                                                graphEle.cyNavigator({
+                                                    container: navigatorEle
+                                                });
                                             });
-                                        });
+                                        }); // on dom ready
 
-                                        deferred.resolve();
+                                    } else {
+                                        cy.load(data);
+                                    }
 
-                                    }); // on dom ready
+                                    deferred.resolve();
 
                                 });
-
                             });
-
                         });
-
-
                         return deferred.promise;
-
                     },
-
                     refresh: function () {
                         if (cy) {
                             cy.load(cy.elements().jsons())
@@ -791,7 +800,6 @@ define(['probFunctions', 'angularAMD', '/bms/libs/bmotion/config.js', 'ngBMotion
                     }
 
                 };
-
                 return elementProjectionGraph;
 
             }])
