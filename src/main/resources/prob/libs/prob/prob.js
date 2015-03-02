@@ -26,10 +26,13 @@ define(['probFunctions', 'angularAMD', '/bms/libs/bmotion/config.js', 'ngBMotion
                 };
                 editableOptions.theme = 'bs3'; // bootstrap3 theme. Can be also 'bs2', 'default'
             }])
-            .factory('initProB', ['$q', 'ws', function ($q, ws) {
+            .factory('initProB', ['$q', 'ws', 'initSession', function ($q, ws, initSession) {
                 var defer = $q.defer();
-                ws.emit('initProB', "", function (data) {
-                    defer.resolve(data)
+                initSession.then(function (standalone) {
+                    ws.emit('initProB', "", function (data) {
+                        data.standalone = standalone;
+                        defer.resolve(data);
+                    });
                 });
                 return defer.promise;
             }])
@@ -37,30 +40,26 @@ define(['probFunctions', 'angularAMD', '/bms/libs/bmotion/config.js', 'ngBMotion
                 return {
                     priority: 2,
                     link: function ($scope, element) {
-
-                        initSession.then(function (standalone) {
-                            if (standalone) {
-                                initProB.then(function (data) {
-                                    //$scope.host = data.host;
-                                    $scope.port = data.port;
-                                    $scope.traceId = data.traceId;
-                                    var bmsNavigation = angular.element('<prob-navigation></prob-navigation>');
-                                    element.find("body").append($compile(bmsNavigation)($scope));
-                                    var probViews = angular.element('<div ng-controller="bmsDialogCtrl">' +
-                                    '<div bms-dialog type="CurrentTrace"><div prob-view></div></div>' +
-                                    '<div bms-dialog type="Events"><div prob-view></div></div>' +
-                                    '<div bms-dialog type="StateInspector"><div prob-view></div></div>' +
-                                    '<div bms-dialog type="CurrentAnimations"><div prob-view></div></div>' +
-                                    '<div bms-dialog type="GroovyConsoleSession"><div prob-view></div></div>' +
-                                    '<div bms-dialog type="ModelCheckingUI"><div prob-view></div></div>' +
-                                    '<div bms-dialog type="ElementProjection"><div diagram-element-projection-view></div></div>' +
-                                    '<div bms-dialog type="TraceDiagram"><div diagram-trace-view></div></div>' +
-                                    '</div>');
-                                    element.find("body").append($compile(probViews)($scope))
-                                })
+                        initProB.then(function (data) {
+                            if (data.standalone) {
+                                $scope.standalone = data.standalone;
+                                $scope.port = data.port;
+                                $scope.traceId = data.traceId;
+                                var bmsNavigation = angular.element('<prob-navigation></prob-navigation>');
+                                element.find("body").append($compile(bmsNavigation)($scope));
+                                var probViews = angular.element('<div ng-controller="bmsDialogCtrl">' +
+                                '<div bms-dialog type="CurrentTrace"><div prob-view></div></div>' +
+                                '<div bms-dialog type="Events"><div prob-view></div></div>' +
+                                '<div bms-dialog type="StateInspector"><div prob-view></div></div>' +
+                                '<div bms-dialog type="CurrentAnimations"><div prob-view></div></div>' +
+                                '<div bms-dialog type="GroovyConsoleSession"><div prob-view></div></div>' +
+                                '<div bms-dialog type="ModelCheckingUI"><div prob-view></div></div>' +
+                                '<div bms-dialog type="ElementProjection"><div diagram-element-projection-view></div></div>' +
+                                '<div bms-dialog type="TraceDiagram"><div diagram-trace-view></div></div>' +
+                                '</div>');
+                                element.find("body").append($compile(probViews)($scope))
                             }
                         })
-
                     }
                 }
             }])
@@ -609,7 +608,7 @@ define(['probFunctions', 'angularAMD', '/bms/libs/bmotion/config.js', 'ngBMotion
             }])
             .factory('diagramTraceGraph', ['$q', 'ws', 'renderingService', function ($q, ws, renderingService) {
 
-                var cy
+                var cy;
 
                 var _loadImage2 = function (v, html, width, height) {
 
@@ -692,7 +691,7 @@ define(['probFunctions', 'angularAMD', '/bms/libs/bmotion/config.js', 'ngBMotion
 
                                         $('#cys').cytoscape({
 
-                                            ready: function() {
+                                            ready: function () {
                                                 cy = this;
                                             },
                                             style: cytoscape.stylesheet()
@@ -742,7 +741,6 @@ define(['probFunctions', 'angularAMD', '/bms/libs/bmotion/config.js', 'ngBMotion
                                             $('#cys').cyNavigator({
                                                 container: '#cys_navigator'
                                             });
-                                            $('#cys').cytoscapeNavigator('resize')
                                         });
 
                                         deferred.resolve();
