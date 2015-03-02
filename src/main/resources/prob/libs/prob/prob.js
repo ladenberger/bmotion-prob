@@ -1,4 +1,4 @@
-define(['probFunctions', 'angularAMD', '/bms/libs/bmotion/config.js', 'ngBMotion', 'jquery', 'jquery-cookie', 'jquery-ui', 'css!jquery-ui-css', 'css!jquery-ui-theme-css', 'xeditable', 'css!xeditable-css', 'cytoscape', 'cytoscape-navigator', 'css!prob-css'], function (probFunctions, angularAMD, config) {
+define(['probFunctions', 'angularAMD', '/bms/libs/bmotion/config.js', 'ngBMotion', 'jquery', 'jquery-cookie', 'jquery-ui', 'css!jquery-ui-css', 'css!jquery-ui-theme-css', 'xeditable', 'css!xeditable-css', 'cytoscape', 'css!cytoscape-navigator-css', 'cytoscape-navigator', 'css!prob-css'], function (probFunctions, angularAMD, config) {
 
         var probModule = angular.module('probModule', ['bmsModule', 'xeditable'])
             .run(["$rootScope", 'editableOptions', function ($rootScope, editableOptions) {
@@ -36,7 +36,7 @@ define(['probFunctions', 'angularAMD', '/bms/libs/bmotion/config.js', 'ngBMotion
                 });
                 return defer.promise;
             }])
-            .directive('bmsApp', ['$compile', 'initProB', 'initSession', function ($compile, initProB, initSession) {
+            .directive('bmsApp', ['$compile', 'initProB', function ($compile, initProB) {
                 return {
                     priority: 2,
                     link: function ($scope, element) {
@@ -318,6 +318,8 @@ define(['probFunctions', 'angularAMD', '/bms/libs/bmotion/config.js', 'ngBMotion
             .factory('diagramElementProjectionGraph', ['$q', 'ws', 'renderingService', function ($q, ws, renderingService) {
 
                 var cy;
+                var navigatorEle;
+                var graphEle;
 
                 var _loadImage2 = function (property, felements, mcanvas, mcontext, v, styleTag) {
 
@@ -464,7 +466,15 @@ define(['probFunctions', 'angularAMD', '/bms/libs/bmotion/config.js', 'ngBMotion
 
                                     $(function () { // on dom ready
 
-                                        cy = cytoscape({
+                                        var containerEle = $('#project_diagram_graph');
+                                        graphEle = containerEle.find(".graph");
+                                        navigatorEle = containerEle.find(".navigator");
+
+                                        graphEle.cytoscape({
+
+                                            ready: function () {
+                                                cy = this;
+                                            },
 
                                             container: $('#cy')[0],
                                             style: cytoscape.stylesheet()
@@ -512,6 +522,10 @@ define(['probFunctions', 'angularAMD', '/bms/libs/bmotion/config.js', 'ngBMotion
                                                 edges: data.edges
                                             }
 
+                                        }).cy(function () {
+                                            graphEle.cyNavigator({
+                                                container: navigatorEle
+                                            });
                                         });
 
                                         deferred.resolve();
@@ -531,6 +545,9 @@ define(['probFunctions', 'angularAMD', '/bms/libs/bmotion/config.js', 'ngBMotion
                     refresh: function () {
                         if (cy) {
                             cy.load(cy.elements().jsons())
+                        }
+                        if (graphEle) {
+                            graphEle.cytoscapeNavigator('resize');
                         }
                     }
 
@@ -609,6 +626,8 @@ define(['probFunctions', 'angularAMD', '/bms/libs/bmotion/config.js', 'ngBMotion
             .factory('diagramTraceGraph', ['$q', 'ws', 'renderingService', function ($q, ws, renderingService) {
 
                 var cy;
+                var navigatorEle;
+                var graphEle;
 
                 var _loadImage2 = function (v, html, width, height) {
 
@@ -689,7 +708,11 @@ define(['probFunctions', 'angularAMD', '/bms/libs/bmotion/config.js', 'ngBMotion
 
                                     $(function () { // on dom ready
 
-                                        $('#cys').cytoscape({
+                                        var containerEle = $('#trace_diagram_graph');
+                                        graphEle = containerEle.find(".graph");
+                                        navigatorEle = containerEle.find(".navigator");
+
+                                        graphEle.cytoscape({
 
                                             ready: function () {
                                                 cy = this;
@@ -738,8 +761,8 @@ define(['probFunctions', 'angularAMD', '/bms/libs/bmotion/config.js', 'ngBMotion
                                             }
 
                                         }).cy(function () {
-                                            $('#cys').cyNavigator({
-                                                container: '#cys_navigator'
+                                            graphEle.cyNavigator({
+                                                container: navigatorEle
                                             });
                                         });
 
@@ -761,6 +784,9 @@ define(['probFunctions', 'angularAMD', '/bms/libs/bmotion/config.js', 'ngBMotion
                     refresh: function () {
                         if (cy) {
                             cy.load(cy.elements().jsons())
+                        }
+                        if (graphEle) {
+                            graphEle.cytoscapeNavigator('resize');
                         }
                     }
 

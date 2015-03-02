@@ -14,16 +14,17 @@
     <orderEntry type="library" name="Maven: org.slf4j:slf4j-api:1.7.7" level="project" />
     <orderEntry type="library" name="Maven: ch.qos.logback:logback-core:1.1.2" level="project" />
     <orderEntry type="library" name="Maven: ch.qos.logback:logback-classic:1.1.2" level="project" />
-    <orderEntry type="library" name="Maven: com.corundumstudio.socketio:netty-socketio:1.6.5" level="project" />
-    <orderEntry type="library" name="Maven: io.netty:netty-buffer:4.0.19.Final" level="project" />
-    <orderEntry type="library" name="Maven: io.netty:netty-common:4.0.19.Final" level="project" />
-    <orderEntry type="library" name="Maven: io.netty:netty-transport:4.0.19.Final" level="project" />
-    <orderEntry type="library" name="Maven: io.netty:netty-handler:4.0.19.Final" level="project" />
-    <orderEntry type="library" name="Maven: io.netty:netty-codec-http:4.0.19.Final" level="project" />
-    <orderEntry type="library" name="Maven: io.netty:netty-codec:4.0.19.Final" level="project" />
-    <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-core:2.3.3" level="project" />
-    <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-databind:2.3.3" level="project" />
-    <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-annotations:2.3.0" level="project" />
+    <orderEntry type="library" name="Maven: com.corundumstudio.socketio:netty-socketio:1.7.7" level="project" />
+    <orderEntry type="library" name="Maven: io.netty:netty-buffer:4.0.25.Final" level="project" />
+    <orderEntry type="library" name="Maven: io.netty:netty-common:4.0.25.Final" level="project" />
+    <orderEntry type="library" name="Maven: io.netty:netty-transport:4.0.25.Final" level="project" />
+    <orderEntry type="library" name="Maven: io.netty:netty-handler:4.0.25.Final" level="project" />
+    <orderEntry type="library" name="Maven: io.netty:netty-codec-http:4.0.25.Final" level="project" />
+    <orderEntry type="library" name="Maven: io.netty:netty-codec:4.0.25.Final" level="project" />
+    <orderEntry type="library" name="Maven: io.netty:netty-transport-native-epoll:4.0.25.Final" level="project" />
+    <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-core:2.4.3" level="project" />
+    <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-databind:2.4.3" level="project" />
+    <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-annotations:2.4.0" level="project" />
     <orderEntry type="library" name="Maven: org.codehaus.groovy:groovy-all:2.3.0" level="project" />
     <orderEntry type="library" name="Maven: com.google.code.gson:gson:1.7.1" level="project" />
     <orderEntry type="library" name="Maven: commons-cli:commons-cli:1.2" level="project" />
