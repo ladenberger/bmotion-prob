@@ -24,7 +24,7 @@ public class Main {
             }
         }).start();
 
-        server.openBrowser();
+        //server.openBrowser();
 
     }
 

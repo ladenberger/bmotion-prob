@@ -18,9 +18,8 @@ public abstract class ProBVisualisation extends BMotion implements IAnimationCha
     def Trace currentTrace;
     def UUID traceId;
 
-    public ProBVisualisation(final UUID sessionId, final String templatePath,
-                             final BMotionScriptEngineProvider scriptEngineProvider) {
-        super(sessionId, templatePath, scriptEngineProvider)
+    public ProBVisualisation(final UUID sessionId, final BMotionScriptEngineProvider scriptEngineProvider) {
+        super(sessionId, scriptEngineProvider)
         animations = de.prob.Main.getInjector().getInstance(AnimationSelector.class)
         api = de.prob.Main.getInjector().getInstance(Api.class)
         animations.registerAnimationChangeListener(this)
@@ -55,13 +54,14 @@ public abstract class ProBVisualisation extends BMotion implements IAnimationCha
 
                 // TODO: Is there a better way to check that the current transition is the initialise machine event?
                 if (changeTrace.getCurrentTransition().toString().startsWith("\$initialise_machine")) {
-                    checkObserver(TRIGGER_MODEL_INITIALISED)
+                    checkObserver([trigger: TRIGGER_MODEL_INITIALISED, stateid: changeTrace.getCurrentState().getId()])
                 }
                 //def modelFileName = changeTrace.getModel().getModelFile().getName()
                 //if (getModel()?.getModelFile()?.getName()?.equals(modelFileName)) {
                 if (changeTrace.getCurrentState().
                         isInitialised()) {
-                    checkObserver(BMotion.TRIGGER_ANIMATION_CHANGED)
+                    checkObserver([trigger  : BMotion.TRIGGER_ANIMATION_CHANGED, stateid: changeTrace.getCurrentState().
+                            getId(), traceId: traceId])
                 }
 
                 this.currentTrace = changeTrace
@@ -74,7 +74,7 @@ public abstract class ProBVisualisation extends BMotion implements IAnimationCha
 
     @Override
     public void modelChanged(StateSpace s) {
-        checkObserver(TRIGGER_MODEL_CHANGED)
+        checkObserver([trigger: TRIGGER_MODEL_CHANGED])
     }
 
     public String getCurrentState() {
@@ -82,7 +82,7 @@ public abstract class ProBVisualisation extends BMotion implements IAnimationCha
     }
 
     @Override
-    public void loadModel(File modelFile, boolean force) {
+    public String loadModel(File modelFile, boolean force) {
         if (currentTrace != null) {
             if (force || !currentTrace.getModel().getModelFile().getCanonicalPath().
                     equals(modelFile.getCanonicalPath())) {
@@ -90,6 +90,7 @@ public abstract class ProBVisualisation extends BMotion implements IAnimationCha
                 // and remove the old one from the AnimationSelector
                 def oldTrace = this.currentTrace
                 this.currentTrace = createNewModelTrace(modelFile.getCanonicalPath())
+                this.traceId = this.currentTrace.getUUID()
                 animations.addNewAnimation(this.currentTrace)
                 animations.removeTrace(oldTrace)
             } else {
@@ -98,16 +99,17 @@ public abstract class ProBVisualisation extends BMotion implements IAnimationCha
         } else {
             // If no trace exists yet, check if the current trace in the AnimationSelector
             // corresponds to the model path, if not, load a new model and add it to the AnimationSelector
-            def selectedTrace = animations.getCurrentTrace()
-            if (selectedTrace?.getModel()?.getModelFile()?.getCanonicalPath()?.equals(modelFile.getCanonicalPath())) {
-                this.currentTrace = selectedTrace
-            } else {
-                // Create a new trace for the model and add it to the AnimationSelector
-                this.currentTrace = createNewModelTrace(modelFile.getCanonicalPath())
-                this.traceId = this.currentTrace.getUUID()
-                animations.addNewAnimation(this.currentTrace)
-            }
+            //def selectedTrace = animations.getCurrentTrace()
+            //if (selectedTrace?.getModel()?.getModelFile()?.getCanonicalPath()?.equals(modelFile.getCanonicalPath())) {
+            //  this.currentTrace = selectedTrace
+            //} else {
+            // Create a new trace for the model and add it to the AnimationSelector
+            this.currentTrace = createNewModelTrace(modelFile.getCanonicalPath())
+            this.traceId = this.currentTrace.getUUID()
+            animations.addNewAnimation(this.currentTrace)
+            //}
         }
+        return this.traceId;
     }
 
     private Trace createNewModelTrace(String modelPath) {
@@ -169,10 +171,11 @@ public abstract class ProBVisualisation extends BMotion implements IAnimationCha
 
     @Override
     public void refresh() {
-        checkObserver(TRIGGER_MODEL_CHANGED);
+        checkObserver([trigger: TRIGGER_MODEL_CHANGED]);
         if (currentTrace != null && currentTrace.getCurrentState().isInitialised()) {
-            checkObserver(TRIGGER_MODEL_INITIALISED);
-            checkObserver(BMotion.TRIGGER_ANIMATION_CHANGED);
+            def stateid = currentTrace.getCurrentState().getId();
+            checkObserver([trigger: TRIGGER_MODEL_INITIALISED, stateid: stateid, traceId: traceId]);
+            checkObserver([trigger: BMotion.TRIGGER_ANIMATION_CHANGED, stateid: stateid, traceId: traceId]);
         }
     }
 

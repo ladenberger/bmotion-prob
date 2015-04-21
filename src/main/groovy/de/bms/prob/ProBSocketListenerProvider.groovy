@@ -3,19 +3,28 @@ package de.bms.prob
 import com.corundumstudio.socketio.AckRequest
 import com.corundumstudio.socketio.SocketIOClient
 import com.corundumstudio.socketio.listener.DataListener
+import com.corundumstudio.socketio.listener.DisconnectListener
 import de.bms.BMotion
 import de.bms.BMotionSocketListenerProvider
+import de.bms.BMotionVisualisationProvider
 import de.bms.server.BMotionSocketServer
 import de.bms.server.JsonObject
 import de.prob.animator.command.GetTransitionDiagramCommand
-import de.prob.animator.domainobjects.*
+import de.prob.animator.domainobjects.EvalElementType
+import de.prob.animator.domainobjects.IEvalElement
 import de.prob.model.eventb.EventBMachine
 import de.prob.statespace.StateSpace
 import de.prob.statespace.Trace
 import de.prob.statespace.Transition
+import de.prob.translator.Translator
+import de.prob.translator.types.Tuple
 import de.prob.webconsole.WebConsole
+import groovy.util.logging.Slf4j
 
+@Slf4j
 class ProBSocketListenerProvider implements BMotionSocketListenerProvider {
+
+    public final Map<String, BMotion> sessions = new HashMap<String, BMotion>();
 
     @Override
     void installListeners(BMotionSocketServer server) {
@@ -25,21 +34,26 @@ class ProBSocketListenerProvider implements BMotionSocketListenerProvider {
                 @Override
                 public void onData(final SocketIOClient client, String str,
                                    final AckRequest ackRequest) {
-                    def ProBVisualisation bms = server.getSession(client)
-                    if (bms != null) {
-                        if (ackRequest.isAckRequested()) {
-                            ackRequest.sendAckData([port: WebConsole.getPort(), traceId: bms.getTraceId()]);
-                        }
+                    if (ackRequest.isAckRequested()) {
+                        ackRequest.sendAckData([port: WebConsole.getPort()]);
                     }
                 }
             });
         }
+
+        server.getServer().addDisconnectListener(new DisconnectListener() {
+            @Override
+            public void onDisconnect(SocketIOClient client) {
+            }
+        });
+
         server.getServer().addEventListener("executeEvent", JsonObject.class,
                 new DataListener<JsonObject>() {
                     @Override
                     public void onData(final SocketIOClient client, JsonObject d,
                                        final AckRequest ackRequest) {
-                        def BMotion bmotion = server.getSession(client)
+                        def String traceId = d.data.traceId;
+                        def BMotion bmotion = getSession(traceId)
                         if (bmotion != null) {
                             def returnValue = bmotion.executeEvent(d.data)
                             if (ackRequest.isAckRequested()) {
@@ -48,13 +62,72 @@ class ProBSocketListenerProvider implements BMotionSocketListenerProvider {
                         }
                     }
                 });
+        server.getServer().addEventListener("reloadModel", JsonObject.class,
+                new DataListener<JsonObject>() {
+                    @Override
+                    public void onData(final SocketIOClient client, JsonObject d,
+                                       final AckRequest ackRequest) {
+                        def String traceId = d.data.traceId;
+                        def ProBVisualisation bmotion = getSession(traceId)
+                        if (bmotion != null) {
+                            def newTraceId = bmotion.reloadModel()
+                            if (ackRequest.isAckRequested()) {
+                                ackRequest.sendAckData(newTraceId);
+                            }
+                        }
+                    }
+                });
 
+        server.getServer().addEventListener("loadModel", JsonObject.class,
+                new DataListener<JsonObject>() {
+                    @Override
+                    public void onData(final SocketIOClient client, JsonObject d,
+                                       final AckRequest ackRequest) {
+
+                        def String path = d.data.path
+                        def String model = d.data.model
+                        def String tool = d.data.tool
+
+                        File templateFolder = new File(path)
+                        File modelFile = new File(templateFolder.getPath() + File.separator + model)
+                        String modelPath = modelFile.getPath();
+                        ProBSocketListenerProvider.log.info "Templatefolder: " + templateFolder
+                        ProBSocketListenerProvider.log.info "Modelfile: " + modelFile
+
+                        def ProBVisualisation bmotion = createSession(tool, server.getVisualisationProvider());
+                        bmotion.setClient(client)
+                        bmotion.initSession(modelPath)
+                        sessions.put(bmotion.getTrace().getUUID().toString(), bmotion)
+                        System.out.println(sessions)
+                        BMotionSocketServer.log.info "Created new BMotion session " + bmotion.sessionId
+
+                        Trace t = bmotion.getTrace()
+                        def EventBMachine eventBMachine = t.getModel().getMainComponent()
+                        def _getrefs
+                        _getrefs = { refines ->
+                            return refines.collect() {
+                                def refs = it.refines
+                                if (refs) {
+                                    [it.toString(), _getrefs(refs)]
+                                } else {
+                                    it.toString()
+                                }
+                            }.flatten()
+                        }
+                        if (ackRequest.isAckRequested()) {
+                            ackRequest.sendAckData([refinements                   : _getrefs(eventBMachine.refines).
+                                    reverse() << eventBMachine.toString(), stateid: t.getCurrentState().getId(), traceId: t.getUUID().toString()]);
+                        }
+
+                    }
+                });
         server.getServer().addEventListener("observe", JsonObject.class,
                 new DataListener<JsonObject>() {
                     @Override
                     public void onData(final SocketIOClient client, JsonObject d,
                                        final AckRequest ackRequest) {
-                        def BMotion bmotion = server.getSession(client)
+                        def String traceId = d.data.traceId;
+                        def BMotion bmotion = getSession(traceId)
                         if (bmotion != null) {
                             if (ackRequest.isAckRequested()) {
                                 ackRequest.sendAckData(bmotion.observe(d));
@@ -67,10 +140,11 @@ class ProBSocketListenerProvider implements BMotionSocketListenerProvider {
             @Override
             public void onData(final SocketIOClient client, JsonObject d,
                                final AckRequest ackRequest) {
-                def BMotion bmotion = server.getSession(client)
+                def String traceId = d.data.traceId;
+                def BMotion bmotion = getSession(traceId)
                 if (bmotion != null) {
                     if (ackRequest.isAckRequested()) {
-                        ackRequest.sendAckData([bmotion.eval(d.data.formula)]);
+                        ackRequest.sendAckData([bmotion.eval(d.data.formula, d.data.stateid)]);
                     }
                 }
             }
@@ -79,7 +153,8 @@ class ProBSocketListenerProvider implements BMotionSocketListenerProvider {
             @Override
             public void onData(final SocketIOClient client, JsonObject d,
                                final AckRequest ackRequest) {
-                def ProBVisualisation bms = server.getSession(client)
+                def String traceId = d.data.traceId;
+                def ProBVisualisation bms = getSession(traceId)
                 if (bms != null) {
                     Trace t = bms.getTrace()
                     def eventMap = d.data.events.collect {
@@ -96,7 +171,8 @@ class ProBSocketListenerProvider implements BMotionSocketListenerProvider {
             @Override
             public void onData(final SocketIOClient client, JsonObject d,
                                final AckRequest ackRequest) {
-                def ProBVisualisation bms = server.getSession(client)
+                def String traceId = d.data.traceId;
+                def ProBVisualisation bms = getSession(traceId)
                 if (bms != null) {
                     Trace t = bms.getTrace()
                     def EventBMachine eventBMachine = t.getModel().getMainComponent()
@@ -123,7 +199,8 @@ class ProBSocketListenerProvider implements BMotionSocketListenerProvider {
                     @Override
                     public void onData(final SocketIOClient client, JsonObject d,
                                        final AckRequest ackRequest) {
-                        def ProBVisualisation bms = server.getSession(client)
+                        def String traceId = d.data.traceId;
+                        def ProBVisualisation bms = getSession(traceId)
                         if (bms != null) {
 
                             def nodes = []
@@ -156,7 +233,8 @@ class ProBSocketListenerProvider implements BMotionSocketListenerProvider {
                     public void onData(final SocketIOClient client, JsonObject d,
                                        final AckRequest ackRequest) {
 
-                        def ProBVisualisation bms = server.getSession(client)
+                        def String traceId = d.data.traceId;
+                        def ProBVisualisation bms = getSession(traceId)
                         if (bms != null) {
 
                             def _getResults
@@ -182,42 +260,49 @@ class ProBSocketListenerProvider implements BMotionSocketListenerProvider {
 
                             }
 
-                            String joinExp = expressions.join("|->")
-                            IEvalElement eval = bms.getTrace().getModel().parseFormula(joinExp)
+                            def nodes = [];
+                            def edges = [];
 
-                            GetTransitionDiagramCommand cmd = new GetTransitionDiagramCommand(eval)
-                            def StateSpace statespace = bms.getStateSpace()
-                            statespace.execute(cmd)
+                            if (!expressions.isEmpty()) {
 
-                            def nodes = cmd.getNodes().collect {
-                                def nn = it.value.properties
-                                nn["translated"] = []
+                                String joinExp = expressions.join("|->")
 
-                                if (!it.value.labels.contains("<< undefined >>") && it.value.id != "1") {
-                                    it.value.labels.each { str ->
-                                        def formula = new TranslateFormula(str as EventB)
-                                        def res = bms.getStateSpace().getRoot().eval(formula)
-                                        if (res instanceof TranslatedEvalResult) {
-                                            if (res.value instanceof Tuple) {
-                                                nn["translated"] += _getResults(res.value)
+                                IEvalElement eval = bms.getTrace().getModel().parseFormula(joinExp)
+
+                                GetTransitionDiagramCommand cmd = new GetTransitionDiagramCommand(eval)
+                                def StateSpace statespace = bms.getStateSpace()
+                                statespace.execute(cmd)
+
+                                nodes = cmd.getNodes().collect {
+                                    def nn = it.value.properties
+                                    nn["translated"] = []
+
+                                    if (!it.value.labels.contains("<< undefined >>") && it.value.id != "1") {
+                                        it.value.labels.each { str ->
+
+                                            def res = Translator.translate(str);
+                                            if (res instanceof Tuple) {
+                                                nn["translated"] += _getResults(res)
                                             } else {
-                                                nn["translated"] << res.value
+                                                nn["translated"] << res
                                             }
+
                                         }
                                     }
+
+                                    nn["results"] = nn["translated"].collect {
+                                        reTranslate(it)
+                                    }
+                                    [data: nn]
+
                                 }
 
-                                nn["results"] = nn["translated"].collect {
-                                    reTranslate(it)
+                                edges = cmd.getEdges().collect {
+                                    def en = it.value.properties
+                                    en['id'] = it.value.source + it.value.target
+                                    [data: en]
                                 }
-                                [data: nn]
 
-                            }
-
-                            def edges = cmd.getEdges().collect {
-                                def en = it.value.properties
-                                en['id'] = it.value.source + it.value.target
-                                [data: en]
                             }
 
                             if (ackRequest.isAckRequested()) {
@@ -226,65 +311,39 @@ class ProBSocketListenerProvider implements BMotionSocketListenerProvider {
 
                         }
                     }
+
                 });
         server.getServer().addEventListener("observeCSPTrace", JsonObject.class, new DataListener<JsonObject>() {
             @Override
             public void onData(final SocketIOClient client, JsonObject d,
                                final AckRequest ackRequest) {
-                def ProBVisualisation bms = server.getSession(client)
+                def String traceId = d.data.traceId;
+                def ProBVisualisation bms = getSession(traceId)
                 if (bms != null) {
 
-                    def values = [:]
-                    def order = []
+                    def ops = [];
+                    def exp = [:];
 
+                    d.data.observers.each { o ->
+                        def events = bms.eval(o.exp)
+                        exp.put(o.exp, events.value);
+                    }
+
+                    // Collect trace data
                     def Trace newTrace = bms.getTrace()
                     def Transition currentTransition = newTrace.getCurrent().getTransition()
-                    //def Transition headTransition = newTrace.getHead().getTransition()
-                    //TODO: Backtrack provides a wrong current element! This is a workaround!
-                    //if (!currentTransition.equals(headTransition)) {
-                    //    currentTransition = newTrace.getTransitionList().get(newTrace.getCurrent().getIndex())
-                    //}
-
-                    def boolean stop = false
                     def list = newTrace.getTransitionList(true)
                     for (Transition op : list) {
-
-                        if (currentTransition.equals(op)) {
-                            stop = true
-                        }
-
                         def fullOp = getOpString(op)
-                        d.data.observers.each { o ->
-
-                            def events = bms.eval(o.exp)
-
-                            if (events instanceof EvalResult) {
-                                def eventNames = events.value.replace("{", "").replace("}", "").split(",")
-                                if (eventNames.contains(fullOp)) {
-                                    o.actions.each { a ->
-                                        def String selector = replaceParameter(a.selector, op)
-                                        def String attr = replaceParameter(a.attr, op)
-                                        def String value = replaceParameter(a.value, op)
-                                        order << selector
-                                        def attrs = values.get(selector)
-                                        if (attrs == null) {
-                                            attrs = [:]
-                                            values.put(selector, attrs)
-                                        }
-                                        attrs.put(attr, value)
-                                    }
-                                }
-                            }
-
-                        }
-
-                        if (stop == true)
+                        ops << [name: fullOp, parameter: op.getParams()]
+                        if (currentTransition.equals(op) || (d.data.stateid != null && op.getDestination().
+                                getId() == d.data.stateid)) {
                             break;
-
+                        }
                     }
 
                     if (ackRequest.isAckRequested()) {
-                        ackRequest.sendAckData([values: values, order: order]);
+                        ackRequest.sendAckData([ops: ops, exp: exp]);
                     }
 
                 }
@@ -293,10 +352,21 @@ class ProBSocketListenerProvider implements BMotionSocketListenerProvider {
 
     }
 
-    def static String replaceParameter(String str, Transition op) {
-        op.getParams().eachWithIndex { item, index -> str = str.replace("{{a" + (index + 1) + "}}", item)
+    private BMotion getSession(String traceId) {
+        sessions.get(traceId);
+    }
+
+    private BMotion createSession(String tool, BMotionVisualisationProvider visualisationProvider) {
+        if (tool != null) {
+            def visualisation = visualisationProvider.get(tool)
+            if (visualisation == null) {
+                log.error "BMotion Studio: No visualisation implementation found for " + tool
+            } else {
+                return visualisation;
+            }
+        } else {
+            log.error "BMotion Studio: Please enter a tool (e.g. BAnimation or CSPAnimation)"
         }
-        return str;
     }
 
     def static String getOpString(Transition op) {

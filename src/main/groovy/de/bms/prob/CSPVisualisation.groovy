@@ -2,19 +2,16 @@ package de.bms.prob
 
 import de.bms.IllegalFormulaException
 import de.bms.server.BMotionScriptEngineProvider
-import de.prob.animator.domainobjects.EvaluationException
 import de.prob.animator.domainobjects.IEvalElement
-import de.prob.animator.domainobjects.IEvalResult
 import de.prob.statespace.State
 import de.prob.statespace.StateSpace
 
 public class CSPVisualisation extends ProBVisualisation {
 
-    private final Map<String, IEvalResult> formulaCache = new HashMap<String, IEvalResult>();
+    private final formulaCache = [:]
 
-    public CSPVisualisation(final UUID sessionId, final String templatePath,
-                            final BMotionScriptEngineProvider scriptEngineProvider) {
-        super(sessionId, templatePath, scriptEngineProvider);
+    public CSPVisualisation(final UUID sessionId, final BMotionScriptEngineProvider scriptEngineProvider) {
+        super(sessionId, scriptEngineProvider);
     }
 
     @Override
