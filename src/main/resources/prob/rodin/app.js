@@ -1,2 +1,2 @@
-requirejs(['bmotion'], function () {
+requirejs(['bmotion.integrated'], function () {
 });
