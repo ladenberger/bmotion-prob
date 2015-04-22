@@ -30,17 +30,17 @@
     <orderEntry type="library" name="Maven: com.google.code.gson:gson:1.7.1" level="project" />
     <orderEntry type="library" name="Maven: commons-cli:commons-cli:1.2" level="project" />
     <orderEntry type="library" name="Maven: com.google.guava:guava:14.0.1" level="project" />
-    <orderEntry type="library" name="Maven: de.prob2:de.prob2.kernel:2.0.0-milestone-25" level="project" />
-    <orderEntry type="library" name="Maven: de.prob:theorymapping:2.4.37" level="project" />
-    <orderEntry type="library" name="Maven: com.google.code.findbugs:jsr305:1.3.9" level="project" />
+    <orderEntry type="library" name="Maven: org.eclipse.jetty:jetty-io:8.1.8.v20121106" level="project" />
     <orderEntry type="library" name="Maven: org.eclipse.jetty:jetty-server:8.1.8.v20121106" level="project" />
     <orderEntry type="library" name="Maven: org.eclipse.jetty.orbit:javax.servlet:3.0.0.v201112011016" level="project" />
     <orderEntry type="library" name="Maven: org.eclipse.jetty:jetty-continuation:8.1.8.v20121106" level="project" />
     <orderEntry type="library" name="Maven: org.eclipse.jetty:jetty-http:8.1.8.v20121106" level="project" />
+    <orderEntry type="library" name="Maven: org.eclipse.jetty:jetty-util:8.1.8.v20121106" level="project" />
+    <orderEntry type="library" name="Maven: de.prob2:de.prob2.kernel:2.0.0-milestone-25" level="project" />
+    <orderEntry type="library" name="Maven: de.prob:theorymapping:2.4.37" level="project" />
+    <orderEntry type="library" name="Maven: com.google.code.findbugs:jsr305:1.3.9" level="project" />
     <orderEntry type="library" name="Maven: de.prob:ltlparser:2.4.37" level="project" />
     <orderEntry type="library" name="Maven: de.prob:unicode:2.4.37" level="project" />
-    <orderEntry type="library" name="Maven: org.eclipse.jetty:jetty-util:8.1.8.v20121106" level="project" />
-    <orderEntry type="library" name="Maven: org.eclipse.jetty:jetty-io:8.1.8.v20121106" level="project" />
     <orderEntry type="library" name="Maven: org.eventb:org.eventb.core.ast:3.0.0" level="project" />
     <orderEntry type="library" name="Maven: net.java.dev.jna:jna:3.4.0" level="project" />
     <orderEntry type="library" name="Maven: de.prob:tla2bAST:1.0.5-SNAPSHOT" level="project" />

@@ -1,6 +1,6 @@
 package de.bms.prob
 
-import de.bms.server.BMotionServer
+import de.bms.BMotionServer
 
 public class ProBServerFactory {
 

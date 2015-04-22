@@ -1,7 +1,7 @@
 package de.bms.prob
 
 import de.bms.IllegalFormulaException
-import de.bms.server.BMotionScriptEngineProvider
+import de.bms.BMotionScriptEngineProvider
 import de.prob.animator.domainobjects.IEvalElement
 import de.prob.statespace.State
 import de.prob.statespace.StateSpace

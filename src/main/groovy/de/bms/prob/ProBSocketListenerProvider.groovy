@@ -4,11 +4,7 @@ import com.corundumstudio.socketio.AckRequest
 import com.corundumstudio.socketio.SocketIOClient
 import com.corundumstudio.socketio.listener.DataListener
 import com.corundumstudio.socketio.listener.DisconnectListener
-import de.bms.BMotion
-import de.bms.BMotionSocketListenerProvider
-import de.bms.BMotionVisualisationProvider
-import de.bms.server.BMotionSocketServer
-import de.bms.server.JsonObject
+import de.bms.*
 import de.prob.animator.command.GetTransitionDiagramCommand
 import de.prob.animator.domainobjects.EvalElementType
 import de.prob.animator.domainobjects.IEvalElement
@@ -30,7 +26,7 @@ class ProBSocketListenerProvider implements BMotionSocketListenerProvider {
     void installListeners(BMotionSocketServer server) {
 
         if (server.standalone) {
-            server.getServer().addEventListener("initProB", String.class, new DataListener<String>() {
+            server.getSocket().addEventListener("initProB", String.class, new DataListener<String>() {
                 @Override
                 public void onData(final SocketIOClient client, String str,
                                    final AckRequest ackRequest) {
@@ -41,13 +37,30 @@ class ProBSocketListenerProvider implements BMotionSocketListenerProvider {
             });
         }
 
-        server.getServer().addDisconnectListener(new DisconnectListener() {
+        server.getSocket().addEventListener("getWorkspacePath", String.class, new DataListener<String>() {
+            @Override
+            public void onData(final SocketIOClient client, String str,
+                               final AckRequest ackRequest) {
+                if (ackRequest.isAckRequested()) {
+                    ackRequest.sendAckData([workspace: server.getServer().getWorkspacePath()]);
+                }
+            }
+        });
+        server.getSocket().addDisconnectListener(new DisconnectListener() {
             @Override
             public void onDisconnect(SocketIOClient client) {
             }
         });
-
-        server.getServer().addEventListener("executeEvent", JsonObject.class,
+        server.getSocket().addEventListener("clientClosed", JsonObject.class,
+                new DataListener<JsonObject>() {
+                    @Override
+                    public void onData(final SocketIOClient client, JsonObject d,
+                                       final AckRequest ackRequest) {
+                        System.out.println("Exit application")
+                        server.getServer().serverStartedListener?.serverCloseRequest();
+                    }
+                });
+        server.getSocket().addEventListener("executeEvent", JsonObject.class,
                 new DataListener<JsonObject>() {
                     @Override
                     public void onData(final SocketIOClient client, JsonObject d,
@@ -62,7 +75,7 @@ class ProBSocketListenerProvider implements BMotionSocketListenerProvider {
                         }
                     }
                 });
-        server.getServer().addEventListener("reloadModel", JsonObject.class,
+        server.getSocket().addEventListener("reloadModel", JsonObject.class,
                 new DataListener<JsonObject>() {
                     @Override
                     public void onData(final SocketIOClient client, JsonObject d,
@@ -78,7 +91,7 @@ class ProBSocketListenerProvider implements BMotionSocketListenerProvider {
                     }
                 });
 
-        server.getServer().addEventListener("loadModel", JsonObject.class,
+        server.getSocket().addEventListener("loadModel", JsonObject.class,
                 new DataListener<JsonObject>() {
                     @Override
                     public void onData(final SocketIOClient client, JsonObject d,
@@ -90,15 +103,14 @@ class ProBSocketListenerProvider implements BMotionSocketListenerProvider {
 
                         File templateFolder = new File(path)
                         File modelFile = new File(templateFolder.getPath() + File.separator + model)
-                        String modelPath = modelFile.getPath();
                         ProBSocketListenerProvider.log.info "Templatefolder: " + templateFolder
                         ProBSocketListenerProvider.log.info "Modelfile: " + modelFile
 
-                        def ProBVisualisation bmotion = createSession(tool, server.getVisualisationProvider());
+                        def ProBVisualisation bmotion = createSession(tool, server.getServer().getVisualisationProvider());
+                        bmotion.setMode(server.getServer().getMode())
+                        bmotion.initSession(modelFile.getPath())
                         bmotion.setClient(client)
-                        bmotion.initSession(modelPath)
                         sessions.put(bmotion.getTrace().getUUID().toString(), bmotion)
-                        System.out.println(sessions)
                         BMotionSocketServer.log.info "Created new BMotion session " + bmotion.sessionId
 
                         Trace t = bmotion.getTrace()
@@ -121,7 +133,7 @@ class ProBSocketListenerProvider implements BMotionSocketListenerProvider {
 
                     }
                 });
-        server.getServer().addEventListener("observe", JsonObject.class,
+        server.getSocket().addEventListener("observe", JsonObject.class,
                 new DataListener<JsonObject>() {
                     @Override
                     public void onData(final SocketIOClient client, JsonObject d,
@@ -136,7 +148,7 @@ class ProBSocketListenerProvider implements BMotionSocketListenerProvider {
                     }
                 });
 
-        server.getServer().addEventListener("eval", JsonObject.class, new DataListener<JsonObject>() {
+        server.getSocket().addEventListener("eval", JsonObject.class, new DataListener<JsonObject>() {
             @Override
             public void onData(final SocketIOClient client, JsonObject d,
                                final AckRequest ackRequest) {
@@ -149,7 +161,7 @@ class ProBSocketListenerProvider implements BMotionSocketListenerProvider {
                 }
             }
         });
-        server.getServer().addEventListener("initTooltip", JsonObject.class, new DataListener<JsonObject>() {
+        server.getSocket().addEventListener("initTooltip", JsonObject.class, new DataListener<JsonObject>() {
             @Override
             public void onData(final SocketIOClient client, JsonObject d,
                                final AckRequest ackRequest) {
@@ -167,7 +179,7 @@ class ProBSocketListenerProvider implements BMotionSocketListenerProvider {
                 }
             }
         });
-        server.getServer().addEventListener("observeRefinement", JsonObject.class, new DataListener<JsonObject>() {
+        server.getSocket().addEventListener("observeRefinement", JsonObject.class, new DataListener<JsonObject>() {
             @Override
             public void onData(final SocketIOClient client, JsonObject d,
                                final AckRequest ackRequest) {
@@ -194,7 +206,7 @@ class ProBSocketListenerProvider implements BMotionSocketListenerProvider {
                 }
             }
         });
-        server.getServer().
+        server.getSocket().
                 addEventListener("createTraceDiagram", JsonObject.class, new DataListener<JsonObject>() {
                     @Override
                     public void onData(final SocketIOClient client, JsonObject d,
@@ -227,7 +239,7 @@ class ProBSocketListenerProvider implements BMotionSocketListenerProvider {
                 }
 
                 );
-        server.getServer().
+        server.getSocket().
                 addEventListener("createCustomTransitionDiagram", JsonObject.class, new DataListener<JsonObject>() {
                     @Override
                     public void onData(final SocketIOClient client, JsonObject d,
@@ -313,7 +325,7 @@ class ProBSocketListenerProvider implements BMotionSocketListenerProvider {
                     }
 
                 });
-        server.getServer().addEventListener("observeCSPTrace", JsonObject.class, new DataListener<JsonObject>() {
+        server.getSocket().addEventListener("observeCSPTrace", JsonObject.class, new DataListener<JsonObject>() {
             @Override
             public void onData(final SocketIOClient client, JsonObject d,
                                final AckRequest ackRequest) {

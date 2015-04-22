@@ -1,8 +1,9 @@
 package de.bms.prob
 
 import de.bms.BMotion
+import de.bms.BMotionScriptEngineProvider
+import de.bms.BMotionServer
 import de.bms.ImpossibleStepException
-import de.bms.server.BMotionScriptEngineProvider
 import de.prob.model.representation.AbstractModel
 import de.prob.scripting.Api
 import de.prob.statespace.*
@@ -98,16 +99,17 @@ public abstract class ProBVisualisation extends BMotion implements IAnimationCha
             }
         } else {
             // If no trace exists yet, check if the current trace in the AnimationSelector
-            // corresponds to the model path, if not, load a new model and add it to the AnimationSelector
-            //def selectedTrace = animations.getCurrentTrace()
-            //if (selectedTrace?.getModel()?.getModelFile()?.getCanonicalPath()?.equals(modelFile.getCanonicalPath())) {
-            //  this.currentTrace = selectedTrace
-            //} else {
-            // Create a new trace for the model and add it to the AnimationSelector
-            this.currentTrace = createNewModelTrace(modelFile.getCanonicalPath())
-            this.traceId = this.currentTrace.getUUID()
-            animations.addNewAnimation(this.currentTrace)
-            //}
+            // corresponds to the model path, if not, load a new model and add it to the AnimationSelector (not in standalone mode)
+            def selectedTrace = animations.getCurrentTrace()
+            if (mode == BMotionServer.MODE_INTEGRATED && selectedTrace?.getModel()?.getModelFile()?.getCanonicalPath()?.equals(modelFile.getCanonicalPath())) {
+                this.currentTrace = selectedTrace
+                this.traceId = selectedTrace.getUUID()
+            } else {
+                // Create a new trace for the model and add it to the AnimationSelector
+                this.currentTrace = createNewModelTrace(modelFile.getCanonicalPath())
+                this.traceId = this.currentTrace.getUUID()
+                animations.addNewAnimation(this.currentTrace)
+            }
         }
         return this.traceId;
     }

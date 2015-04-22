@@ -1,15 +1,40 @@
 package de.bms.prob
 
 import de.bms.BMotionServer
-import de.prob.webconsole.WebConsole
+import de.bms.SocketServerListener
 
-public class Main {
+public class Standalone {
 
     public static void main(final String[] args) throws InterruptedException {
 
+        def Process p = null;
+
         // Start BMotion Server
         BMotionServer server = ProBServerFactory.getServer(args)
-        server.startWithJetty()
+        server.setMode(BMotionServer.MODE_STANDALONE)
+        server.setServerStartedListener(new SocketServerListener() {
+
+            @Override
+            void serverStarted(String clientApp) {
+                // Open Client
+                try {
+                    Runtime runTime = Runtime.getRuntime();
+                    p = runTime.exec(clientApp);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            void serverCloseRequest() {
+                if (p != null) {
+                    p.destroy()
+                    System.exit(0);
+                }
+            }
+
+        });
+        server.start()
 
         // Start ProB Server
         new Thread(new Runnable() {
@@ -25,10 +50,6 @@ public class Main {
                 de.prob.Main.main(probargs.toArray(new String[probargs.size()]))
             }
         }).start();
-
-        System.out.println("ProB 2 Server started on port " + WebConsole.getPort())
-
-        server.openBrowser()
 
     }
 

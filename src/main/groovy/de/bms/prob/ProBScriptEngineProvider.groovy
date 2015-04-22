@@ -3,7 +3,7 @@ package de.bms.prob
 import com.google.common.base.Charsets
 import com.google.common.io.Resources
 import de.bms.BMotionGroovy
-import de.bms.server.BMotionScriptEngineProvider
+import de.bms.BMotionScriptEngineProvider
 import de.prob.scripting.Api
 import de.prob.scripting.Downloader
 import de.prob.statespace.AnimationSelector
