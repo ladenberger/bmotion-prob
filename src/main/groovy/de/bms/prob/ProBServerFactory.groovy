@@ -1,5 +1,6 @@
 package de.bms.prob
 
+import com.google.common.io.Resources
 import de.bms.BMotionServer
 
 public class ProBServerFactory {
@@ -8,6 +9,8 @@ public class ProBServerFactory {
         BMotionServer server = new BMotionServer(args, new ProBOptionProvider())
         server.setVisualisationProvider(new ProBVisualisationProvider())
         server.setSocketListenerProvider(new ProBSocketListenerProvider())
+        URL[] paths = [Resources.getResource("prob")]
+        server.setResourcePaths(paths)
         return server
     }
 
