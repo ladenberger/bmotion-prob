@@ -9,6 +9,7 @@ import de.prob.animator.command.GetTransitionDiagramCommand
 import de.prob.animator.domainobjects.EvalElementType
 import de.prob.animator.domainobjects.IEvalElement
 import de.prob.model.eventb.EventBMachine
+import de.prob.model.eventb.EventBModel
 import de.prob.statespace.StateSpace
 import de.prob.statespace.Trace
 import de.prob.statespace.Transition
@@ -56,7 +57,6 @@ class ProBSocketListenerProvider implements BMotionSocketListenerProvider {
                     @Override
                     public void onData(final SocketIOClient client, JsonObject d,
                                        final AckRequest ackRequest) {
-                        System.out.println("Exit application")
                         server.getServer().serverStartedListener?.serverCloseRequest();
                     }
                 });
@@ -114,22 +114,29 @@ class ProBSocketListenerProvider implements BMotionSocketListenerProvider {
                         BMotionSocketServer.log.info "Created new BMotion session " + bmotion.sessionId
 
                         Trace t = bmotion.getTrace()
-                        def EventBMachine eventBMachine = t.getModel().getMainComponent()
-                        def _getrefs
-                        _getrefs = { refines ->
-                            return refines.collect() {
-                                def refs = it.refines
-                                if (refs) {
-                                    [it.toString(), _getrefs(refs)]
-                                } else {
-                                    it.toString()
-                                }
-                            }.flatten()
+                        if (bmotion.getModel() instanceof EventBModel) {
+                            def EventBMachine eventBMachine = t.getModel().getMainComponent()
+                            def _getrefs
+                            _getrefs = { refines ->
+                                return refines.collect() {
+                                    def refs = it.refines
+                                    if (refs) {
+                                        [it.toString(), _getrefs(refs)]
+                                    } else {
+                                        it.toString()
+                                    }
+                                }.flatten()
+                            }
+                            if (ackRequest.isAckRequested()) {
+                                ackRequest.sendAckData([refinements                   : _getrefs(eventBMachine.refines).
+                                        reverse() << eventBMachine.toString(), stateid: t.getCurrentState().getId(), traceId: t.getUUID().toString()]);
+                            }
+                        } else {
+                            if (ackRequest.isAckRequested()) {
+                                ackRequest.sendAckData([stateid: t.getCurrentState().getId(), traceId: t.getUUID().toString()]);
+                            }
                         }
-                        if (ackRequest.isAckRequested()) {
-                            ackRequest.sendAckData([refinements                   : _getrefs(eventBMachine.refines).
-                                    reverse() << eventBMachine.toString(), stateid: t.getCurrentState().getId(), traceId: t.getUUID().toString()]);
-                        }
+
 
                     }
                 });
@@ -175,33 +182,6 @@ class ProBSocketListenerProvider implements BMotionSocketListenerProvider {
                     }
                     if (ackRequest.isAckRequested()) {
                         ackRequest.sendAckData([events: eventMap]);
-                    }
-                }
-            }
-        });
-        server.getSocket().addEventListener("observeRefinement", JsonObject.class, new DataListener<JsonObject>() {
-            @Override
-            public void onData(final SocketIOClient client, JsonObject d,
-                               final AckRequest ackRequest) {
-                def String traceId = d.data.traceId;
-                def ProBVisualisation bms = getSession(traceId)
-                if (bms != null) {
-                    Trace t = bms.getTrace()
-                    def EventBMachine eventBMachine = t.getModel().getMainComponent()
-                    def _getrefs
-                    _getrefs = { refines ->
-                        return refines.collect() {
-                            def refs = it.refines
-                            if (refs) {
-                                [it.toString(), _getrefs(refs)]
-                            } else {
-                                it.toString()
-                            }
-                        }.flatten()
-                    }
-                    if (ackRequest.isAckRequested()) {
-                        ackRequest.sendAckData([refinements: _getrefs(eventBMachine.refines).
-                                reverse() << eventBMachine.toString()]);
                     }
                 }
             }

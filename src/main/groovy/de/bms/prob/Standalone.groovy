@@ -27,6 +27,7 @@ public class Standalone {
 
             @Override
             void serverCloseRequest() {
+                System.out.println("Exit application")
                 if (p != null) {
                     p.destroy()
                     System.exit(0);
