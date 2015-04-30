@@ -26,17 +26,15 @@ class ProBSocketListenerProvider implements BMotionSocketListenerProvider {
     @Override
     void installListeners(BMotionSocketServer server) {
 
-        if (server.standalone) {
-            server.getSocket().addEventListener("initProB", String.class, new DataListener<String>() {
-                @Override
-                public void onData(final SocketIOClient client, String str,
-                                   final AckRequest ackRequest) {
-                    if (ackRequest.isAckRequested()) {
-                        ackRequest.sendAckData([port: WebConsole.getPort()]);
-                    }
+        server.getSocket().addEventListener("initProB", String.class, new DataListener<String>() {
+            @Override
+            public void onData(final SocketIOClient client, String str,
+                               final AckRequest ackRequest) {
+                if (ackRequest.isAckRequested()) {
+                    ackRequest.sendAckData([port: WebConsole.getPort()]);
                 }
-            });
-        }
+            }
+        });
 
         server.getSocket().addEventListener("getWorkspacePath", String.class, new DataListener<String>() {
             @Override

@@ -3,13 +3,13 @@ package de.bms.prob
 import de.bms.BMotionServer
 import de.prob.webconsole.WebConsole
 
-public class Main {
+public class Online {
 
     public static void main(final String[] args) throws InterruptedException {
 
         // Start BMotion Server
         BMotionServer server = ProBServerFactory.getServer(args)
-        server.setMode(BMotionServer.MODE_INTEGRATED)
+        server.setMode(BMotionServer.MODE_ONLINE)
         server.startWithJetty()
 
         // Start ProB Server
