@@ -98,13 +98,18 @@ public abstract class ProBVisualisation extends BMotion implements IAnimationCha
                 animations.changeCurrentAnimation(currentTrace)
             }
         } else {
-            // If no trace exists yet, check if the current trace in the AnimationSelector
-            // corresponds to the model path, if not, load a new model and add it to the AnimationSelector (not in standalone mode)
-            def selectedTrace = animations.getCurrentTrace()
-            if ((mode == BMotionServer.MODE_INTEGRATED || mode == BMotionServer.MODE_ONLINE) && selectedTrace?.getModel()?.getModelFile()?.getCanonicalPath()?.equals(modelFile.getCanonicalPath())) {
-                this.currentTrace = selectedTrace
-                this.traceId = selectedTrace.getUUID()
-            } else {
+            def found = false;
+            if (mode == BMotionServer.MODE_INTEGRATED || mode == BMotionServer.MODE_ONLINE) {
+                for (Trace t : animations.getTraces()) {
+                    if (t.getModel().getModelFile().getCanonicalPath().equals(modelFile.getCanonicalPath())) {
+                        this.currentTrace = t
+                        this.traceId = t.getUUID()
+                        found = true;
+                        break;
+                    }
+                }
+            }
+            if (!found) {
                 // Create a new trace for the model and add it to the AnimationSelector
                 this.currentTrace = createNewModelTrace(modelFile.getCanonicalPath())
                 this.traceId = this.currentTrace.getUUID()
