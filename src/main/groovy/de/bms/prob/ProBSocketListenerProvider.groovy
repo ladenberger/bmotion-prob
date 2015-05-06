@@ -139,7 +139,7 @@ class ProBSocketListenerProvider implements BMotionSocketListenerProvider {
 
                     }
                 });
-        server.getSocket().addEventListener("observe", JsonObject.class,
+        server.getSocket().addEventListener("evaluateFormulas", JsonObject.class,
                 new DataListener<JsonObject>() {
                     @Override
                     public void onData(final SocketIOClient client, JsonObject d,
@@ -148,12 +148,37 @@ class ProBSocketListenerProvider implements BMotionSocketListenerProvider {
                         def BMotion bmotion = getSession(traceId)
                         if (bmotion != null) {
                             if (ackRequest.isAckRequested()) {
-                                ackRequest.sendAckData(bmotion.observe(d));
+                                ackRequest.sendAckData(bmotion.evaluateFormulas(d));
                             }
                         }
                     }
                 });
-
+        server.getSocket().addEventListener("getHistory", JsonObject.class, new DataListener<JsonObject>() {
+            @Override
+            public void onData(final SocketIOClient client, JsonObject d,
+                               final AckRequest ackRequest) {
+                def String traceId = d.data.traceId;
+                def ProBVisualisation bms = getSession(traceId)
+                if (bms != null) {
+                    def ops = [];
+                    // Collect trace data
+                    def Trace newTrace = bms.getTrace()
+                    def Transition currentTransition = newTrace.getCurrent().getTransition()
+                    def list = newTrace.getTransitionList(true)
+                    for (Transition op : list) {
+                        def fullOp = getOpString(op)
+                        ops << [name: fullOp, parameter: op.getParams()]
+                        if (currentTransition.equals(op) || (d.data.stateid != null && op.getDestination().
+                                getId() == d.data.stateid)) {
+                            break;
+                        }
+                    }
+                    if (ackRequest.isAckRequested()) {
+                        ackRequest.sendAckData([ops: ops]);
+                    }
+                }
+            }
+        });
         server.getSocket().addEventListener("eval", JsonObject.class, new DataListener<JsonObject>() {
             @Override
             public void onData(final SocketIOClient client, JsonObject d,
@@ -319,42 +344,6 @@ class ProBSocketListenerProvider implements BMotionSocketListenerProvider {
                     }
 
                 });
-        server.getSocket().addEventListener("observeCSPTrace", JsonObject.class, new DataListener<JsonObject>() {
-            @Override
-            public void onData(final SocketIOClient client, JsonObject d,
-                               final AckRequest ackRequest) {
-                def String traceId = d.data.traceId;
-                def ProBVisualisation bms = getSession(traceId)
-                if (bms != null) {
-
-                    def ops = [];
-                    def exp = [:];
-
-                    d.data.observers.each { o ->
-                        def events = bms.eval(o.exp)
-                        exp.put(o.exp, events.value);
-                    }
-
-                    // Collect trace data
-                    def Trace newTrace = bms.getTrace()
-                    def Transition currentTransition = newTrace.getCurrent().getTransition()
-                    def list = newTrace.getTransitionList(true)
-                    for (Transition op : list) {
-                        def fullOp = getOpString(op)
-                        ops << [name: fullOp, parameter: op.getParams()]
-                        if (currentTransition.equals(op) || (d.data.stateid != null && op.getDestination().
-                                getId() == d.data.stateid)) {
-                            break;
-                        }
-                    }
-
-                    if (ackRequest.isAckRequested()) {
-                        ackRequest.sendAckData([ops: ops, exp: exp]);
-                    }
-
-                }
-            }
-        });
 
     }
 

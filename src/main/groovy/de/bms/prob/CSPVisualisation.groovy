@@ -7,7 +7,9 @@ import de.prob.animator.domainobjects.IdentifierNotInitialised
 import de.prob.statespace.State
 import de.prob.statespace.StateSpace
 import de.prob.statespace.Trace
+import groovy.util.logging.Slf4j
 
+@Slf4j
 public class CSPVisualisation extends ProBVisualisation {
 
     private final formulaCache = [:]
@@ -18,13 +20,20 @@ public class CSPVisualisation extends ProBVisualisation {
 
     @Override
     public Object eval(final String formula) throws IllegalFormulaException {
+        return eval(formula, getCurrentState());
+    }
+
+    public Object eval(final String formula, final String stateId) throws IllegalFormulaException {
         if (trace == null) {
             log.error "BMotion Studio: No trace exists."
         }
-        if (!formulaCache.containsKey(formula)) {
+        if (formula == null) {
+            log.error "BMotion Studio: Formula must not be null."
+        }
+        if (!formulaCache.containsKey(formula) && formula != null) {
             IEvalElement e = trace.getModel().parseFormula(formula);
             StateSpace space = trace.getStateSpace();
-            State state = space.getState(getCurrentState());
+            State state = space.getState(stateId);
             if (state != null) {
                 formulaCache.put(formula, state.eval(e));
             }
@@ -33,15 +42,17 @@ public class CSPVisualisation extends ProBVisualisation {
     }
 
     @Override
-    public Object observe(final d) {
+    public Object evaluateFormulas(final d) {
         def map = [:]
-        d.data.observers.each { String k, v ->
-            def result = eval(k);
-            def resString = null;
-            if (result != null && !(result instanceof IdentifierNotInitialised)) {
-                resString = result.value
+        d.data.formulas.each { String formula ->
+            if (formula != null) {
+                def result = eval(formula);
+                def resString = null;
+                if (result != null && !(result instanceof IdentifierNotInitialised)) {
+                    resString = result.value
+                }
+                map.put(formula, [result: resString]);
             }
-            map.put(k, [result: resString]);
         }
         return map
     }

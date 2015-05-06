@@ -25,9 +25,12 @@ public class BVisualisation extends ProBVisualisation {
         return eval(formula, getCurrentState());
     }
 
-    public Object eval(final String formula, final String stateid) throws IllegalFormulaException {
+    public Object eval(final String formula, final String stateId) throws IllegalFormulaException {
         if (trace == null) {
             log.error "BMotion Studio: No trace exists."
+        }
+        if (formula == null) {
+            log.error "BMotion Studio: Formula must not be null."
         }
         try {
             StateSpace space = trace.getStateSpace();
@@ -37,7 +40,7 @@ public class BVisualisation extends ProBVisualisation {
                 formulas.put(formula, e);
                 space.subscribe(this, e);
             }
-            State sId = space.getState(stateid);
+            State sId = space.getState(stateId);
             return sId.getValues().get(formulas.get(formula));
         } catch (EvaluationException e) {
             log.error "BMotion Studio: Formula " + formula + " could not be parsed: " + e.getMessage()
@@ -73,19 +76,20 @@ public class BVisualisation extends ProBVisualisation {
     }
 
     @Override
-    public Object observe(final d) {
+    public Object evaluateFormulas(final d) {
         def map = [:]
         def stateId = d.data.stateId ?: getCurrentState()
-        d.data.observers.each { String k, v ->
-            def t = v.translate ?: false
+        d.data.formulas.each { String formula ->
+            //def t = v.translate ?: false
             //def s = v.solutions ?: false
-            def result = eval(k, stateId);
+            def result = eval(formula, stateId);
             def resString = null;
             if (result != null && !(result instanceof IdentifierNotInitialised)) {
                 resString = result.value
             }
-            def resTranslate = t ? translate(k, stateId) : null;
-            map.put(k, [result: resString, translate: resTranslate]);
+            //def resTranslate = t ? translate(k, stateId) : null;
+            //map.put(k, [result: resString, translate: resTranslate]);
+            map.put(formula, [result: resString]);
         }
         return map
     }
