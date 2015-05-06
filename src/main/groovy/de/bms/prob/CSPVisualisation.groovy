@@ -1,5 +1,6 @@
 package de.bms.prob
 
+import de.bms.BMotionException
 import de.bms.BMotionScriptEngineProvider
 import de.bms.IllegalFormulaException
 import de.prob.animator.domainobjects.IEvalElement
@@ -42,7 +43,7 @@ public class CSPVisualisation extends ProBVisualisation {
     }
 
     @Override
-    public Object evaluateFormulas(final d) {
+    public Object evaluateFormulas(final d) throws BMotionException {
         def map = [:]
         d.data.formulas.each { String formula ->
             if (formula != null) {

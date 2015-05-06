@@ -156,9 +156,12 @@ class ProBSocketListenerProvider implements BMotionSocketListenerProvider {
                         def String traceId = d.data.traceId;
                         def BMotion bmotion = getSession(traceId)
                         if (bmotion != null) {
-                            if (ackRequest.isAckRequested()) {
+                            try {
                                 ackRequest.sendAckData(bmotion.evaluateFormulas(d));
+                            } catch (BMotionException e) {
+                                ackRequest.sendAckData([errors: [e.getMessage()]]);
                             }
+
                         }
                     }
                 });

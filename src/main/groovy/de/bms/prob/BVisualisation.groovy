@@ -1,11 +1,13 @@
 package de.bms.prob
 
+import de.bms.BMotionException
 import de.bms.BMotionScriptEngineProvider
 import de.bms.IllegalFormulaException
 import de.prob.animator.domainobjects.EvaluationException
 import de.prob.animator.domainobjects.IEvalElement
 import de.prob.animator.domainobjects.IdentifierNotInitialised
 import de.prob.animator.domainobjects.TranslatedEvalResult
+import de.prob.exception.ProBError
 import de.prob.statespace.State
 import de.prob.statespace.StateSpace
 import de.prob.statespace.Trace
@@ -25,12 +27,12 @@ public class BVisualisation extends ProBVisualisation {
         return eval(formula, getCurrentState());
     }
 
-    public Object eval(final String formula, final String stateId) throws IllegalFormulaException {
+    public Object eval(final String formula, final String stateId) throws BMotionException {
         if (trace == null) {
-            log.error "BMotion Studio: No trace exists."
+            throw new BMotionException("No trace exists.");
         }
         if (formula == null) {
-            log.error "BMotion Studio: Formula must not be null."
+            throw new BMotionException("BMotion Studio: Formula must not be null.");
         }
         try {
             StateSpace space = trace.getStateSpace();
@@ -41,11 +43,13 @@ public class BVisualisation extends ProBVisualisation {
                 space.subscribe(this, e);
             }
             State sId = space.getState(stateId);
-            return sId.getValues().get(formulas.get(formula));
+            return sId.getValues().get(formulas.get(formula))
+        } catch (ProBError e) {
+            throw new BMotionException(e.getMessage());
         } catch (EvaluationException e) {
-            log.error "BMotion Studio: Formula " + formula + " could not be parsed: " + e.getMessage()
+            throw new BMotionException("Formula " + formula + " could not be parsed: " + e.getMessage());
         } catch (Exception e) {
-            log.error "BMotion Studio: " + e.getClass() + " thrown: " + e.getMessage()
+            throw new BMotionException(e.getClass().toString() + " thrown: " + e.getMessage());
         }
     }
 
@@ -76,7 +80,7 @@ public class BVisualisation extends ProBVisualisation {
     }
 
     @Override
-    public Object evaluateFormulas(final d) {
+    public Object evaluateFormulas(final d) throws BMotionException {
         def map = [:]
         def stateId = d.data.stateId ?: getCurrentState()
         d.data.formulas.each { String formula ->
