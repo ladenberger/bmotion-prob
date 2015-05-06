@@ -1,13 +1,14 @@
 package de.bms.prob
 
-import de.bms.IllegalFormulaException
 import de.bms.BMotionScriptEngineProvider
+import de.bms.IllegalFormulaException
 import de.prob.animator.domainobjects.EvaluationException
 import de.prob.animator.domainobjects.IEvalElement
 import de.prob.animator.domainobjects.IdentifierNotInitialised
 import de.prob.animator.domainobjects.TranslatedEvalResult
 import de.prob.statespace.State
 import de.prob.statespace.StateSpace
+import de.prob.statespace.Trace
 import groovy.util.logging.Slf4j
 
 @Slf4j
@@ -91,5 +92,14 @@ public class BVisualisation extends ProBVisualisation {
 
     @Override
     public void animatorStatus(final boolean busy) {}
+
+    @Override
+    protected Trace getNewTrace(Trace trace, transition) {
+        try {
+            trace.execute(transition.name, transition.predicate ?: [])
+        } catch (Exception e) {
+            null
+        }
+    }
 
 }

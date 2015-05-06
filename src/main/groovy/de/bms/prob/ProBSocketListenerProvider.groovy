@@ -10,6 +10,7 @@ import de.prob.animator.domainobjects.EvalElementType
 import de.prob.animator.domainobjects.IEvalElement
 import de.prob.model.eventb.EventBMachine
 import de.prob.model.eventb.EventBModel
+import de.prob.statespace.FormalismType
 import de.prob.statespace.StateSpace
 import de.prob.statespace.Trace
 import de.prob.statespace.Transition
@@ -174,9 +175,24 @@ class ProBSocketListenerProvider implements BMotionSocketListenerProvider {
                 def ProBVisualisation bms = getSession(traceId)
                 if (bms != null) {
                     Trace t = bms.getTrace()
-                    def eventMap = d.data.events.collect {
-                        def p = it.predicate == null ? [] : it.predicate
-                        [name: it.name, predicate: p, canExecute: t.canExecuteEvent(it.name, p)]
+                    def eventMap = d.data.events.collect { op ->
+
+                        def Transition trans
+                        if (t.getModel().getFormalismType().equals(FormalismType.CSP)) {
+                            for (cop in t.getNextTransitions()) {
+                                if (cop.getRep().equals(op.name)) {
+                                    trans = cop;
+                                    break;
+                                }
+                            }
+                        } else {
+                            trans = t.getCurrentState().findTransition(op.name, op.predicate == null ? [] : op.predicate);
+                        }
+                        def canExecute = trans != null;
+                        def transId = trans != null ? trans.getId() : null;
+
+                        [name: op.name, predicate: op.predicate, id: transId, canExecute: canExecute]
+
                     }
                     if (ackRequest.isAckRequested()) {
                         ackRequest.sendAckData([events: eventMap]);

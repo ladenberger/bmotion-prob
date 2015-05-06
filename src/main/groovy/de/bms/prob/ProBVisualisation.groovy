@@ -150,16 +150,23 @@ public abstract class ProBVisualisation extends BMotion implements IAnimationCha
             log.error "BMotion Studio: No currentTrace exists."
         }
 
-        def Trace new_trace
-        for (def alt : data.events) {
-            new_trace = alt.predicate != null ? executeEventHelper(trace, alt.name, alt.predicate) :
-                    executeEventHelper(trace, alt.name, [])
-            if (new_trace != null)
-                break;
+        def Trace newTrace
+        for (def transition : data.events) {
+            if (transition.id != null) {
+                try {
+                    newTrace = trace.add(transition.id);
+                } catch (IllegalArgumentException e) {
+                }
+            } else {
+                // Delegate to formalism
+                newTrace = getNewTrace(trace, transition);
+            }
+            if (newTrace != null) break;
         }
-        if (new_trace != null) {
-            animations.traceChange(new_trace)
-            currentTrace = new_trace
+
+        if (newTrace != null) {
+            animations.traceChange(newTrace)
+            currentTrace = newTrace
         } else {
             log.error "BMotion Studio: Could not execute any event ..."
         }
@@ -168,13 +175,7 @@ public abstract class ProBVisualisation extends BMotion implements IAnimationCha
 
     }
 
-    private Trace executeEventHelper(t, name, pred) {
-        try {
-            t.execute(name, pred)
-        } catch (Exception e) {
-            null
-        }
-    }
+    protected abstract Trace getNewTrace(Trace trace, transition);
 
     @Override
     public void refresh() {
