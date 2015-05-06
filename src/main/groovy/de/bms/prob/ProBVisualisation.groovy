@@ -83,7 +83,7 @@ public abstract class ProBVisualisation extends BMotion implements IAnimationCha
     }
 
     @Override
-    public String loadModel(File modelFile, boolean force) {
+    public void loadModel(File modelFile, boolean force) {
         if (currentTrace != null) {
             if (force || !currentTrace.getModel().getModelFile().getCanonicalPath().
                     equals(modelFile.getCanonicalPath())) {
@@ -116,7 +116,6 @@ public abstract class ProBVisualisation extends BMotion implements IAnimationCha
                 animations.addNewAnimation(this.currentTrace)
             }
         }
-        return this.traceId;
     }
 
     private Trace createNewModelTrace(String modelPath) {

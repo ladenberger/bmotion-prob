@@ -74,7 +74,7 @@ class ProBSocketListenerProvider implements BMotionSocketListenerProvider {
                         }
                     }
                 });
-        server.getSocket().addEventListener("reloadModel", JsonObject.class,
+        /*server.getSocket().addEventListener("reloadModel", JsonObject.class,
                 new DataListener<JsonObject>() {
                     @Override
                     public void onData(final SocketIOClient client, JsonObject d,
@@ -88,7 +88,7 @@ class ProBSocketListenerProvider implements BMotionSocketListenerProvider {
                             }
                         }
                     }
-                });
+                });*/
 
         server.getSocket().addEventListener("loadModel", JsonObject.class,
                 new DataListener<JsonObject>() {
@@ -96,46 +96,55 @@ class ProBSocketListenerProvider implements BMotionSocketListenerProvider {
                     public void onData(final SocketIOClient client, JsonObject d,
                                        final AckRequest ackRequest) {
 
+                        // Data from client
                         def String path = d.data.path
                         def String model = d.data.model
                         def String tool = d.data.tool
 
                         File templateFolder = new File(path)
-                        File modelFile = new File(templateFolder.getPath() + File.separator + model)
-                        ProBSocketListenerProvider.log.info "Templatefolder: " + templateFolder
-                        ProBSocketListenerProvider.log.info "Modelfile: " + modelFile
+                        String modelFilePath = templateFolder.getPath() + File.separator + model
 
-                        def ProBVisualisation bmotion = createSession(tool, server.getServer().getVisualisationProvider());
-                        bmotion.setMode(server.getServer().getMode())
-                        bmotion.initSession(modelFile.getPath())
-                        bmotion.setClient(client)
-                        sessions.put(bmotion.getTrace().getUUID().toString(), bmotion)
-                        BMotionSocketServer.log.info "Created new BMotion session " + bmotion.sessionId
+                        log.info "BMotion Studio:  Templatefolder = " + templateFolder
+                        log.info "BMotion Studio: Modelfile = " + modelFilePath
 
-                        Trace t = bmotion.getTrace()
-                        if (bmotion.getModel() instanceof EventBModel) {
-                            def EventBMachine eventBMachine = t.getModel().getMainComponent()
-                            def _getrefs
-                            _getrefs = { refines ->
-                                return refines.collect() {
-                                    def refs = it.refines
-                                    if (refs) {
-                                        [it.toString(), _getrefs(refs)]
-                                    } else {
-                                        it.toString()
+                        try {
+
+                            def ProBVisualisation bmotion = createSession(tool, server.getServer().getVisualisationProvider());
+                            if (bmotion != null) {
+                                bmotion.setMode(server.getServer().getMode())
+                                bmotion.initSession(modelFilePath)
+                                bmotion.setClient(client)
+                                sessions.put(bmotion.getTrace().getUUID().toString(), bmotion)
+                                BMotionSocketServer.log.info "Created new BMotion session " + bmotion.sessionId
+                                Trace t = bmotion.getTrace()
+                                if (bmotion.getModel() instanceof EventBModel) {
+                                    def EventBMachine eventBMachine = t.getModel().getMainComponent()
+                                    def _getrefs
+                                    _getrefs = { refines ->
+                                        return refines.collect() {
+                                            def refs = it.refines
+                                            if (refs) {
+                                                [it.toString(), _getrefs(refs)]
+                                            } else {
+                                                it.toString()
+                                            }
+                                        }.flatten()
                                     }
-                                }.flatten()
+                                    if (ackRequest.isAckRequested()) {
+                                        ackRequest.sendAckData([refinements                   : _getrefs(eventBMachine.refines).
+                                                reverse() << eventBMachine.toString(), stateid: t.getCurrentState().getId(), traceId: t.getUUID().toString()]);
+                                    }
+                                } else {
+                                    if (ackRequest.isAckRequested()) {
+                                        ackRequest.sendAckData([stateid: t.getCurrentState().getId(), traceId: t.getUUID().toString()]);
+                                    }
+                                }
                             }
-                            if (ackRequest.isAckRequested()) {
-                                ackRequest.sendAckData([refinements                   : _getrefs(eventBMachine.refines).
-                                        reverse() << eventBMachine.toString(), stateid: t.getCurrentState().getId(), traceId: t.getUUID().toString()]);
-                            }
-                        } else {
-                            if (ackRequest.isAckRequested()) {
-                                ackRequest.sendAckData([stateid: t.getCurrentState().getId(), traceId: t.getUUID().toString()]);
-                            }
-                        }
 
+                        } catch (BMotionException e) {
+                            ackRequest.sendAckData([errors: [e.getMessage()]]);
+                            return;
+                        }
 
                     }
                 });
@@ -351,16 +360,16 @@ class ProBSocketListenerProvider implements BMotionSocketListenerProvider {
         sessions.get(traceId);
     }
 
-    private BMotion createSession(String tool, BMotionVisualisationProvider visualisationProvider) {
+    private BMotion createSession(String tool, BMotionVisualisationProvider visualisationProvider) throws BMotionException {
         if (tool != null) {
             def visualisation = visualisationProvider.get(tool)
             if (visualisation == null) {
-                log.error "BMotion Studio: No visualisation implementation found for " + tool
+                throw new BMotionException("No visualisation implementation found for " + tool)
             } else {
                 return visualisation;
             }
         } else {
-            log.error "BMotion Studio: Please enter a tool (e.g. BAnimation or CSPAnimation)"
+            throw new BMotionException("Please specify a tool in bmotion.json (e.g. BAnimation or CSPAnimation)")
         }
     }
 
