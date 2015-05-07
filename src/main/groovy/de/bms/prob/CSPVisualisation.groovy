@@ -2,9 +2,10 @@ package de.bms.prob
 
 import de.bms.BMotionException
 import de.bms.BMotionScriptEngineProvider
-import de.bms.IllegalFormulaException
+import de.prob.animator.domainobjects.EvaluationException
 import de.prob.animator.domainobjects.IEvalElement
 import de.prob.animator.domainobjects.IdentifierNotInitialised
+import de.prob.exception.ProBError
 import de.prob.statespace.State
 import de.prob.statespace.StateSpace
 import de.prob.statespace.Trace
@@ -20,42 +21,54 @@ public class CSPVisualisation extends ProBVisualisation {
     }
 
     @Override
-    public Object eval(final String formula) throws IllegalFormulaException {
+    public Object eval(final String formula) throws BMotionException {
         return eval(formula, getCurrentState());
     }
 
-    public Object eval(final String formula, final String stateId) throws IllegalFormulaException {
+    public Object eval(final String formula, final String stateId) throws BMotionException {
         if (trace == null) {
-            log.error "BMotion Studio: No trace exists."
+            throw new BMotionException("No trace exists.");
         }
         if (formula == null) {
-            log.error "BMotion Studio: Formula must not be null."
+            throw new BMotionException("BMotion Studio: Formula must not be null.");
         }
-        if (!formulaCache.containsKey(formula) && formula != null) {
-            IEvalElement e = trace.getModel().parseFormula(formula);
-            StateSpace space = trace.getStateSpace();
-            State state = space.getState(stateId);
-            if (state != null) {
-                formulaCache.put(formula, state.eval(e));
+        try {
+            if (!formulaCache.containsKey(formula) && formula != null) {
+                IEvalElement e = trace.getModel().parseFormula(formula);
+                StateSpace space = trace.getStateSpace();
+                State state = space.getState(stateId);
+                if (state != null) {
+                    formulaCache.put(formula, state.eval(e));
+                }
             }
+        } catch (ProBError e) {
+            throw new BMotionException(e.getMessage());
+        } catch (EvaluationException e) {
+            throw new BMotionException("Formula " + formula + " could not be parsed: " + e.getMessage());
+        } catch (Exception e) {
+            throw new BMotionException(e.getClass().toString() + " thrown: " + e.getMessage());
         }
         return formulaCache.get(formula);
     }
 
     @Override
     public Object evaluateFormulas(final d) throws BMotionException {
-        def map = [:]
+        def formulas = [:]
         d.data.formulas.each { String formula ->
             if (formula != null) {
-                def result = eval(formula);
-                def resString = null;
-                if (result != null && !(result instanceof IdentifierNotInitialised)) {
-                    resString = result.value
+                try {
+                    def result = eval(formula);
+                    def resString = null;
+                    if (result != null && !(result instanceof IdentifierNotInitialised)) {
+                        resString = result.value
+                    }
+                    formulas.put(formula, [result: resString]);
+                } catch (BMotionException e) {
+                    formulas.put(formula, [error: e.getMessage()]);
                 }
-                map.put(formula, [result: resString]);
             }
         }
-        return map
+        return formulas
     }
 
     @Override

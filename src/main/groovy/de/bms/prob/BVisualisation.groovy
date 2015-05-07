@@ -81,21 +81,25 @@ public class BVisualisation extends ProBVisualisation {
 
     @Override
     public Object evaluateFormulas(final d) throws BMotionException {
-        def map = [:]
+        def formulas = [:]
         def stateId = d.data.stateId ?: getCurrentState()
         d.data.formulas.each { String formula ->
             //def t = v.translate ?: false
             //def s = v.solutions ?: false
-            def result = eval(formula, stateId);
-            def resString = null;
-            if (result != null && !(result instanceof IdentifierNotInitialised)) {
-                resString = result.value
+            try {
+                def result = eval(formula, stateId);
+                def resString = null;
+                if (result != null && !(result instanceof IdentifierNotInitialised)) {
+                    resString = result.value
+                }
+                //def resTranslate = t ? translate(k, stateId) : null;
+                //map.put(k, [result: resString, translate: resTranslate]);
+                formulas.put(formula, [result: resString]);
+            } catch (BMotionException e) {
+                formulas.put(formula, [error: e.getMessage()]);
             }
-            //def resTranslate = t ? translate(k, stateId) : null;
-            //map.put(k, [result: resString, translate: resTranslate]);
-            map.put(formula, [result: resString]);
         }
-        return map
+        return formulas
     }
 
     @Override

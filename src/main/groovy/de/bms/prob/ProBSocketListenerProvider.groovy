@@ -104,8 +104,8 @@ class ProBSocketListenerProvider implements BMotionSocketListenerProvider {
                         File templateFolder = new File(path)
                         String modelFilePath = templateFolder.getPath() + File.separator + model
 
-                        log.info "BMotion Studio:  Templatefolder = " + templateFolder
-                        log.info "BMotion Studio: Modelfile = " + modelFilePath
+                        de.bms.BMotion.log.info "BMotion Studio:  Templatefolder = " + templateFolder
+                        de.bms.BMotion.log.info "BMotion Studio: Modelfile = " + modelFilePath
 
                         try {
 
@@ -115,7 +115,7 @@ class ProBSocketListenerProvider implements BMotionSocketListenerProvider {
                                 bmotion.initSession(modelFilePath)
                                 bmotion.setClient(client)
                                 sessions.put(bmotion.getTrace().getUUID().toString(), bmotion)
-                                BMotionSocketServer.log.info "Created new BMotion session " + bmotion.sessionId
+                                de.bms.BMotion.log.info "Created new BMotion session " + bmotion.sessionId
                                 Trace t = bmotion.getTrace()
                                 if (bmotion.getModel() instanceof EventBModel) {
                                     def EventBMachine eventBMachine = t.getModel().getMainComponent()
@@ -156,6 +156,9 @@ class ProBSocketListenerProvider implements BMotionSocketListenerProvider {
                         def String traceId = d.data.traceId;
                         def BMotion bmotion = getSession(traceId)
                         if (bmotion != null) {
+
+                            def formulaMap = bmotion.evaluateFormulas(d);
+
                             try {
                                 ackRequest.sendAckData(bmotion.evaluateFormulas(d));
                             } catch (BMotionException e) {
