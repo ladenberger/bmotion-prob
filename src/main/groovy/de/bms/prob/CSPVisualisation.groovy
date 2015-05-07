@@ -4,7 +4,6 @@ import de.bms.BMotionException
 import de.bms.BMotionScriptEngineProvider
 import de.prob.animator.domainobjects.EvaluationException
 import de.prob.animator.domainobjects.IEvalElement
-import de.prob.animator.domainobjects.IdentifierNotInitialised
 import de.prob.exception.ProBError
 import de.prob.statespace.State
 import de.prob.statespace.StateSpace
@@ -54,18 +53,18 @@ public class CSPVisualisation extends ProBVisualisation {
     @Override
     public Object evaluateFormulas(final d) throws BMotionException {
         def formulas = [:]
-        d.data.formulas.each { String formula ->
-            if (formula != null) {
-                try {
-                    def result = eval(formula);
-                    def resString = null;
-                    if (result != null && !(result instanceof IdentifierNotInitialised)) {
-                        resString = result.value
-                    }
-                    formulas.put(formula, [result: resString]);
-                } catch (BMotionException e) {
-                    formulas.put(formula, [error: e.getMessage()]);
+        def stateId = d.data.stateId ?: getCurrentState()
+        d.data.formulas.each {
+            def f = it['formula']
+            try {
+                def result = eval(f, stateId);
+                def resString = null;
+                if (result != null) {
+                    resString = result.value
                 }
+                formulas.put(f, [result: resString]);
+            } catch (BMotionException e) {
+                formulas.put(f, [error: e.getMessage()]);
             }
         }
         return formulas
