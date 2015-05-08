@@ -14,6 +14,7 @@ public abstract class ProBVisualisation extends BMotion implements IAnimationCha
 
     public static final String TRIGGER_MODEL_CHANGED = "ModelChanged";
     public static final String TRIGGER_MODEL_INITIALISED = "ModelInitialised";
+    public static final String TRIGGER_MODEL_SETUP_CONSTANTS = "ModelSetupConstants";
     def final AnimationSelector animations;
     def final Api api
     def Trace currentTrace;
@@ -45,6 +46,12 @@ public abstract class ProBVisualisation extends BMotion implements IAnimationCha
     }
 
     @Override
+    public void disconnect() {
+        animations.deregisterAnimationChangeListener(this)
+        animations.deregisterModelChangedListeners(this)
+    }
+
+    @Override
     public void traceChange(final Trace ct, final boolean currentAnimationChanged) {
 
         def changeTrace = animations.getTrace(traceId)
@@ -53,16 +60,18 @@ public abstract class ProBVisualisation extends BMotion implements IAnimationCha
 
             if (changeTrace.getUUID() == traceId) {
 
+                def currentTransition = changeTrace.getCurrentTransition()
+                def currentState = changeTrace.getCurrentState()
+                def clientData = [stateId: currentState.getId(), traceId: traceId]
+
                 // TODO: Is there a better way to check that the current transition is the initialise machine event?
-                if (changeTrace.getCurrentTransition().toString().startsWith("\$initialise_machine")) {
-                    checkObserver([trigger: TRIGGER_MODEL_INITIALISED, stateid: changeTrace.getCurrentState().getId()])
+                if (currentTransition.toString().startsWith("\$initialise_machine")) {
+                    checkObserver(TRIGGER_MODEL_INITIALISED, clientData)
+                } else if (currentTransition.toString().startsWith("\$setup_constants")) {
+                    checkObserver(TRIGGER_MODEL_SETUP_CONSTANTS, clientData)
                 }
-                //def modelFileName = changeTrace.getModel().getModelFile().getName()
-                //if (getModel()?.getModelFile()?.getName()?.equals(modelFileName)) {
-                if (changeTrace.getCurrentState().
-                        isInitialised()) {
-                    checkObserver([trigger  : BMotion.TRIGGER_ANIMATION_CHANGED, stateid: changeTrace.getCurrentState().
-                            getId(), traceId: traceId])
+                if (currentState.isInitialised()) {
+                    checkObserver(BMotion.TRIGGER_ANIMATION_CHANGED, clientData)
                 }
 
                 this.currentTrace = changeTrace
@@ -75,7 +84,9 @@ public abstract class ProBVisualisation extends BMotion implements IAnimationCha
 
     @Override
     public void modelChanged(StateSpace s) {
-        checkObserver([trigger: TRIGGER_MODEL_CHANGED])
+        // TODO: fix this!
+        def clientData = [stateId: null, traceId: null]
+        checkObserver(TRIGGER_MODEL_CHANGED, clientData)
     }
 
     public String getCurrentState() {
@@ -175,15 +186,5 @@ public abstract class ProBVisualisation extends BMotion implements IAnimationCha
     }
 
     protected abstract Trace getNewTrace(Trace trace, transition);
-
-    @Override
-    public void refresh() {
-        checkObserver([trigger: TRIGGER_MODEL_CHANGED]);
-        if (currentTrace != null && currentTrace.getCurrentState().isInitialised()) {
-            def stateid = currentTrace.getCurrentState().getId();
-            checkObserver([trigger: TRIGGER_MODEL_INITIALISED, stateid: stateid, traceId: traceId]);
-            checkObserver([trigger: BMotion.TRIGGER_ANIMATION_CHANGED, stateid: stateid, traceId: traceId]);
-        }
-    }
 
 }

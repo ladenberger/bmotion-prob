@@ -22,7 +22,7 @@ import groovy.util.logging.Slf4j
 @Slf4j
 class ProBSocketListenerProvider implements BMotionSocketListenerProvider {
 
-    public final Map<String, BMotion> sessions = new HashMap<String, BMotion>();
+    public final Map<SocketIOClient, BMotion> sessions = new HashMap<SocketIOClient, BMotion>();
 
     @Override
     void installListeners(BMotionSocketServer server) {
@@ -46,11 +46,17 @@ class ProBSocketListenerProvider implements BMotionSocketListenerProvider {
                 }
             }
         });
+
         server.getSocket().addDisconnectListener(new DisconnectListener() {
             @Override
             public void onDisconnect(SocketIOClient client) {
+                def BMotion bmotion = getSession(client)
+                if (bmotion != null) {
+                    bmotion.disconnect();
+                }
             }
         });
+
         server.getSocket().addEventListener("clientClosed", JsonObject.class,
                 new DataListener<JsonObject>() {
                     @Override
@@ -59,13 +65,13 @@ class ProBSocketListenerProvider implements BMotionSocketListenerProvider {
                         server.getServer().serverStartedListener?.serverCloseRequest();
                     }
                 });
+
         server.getSocket().addEventListener("executeEvent", JsonObject.class,
                 new DataListener<JsonObject>() {
                     @Override
                     public void onData(final SocketIOClient client, JsonObject d,
                                        final AckRequest ackRequest) {
-                        def String traceId = d.data.traceId;
-                        def BMotion bmotion = getSession(traceId)
+                        def BMotion bmotion = getSession(client)
                         if (bmotion != null) {
                             def returnValue = bmotion.executeEvent(d.data)
                             if (ackRequest.isAckRequested()) {
@@ -74,6 +80,7 @@ class ProBSocketListenerProvider implements BMotionSocketListenerProvider {
                         }
                     }
                 });
+
         /*server.getSocket().addEventListener("reloadModel", JsonObject.class,
                 new DataListener<JsonObject>() {
                     @Override
@@ -90,7 +97,7 @@ class ProBSocketListenerProvider implements BMotionSocketListenerProvider {
                     }
                 });*/
 
-        server.getSocket().addEventListener("loadModel", JsonObject.class,
+        server.getSocket().addEventListener("initSession", JsonObject.class,
                 new DataListener<JsonObject>() {
                     @Override
                     public void onData(final SocketIOClient client, JsonObject d,
@@ -114,7 +121,7 @@ class ProBSocketListenerProvider implements BMotionSocketListenerProvider {
                                 bmotion.setMode(server.getServer().getMode())
                                 bmotion.initSession(modelFilePath)
                                 bmotion.setClient(client)
-                                sessions.put(bmotion.getTrace().getUUID().toString(), bmotion)
+                                sessions.put(client, bmotion)
                                 de.bms.BMotion.log.info "Created new BMotion session " + bmotion.sessionId
                                 Trace t = bmotion.getTrace()
                                 if (bmotion.getModel() instanceof EventBModel) {
@@ -132,11 +139,11 @@ class ProBSocketListenerProvider implements BMotionSocketListenerProvider {
                                     }
                                     if (ackRequest.isAckRequested()) {
                                         ackRequest.sendAckData([refinements                   : _getrefs(eventBMachine.refines).
-                                                reverse() << eventBMachine.toString(), stateid: t.getCurrentState().getId(), traceId: t.getUUID().toString()]);
+                                                reverse() << eventBMachine.toString(), stateId: t.getCurrentState().getId(), traceId: t.getUUID().toString()]);
                                     }
                                 } else {
                                     if (ackRequest.isAckRequested()) {
-                                        ackRequest.sendAckData([stateid: t.getCurrentState().getId(), traceId: t.getUUID().toString()]);
+                                        ackRequest.sendAckData([stateId: t.getCurrentState().getId(), traceId: t.getUUID().toString()]);
                                     }
                                 }
                             }
@@ -148,32 +155,28 @@ class ProBSocketListenerProvider implements BMotionSocketListenerProvider {
 
                     }
                 });
+
         server.getSocket().addEventListener("evaluateFormulas", JsonObject.class,
                 new DataListener<JsonObject>() {
                     @Override
                     public void onData(final SocketIOClient client, JsonObject d,
                                        final AckRequest ackRequest) {
-                        def String traceId = d.data.traceId;
-                        def BMotion bmotion = getSession(traceId)
+                        def BMotion bmotion = getSession(client)
                         if (bmotion != null) {
-
-                            def formulaMap = bmotion.evaluateFormulas(d);
-
                             try {
                                 ackRequest.sendAckData(bmotion.evaluateFormulas(d));
                             } catch (BMotionException e) {
                                 ackRequest.sendAckData([errors: [e.getMessage()]]);
                             }
-
                         }
                     }
                 });
+
         server.getSocket().addEventListener("getHistory", JsonObject.class, new DataListener<JsonObject>() {
             @Override
             public void onData(final SocketIOClient client, JsonObject d,
                                final AckRequest ackRequest) {
-                def String traceId = d.data.traceId;
-                def ProBVisualisation bms = getSession(traceId)
+                def ProBVisualisation bms = getSession(client)
                 if (bms != null) {
                     def ops = [];
                     // Collect trace data
@@ -183,8 +186,8 @@ class ProBSocketListenerProvider implements BMotionSocketListenerProvider {
                     for (Transition op : list) {
                         def fullOp = getOpString(op)
                         ops << [name: fullOp, parameter: op.getParams()]
-                        if (currentTransition.equals(op) || (d.data.stateid != null && op.getDestination().
-                                getId() == d.data.stateid)) {
+                        if (currentTransition.equals(op) || (d.data.stateId != null && op.getDestination().
+                                getId() == d.data.stateId)) {
                             break;
                         }
                     }
@@ -194,25 +197,25 @@ class ProBSocketListenerProvider implements BMotionSocketListenerProvider {
                 }
             }
         });
+
         server.getSocket().addEventListener("eval", JsonObject.class, new DataListener<JsonObject>() {
             @Override
             public void onData(final SocketIOClient client, JsonObject d,
                                final AckRequest ackRequest) {
-                def String traceId = d.data.traceId;
-                def BMotion bmotion = getSession(traceId)
+                def BMotion bmotion = getSession(client)
                 if (bmotion != null) {
                     if (ackRequest.isAckRequested()) {
-                        ackRequest.sendAckData([bmotion.eval(d.data.formula, d.data.stateid)]);
+                        ackRequest.sendAckData([bmotion.eval(d.data.formula, d.data.stateId)]);
                     }
                 }
             }
         });
+
         server.getSocket().addEventListener("initTooltip", JsonObject.class, new DataListener<JsonObject>() {
             @Override
             public void onData(final SocketIOClient client, JsonObject d,
                                final AckRequest ackRequest) {
-                def String traceId = d.data.traceId;
-                def ProBVisualisation bms = getSession(traceId)
+                def ProBVisualisation bms = getSession(client)
                 if (bms != null) {
                     Trace t = bms.getTrace()
                     def eventMap = d.data.events.collect { op ->
@@ -240,13 +243,13 @@ class ProBSocketListenerProvider implements BMotionSocketListenerProvider {
                 }
             }
         });
+
         server.getSocket().
                 addEventListener("createTraceDiagram", JsonObject.class, new DataListener<JsonObject>() {
                     @Override
                     public void onData(final SocketIOClient client, JsonObject d,
                                        final AckRequest ackRequest) {
-                        def String traceId = d.data.traceId;
-                        def ProBVisualisation bms = getSession(traceId)
+                        def ProBVisualisation bms = getSession(client)
                         if (bms != null) {
 
                             def nodes = []
@@ -270,17 +273,14 @@ class ProBSocketListenerProvider implements BMotionSocketListenerProvider {
 
                         }
                     }
-                }
+                });
 
-                );
         server.getSocket().
                 addEventListener("createCustomTransitionDiagram", JsonObject.class, new DataListener<JsonObject>() {
                     @Override
                     public void onData(final SocketIOClient client, JsonObject d,
                                        final AckRequest ackRequest) {
-
-                        def String traceId = d.data.traceId;
-                        def ProBVisualisation bms = getSession(traceId)
+                        def ProBVisualisation bms = getSession(client)
                         if (bms != null) {
 
                             def _getResults
@@ -357,13 +357,12 @@ class ProBSocketListenerProvider implements BMotionSocketListenerProvider {
 
                         }
                     }
-
                 });
 
     }
 
-    private BMotion getSession(String traceId) {
-        sessions.get(traceId);
+    private BMotion getSession(SocketIOClient client) {
+        sessions.get(client);
     }
 
     private BMotion createSession(String tool, BMotionVisualisationProvider visualisationProvider) throws BMotionException {
