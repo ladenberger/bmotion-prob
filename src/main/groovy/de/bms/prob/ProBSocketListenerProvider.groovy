@@ -124,6 +124,9 @@ class ProBSocketListenerProvider implements BMotionSocketListenerProvider {
                                 sessions.put(client, bmotion)
                                 de.bms.BMotion.log.info "Created new BMotion session " + bmotion.sessionId
                                 Trace t = bmotion.getTrace()
+
+                                def clientData = [stateId: t.getCurrentState().getId(), traceId: t.getUUID().toString(), initialised: t.getCurrentState().isInitialised()]
+
                                 if (bmotion.getModel() instanceof EventBModel) {
                                     def EventBMachine eventBMachine = t.getModel().getMainComponent()
                                     def _getrefs
@@ -138,12 +141,12 @@ class ProBSocketListenerProvider implements BMotionSocketListenerProvider {
                                         }.flatten()
                                     }
                                     if (ackRequest.isAckRequested()) {
-                                        ackRequest.sendAckData([refinements                   : _getrefs(eventBMachine.refines).
-                                                reverse() << eventBMachine.toString(), stateId: t.getCurrentState().getId(), traceId: t.getUUID().toString()]);
+                                        clientData.put('refinements', _getrefs(eventBMachine.refines).reverse() << eventBMachine.toString())
+                                        ackRequest.sendAckData(clientData);
                                     }
                                 } else {
                                     if (ackRequest.isAckRequested()) {
-                                        ackRequest.sendAckData([stateId: t.getCurrentState().getId(), traceId: t.getUUID().toString()]);
+                                        ackRequest.sendAckData(clientData);
                                     }
                                 }
                             }
