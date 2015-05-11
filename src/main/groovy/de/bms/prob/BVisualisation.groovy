@@ -20,8 +20,8 @@ public class BVisualisation extends ProBVisualisation {
 
     private final Map<String, IEvalElement> formulas = new HashMap<String, IEvalElement>();
 
-    public BVisualisation(final UUID sessionId, final BMotionScriptEngineProvider scriptEngineProvider) {
-        super(sessionId, scriptEngineProvider);
+    public BVisualisation(final UUID id, final BMotionScriptEngineProvider scriptEngineProvider) {
+        super(id, scriptEngineProvider);
     }
 
     @Override
@@ -34,7 +34,7 @@ public class BVisualisation extends ProBVisualisation {
             throw new BMotionException("No trace exists.");
         }
         if (formula == null) {
-            throw new BMotionException("BMotion Studio: Formula must not be null.");
+            throw new BMotionException("Formula must not be null.");
         }
         try {
             StateSpace space = trace.getStateSpace();

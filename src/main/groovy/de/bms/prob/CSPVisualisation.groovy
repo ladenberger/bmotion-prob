@@ -15,8 +15,8 @@ public class CSPVisualisation extends ProBVisualisation {
 
     private final formulaCache = [:]
 
-    public CSPVisualisation(final UUID sessionId, final BMotionScriptEngineProvider scriptEngineProvider) {
-        super(sessionId, scriptEngineProvider);
+    public CSPVisualisation(final UUID id, final BMotionScriptEngineProvider scriptEngineProvider) {
+        super(id, scriptEngineProvider);
     }
 
     @Override
@@ -29,7 +29,7 @@ public class CSPVisualisation extends ProBVisualisation {
             throw new BMotionException("No trace exists.");
         }
         if (formula == null) {
-            throw new BMotionException("BMotion Studio: Formula must not be null.");
+            throw new BMotionException("Formula must not be null.");
         }
         try {
             if (!formulaCache.containsKey(formula) && formula != null) {

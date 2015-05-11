@@ -20,8 +20,8 @@ public abstract class ProBVisualisation extends BMotion implements IAnimationCha
     def Trace currentTrace;
     def UUID traceId;
 
-    public ProBVisualisation(final UUID sessionId, final BMotionScriptEngineProvider scriptEngineProvider) {
-        super(sessionId, scriptEngineProvider)
+    public ProBVisualisation(final UUID id, final BMotionScriptEngineProvider scriptEngineProvider) {
+        super(id, scriptEngineProvider)
         animations = de.prob.Main.getInjector().getInstance(AnimationSelector.class)
         api = de.prob.Main.getInjector().getInstance(Api.class)
         animations.registerAnimationChangeListener(this)
