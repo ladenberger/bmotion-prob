@@ -1,7 +1,0 @@
-Script.getMetaClass().observeBSet = { a1,a2 ->
-	new BSetObserver(a1).with a2
-}
-
-Script.getMetaClass().observeCSPTrace = { a1,a2 ->
-	new CSPTraceObserver(a1).with a2
-}

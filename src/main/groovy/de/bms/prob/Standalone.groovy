@@ -1,18 +1,17 @@
 package de.bms.prob
 
 import de.bms.BMotionServer
-import de.bms.SocketServerListener
 
 public class Standalone {
 
     public static void main(final String[] args) throws InterruptedException {
 
-        def Process p = null;
+        //def Process p = null;
 
         // Start BMotion Server
         BMotionServer server = ProBServerFactory.getServer(args)
         server.setMode(BMotionServer.MODE_STANDALONE)
-        server.setServerStartedListener(new SocketServerListener() {
+        /*server.setServerStartedListener(new SocketServerListener() {
 
             @Override
             void serverStarted(String clientApp) {
@@ -34,7 +33,7 @@ public class Standalone {
                 }
             }
 
-        });
+        });*/
         server.start()
 
         // Start ProB Server
