@@ -3,7 +3,6 @@ package de.bms.prob
 import de.be4.classicalb.core.parser.exceptions.BException
 import de.bms.BMotionException
 import de.bms.BMotionScriptEngineProvider
-import de.bms.IllegalFormulaException
 import de.prob.animator.domainobjects.EvalResult
 import de.prob.animator.domainobjects.EvaluationException
 import de.prob.animator.domainobjects.IEvalElement
@@ -25,7 +24,7 @@ public class BVisualisation extends ProBVisualisation {
     }
 
     @Override
-    public Object eval(final String formula) throws IllegalFormulaException {
+    public Object eval(final String formula) throws BMotionException {
         return eval(formula, getCurrentState());
     }
 
@@ -59,7 +58,7 @@ public class BVisualisation extends ProBVisualisation {
         }
     }
 
-    public Object translate(String formula) throws IllegalFormulaException {
+    public Object translate(String formula) throws BMotionException {
         return translate(formula, getCurrentState());
     }
 
