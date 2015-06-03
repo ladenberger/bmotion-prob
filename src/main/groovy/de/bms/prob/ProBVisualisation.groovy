@@ -2,7 +2,6 @@ package de.bms.prob
 
 import de.bms.BMotion
 import de.bms.BMotionScriptEngineProvider
-import de.bms.BMotionServer
 import de.bms.ImpossibleStepException
 import de.prob.model.representation.AbstractModel
 import de.prob.scripting.Api
@@ -110,16 +109,16 @@ public abstract class ProBVisualisation extends BMotion implements IAnimationCha
             }
         } else {
             def found = false;
-            if (mode == BMotionServer.MODE_INTEGRATED || mode == BMotionServer.MODE_ONLINE) {
-                for (Trace t : animations.getTraces()) {
-                    if (t.getModel().getModelFile().getCanonicalPath().equals(modelFile.getCanonicalPath())) {
-                        this.currentTrace = t
-                        this.traceId = t.getUUID()
-                        found = true;
-                        break;
-                    }
+            //if (mode == BMotionServer.MODE_INTEGRATED || mode == BMotionServer.MODE_ONLINE) {
+            for (Trace t : animations.getTraces()) {
+                if (t.getModel().getModelFile().getCanonicalPath().equals(modelFile.getCanonicalPath())) {
+                    this.currentTrace = t
+                    this.traceId = t.getUUID()
+                    found = true;
+                    break;
                 }
             }
+            //}
             if (!found) {
                 // Create a new trace for the model and add it to the AnimationSelector
                 this.currentTrace = createNewModelTrace(modelFile.getCanonicalPath())
