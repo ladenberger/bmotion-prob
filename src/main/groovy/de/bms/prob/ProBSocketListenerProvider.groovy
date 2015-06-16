@@ -1,7 +1,9 @@
 package de.bms.prob
 
 import com.corundumstudio.socketio.AckRequest
+import com.corundumstudio.socketio.BroadcastAckCallback
 import com.corundumstudio.socketio.SocketIOClient
+import com.corundumstudio.socketio.SocketIOServer
 import com.corundumstudio.socketio.listener.DataListener
 import com.corundumstudio.socketio.listener.DisconnectListener
 import de.bms.*
@@ -25,8 +27,39 @@ class ProBSocketListenerProvider implements BMotionSocketListenerProvider {
     public final Map<String, BMotion> sessions = new HashMap<String, BMotion>();
     public final Map<SocketIOClient, String> clients = new HashMap<SocketIOClient, String>();
 
+    private void startHeartBeatListener(SocketIOServer socket) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while (true) {
+                    try {
+                        Thread.sleep(5000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    log.debug("Send heartbeat");
+                    socket.getBroadcastOperations().sendEvent("heartbeat", null, new BroadcastAckCallback(String.class) {
+                        @Override
+                        protected void onClientTimeout(SocketIOClient client) {
+                            if (socket.getAllClients().contains(client) && socket.getAllClients().size() == 1) {
+                                log.info("Closing BMotion Studio for ProB server ...")
+                                System.exit(-1)
+                            }
+                        }
+                    });
+                    log.debug("Still alive");
+                }
+            }
+        }).start();
+    }
+
     @Override
     void installListeners(BMotionSocketServer server) {
+
+        // Listen for heartbeat in standalone mode
+        if (server.getServer().getMode() == BMotionServer.MODE_STANDALONE) {
+            startHeartBeatListener(server.getSocket())
+        }
 
         server.getSocket().addEventListener("initProB", String.class, new DataListener<String>() {
             @Override
