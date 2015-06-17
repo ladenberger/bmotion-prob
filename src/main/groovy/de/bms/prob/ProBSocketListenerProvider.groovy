@@ -1,9 +1,8 @@
 package de.bms.prob
 
 import com.corundumstudio.socketio.AckRequest
-import com.corundumstudio.socketio.BroadcastAckCallback
 import com.corundumstudio.socketio.SocketIOClient
-import com.corundumstudio.socketio.SocketIOServer
+import com.corundumstudio.socketio.listener.ConnectListener
 import com.corundumstudio.socketio.listener.DataListener
 import com.corundumstudio.socketio.listener.DisconnectListener
 import de.bms.*
@@ -26,40 +25,11 @@ class ProBSocketListenerProvider implements BMotionSocketListenerProvider {
 
     public final Map<String, BMotion> sessions = new HashMap<String, BMotion>();
     public final Map<SocketIOClient, String> clients = new HashMap<SocketIOClient, String>();
-
-    private void startHeartBeatListener(SocketIOServer socket) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                while (true) {
-                    try {
-                        Thread.sleep(5000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    log.debug("Send heartbeat");
-                    socket.getBroadcastOperations().sendEvent("heartbeat", null, new BroadcastAckCallback(String.class) {
-                        @Override
-                        protected void onClientTimeout(SocketIOClient client) {
-                            if (socket.getAllClients().contains(client) && socket.getAllClients().size() == 1) {
-                                log.info("Closing BMotion Studio for ProB server ...")
-                                System.exit(-1)
-                            }
-                        }
-                    });
-                    log.debug("Still alive");
-                }
-            }
-        }).start();
-    }
+    public final long waitTime = 25000;
+    private Thread exitThread;
 
     @Override
     void installListeners(BMotionSocketServer server) {
-
-        // Listen for heartbeat in standalone mode
-        if (server.getServer().getMode() == BMotionServer.MODE_STANDALONE) {
-            startHeartBeatListener(server.getSocket())
-        }
 
         server.getSocket().addEventListener("initProB", String.class, new DataListener<String>() {
             @Override
@@ -81,9 +51,18 @@ class ProBSocketListenerProvider implements BMotionSocketListenerProvider {
             }
         });
 
+        server.getSocket().addConnectListener(new ConnectListener() {
+            @Override
+            public void onConnect(SocketIOClient client) {
+                log.info("Client connected")
+                if (exitThread) exitThread.interrupt();
+            }
+        });
+
         server.getSocket().addDisconnectListener(new DisconnectListener() {
             @Override
             public void onDisconnect(SocketIOClient client) {
+
                 def String id = clients.get(client)
                 def BMotion bms = getSession(id)
                 if (bms != null) {
@@ -91,17 +70,17 @@ class ProBSocketListenerProvider implements BMotionSocketListenerProvider {
                     clients.remove(client)
                     bms.disconnect();
                 }
+
+                // In standalone mode exit server when no client exists
+                if (server.getServer().getMode() == BMotionServer.MODE_STANDALONE) {
+                    log.info("Check if no clients exist " + server.getSocket().getAllClients().isEmpty().toString())
+                    if (server.getSocket().getAllClients().isEmpty()) {
+                        startTimer(server);
+                    }
+                }
+
             }
         });
-
-        server.getSocket().addEventListener("clientClosed", JsonObject.class,
-                new DataListener<JsonObject>() {
-                    @Override
-                    public void onData(final SocketIOClient client, JsonObject d,
-                                       final AckRequest ackRequest) {
-                        server.getServer().serverStartedListener?.serverCloseRequest();
-                    }
-                });
 
         server.getSocket().addEventListener("executeEvent", JsonObject.class,
                 new DataListener<JsonObject>() {
@@ -398,6 +377,37 @@ class ProBSocketListenerProvider implements BMotionSocketListenerProvider {
                         }
                     }
                 });
+
+    }
+
+    private void startTimer(BMotionSocketServer server) {
+
+        log.info("Going to start timer thread")
+        //ExecutorService singleThreadExecutor = Executors.newSingleThreadExecutor();
+        //singleThreadExecutor.execute();
+
+        exitThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                log.info("Timer thread started")
+                try {
+                    Thread.sleep(waitTime);
+                    log.info("Check if still no clients exist")
+                    if (server.getSocket().getAllClients().isEmpty()) {
+                        log.info("Close BMotion Studio for ProB server process")
+                        System.exit(-1)
+                    }
+                } catch (InterruptedException e) {
+                    log.info("Timer thread interrupted")
+                    //e.printStackTrace();
+                } finally {
+                    log.info("Exit timer thread")
+                    return;
+                }
+            }
+        });
+        exitThread.start();
+        //log.info("Is alive? " + exitThread.isAlive().toString())
 
     }
 
