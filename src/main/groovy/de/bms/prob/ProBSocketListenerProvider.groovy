@@ -25,7 +25,7 @@ class ProBSocketListenerProvider implements BMotionSocketListenerProvider {
 
     public final Map<String, BMotion> sessions = new HashMap<String, BMotion>();
     public final Map<SocketIOClient, String> clients = new HashMap<SocketIOClient, String>();
-    public final long waitTime = 25000;
+    public final long waitTime = 50000;
     private Thread exitThread;
 
     @Override
