@@ -275,26 +275,48 @@ class ProBSocketListenerProvider implements BMotionSocketListenerProvider {
                         def String id = d.data.id
                         def ProBVisualisation bms = getSession(id)
                         if (bms != null) {
+
                             def nodes = []
                             def edges = []
+                            def formulaMap = []
+
+                            d.data.formulas.each {
+                                formulaMap += [formula: it, translate: false]
+                            }
+
                             bms.getCurrentTrace().getTransitionList().each { Transition op ->
+
                                 def sId = op.getSource().getId()
                                 def dId = op.getDestination().getId()
-                                nodes.push([group: 'nodes', data: [id: sId, label: sId]]);
-                                nodes.push([group: 'nodes', data: [id: dId, label: dId]]);
+
+                                def res1 = [:]
+                                def res2 = [:]
+                                if (sId != 'root' && sId != '0') {
+                                    res1 = bms.evaluateFormulas([data: [stateId: sId, formulas: formulaMap]])
+                                }
+                                if (dId != 'root' && dId != '0') {
+                                    res2 = bms.evaluateFormulas([data: [stateId: dId, formulas: formulaMap]])
+                                }
+
+                                nodes.push([group: 'nodes', data: [id: sId, label: sId, results: res1]]);
+                                nodes.push([group: 'nodes', data: [id: dId, label: dId, results: res2]]);
+
                                 edges.push(
                                         [group: 'edges', data: [id: 'e' + sId + '' + dId, source: sId, target: dId, label: op.
                                                 getName()]]);
+
                             }
+
                             if (ackRequest.isAckRequested()) {
                                 ackRequest.sendAckData([nodes: nodes, edges: edges]);
                             }
+
                         }
                     }
                 });
 
         server.getSocket().
-                addEventListener("createCustomTransitionDiagram", JsonObject.class, new DataListener<JsonObject>() {
+                addEventListener("createProjectionDiagram", JsonObject.class, new DataListener<JsonObject>() {
                     @Override
                     public void onData(final SocketIOClient client, JsonObject d,
                                        final AckRequest ackRequest) {
@@ -314,7 +336,7 @@ class ProBSocketListenerProvider implements BMotionSocketListenerProvider {
                                 return list
                             }
 
-                            def expressions = d.data.expressions.collect {
+                            def expressions = d.data.formulas.collect {
 
                                 IEvalElement e = bms.getTrace().getModel().parseFormula(it);
                                 if (e.getKind() == EvalElementType.PREDICATE.toString()) {
@@ -355,9 +377,12 @@ class ProBSocketListenerProvider implements BMotionSocketListenerProvider {
                                         }
                                     }
 
-                                    nn["results"] = nn["translated"].collect {
-                                        reTranslate(it)
+                                    nn["results"] = [:]
+
+                                    expressions.eachWithIndex { exp, index ->
+                                        nn["results"][(exp)] = [result: reTranslate(nn["translated"][index])]
                                     }
+
                                     [data: nn]
 
                                 }
