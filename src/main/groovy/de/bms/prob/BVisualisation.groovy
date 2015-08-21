@@ -73,7 +73,7 @@ public class BVisualisation extends ProBVisualisation {
         try {
             return Translator.translate(er.value);
         } catch (BException e) {
-            throw new BMotionException("Error while translating formula " + formula + " " + e.getMessage());
+            throw new BMotionException("Error while translating formula " + er + " " + e.getMessage());
         }
     }
 
@@ -82,7 +82,6 @@ public class BVisualisation extends ProBVisualisation {
         def formulas = [:]
         def stateId = d.data.stateId ?: getCurrentState()
         d.data.formulas.each {
-            System.out.println(it)
             def t = it['translate']
             def f = it['formula']
             //def s = v.solutions ?: false
