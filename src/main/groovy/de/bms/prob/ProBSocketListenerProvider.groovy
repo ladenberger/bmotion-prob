@@ -216,7 +216,7 @@ class ProBSocketListenerProvider implements BMotionSocketListenerProvider {
                         }
                     }
                     if (ackRequest.isAckRequested()) {
-                        ackRequest.sendAckData([ops: ops]);
+                        ackRequest.sendAckData([events: ops]);
                     }
                 }
             }
