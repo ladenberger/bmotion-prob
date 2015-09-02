@@ -11,10 +11,8 @@ import de.prob.animator.domainobjects.EvalElementType
 import de.prob.animator.domainobjects.IEvalElement
 import de.prob.model.eventb.EventBMachine
 import de.prob.model.eventb.EventBModel
-import de.prob.statespace.FormalismType
-import de.prob.statespace.StateSpace
-import de.prob.statespace.Trace
-import de.prob.statespace.Transition
+import de.prob.scripting.Api
+import de.prob.statespace.*
 import de.prob.translator.Translator
 import de.prob.translator.types.Tuple
 import de.prob.webconsole.WebConsole
@@ -26,7 +24,16 @@ class ProBSocketListenerProvider implements BMotionSocketListenerProvider {
     public final Map<String, BMotion> sessions = new HashMap<String, BMotion>();
     public final Map<SocketIOClient, String> clients = new HashMap<SocketIOClient, String>();
     public final long waitTime = 50000;
+    public final long sessionWaitTime = 10000;
     private Thread exitThread;
+    private final Map<String, Thread> sessionThreads = new HashMap<String, Thread>();
+    private final AnimationSelector animations;
+    private final Api api;
+
+    public ProBSocketListenerProvider() {
+        animations = de.prob.Main.getInjector().getInstance(AnimationSelector.class)
+        api = de.prob.Main.getInjector().getInstance(Api.class)
+    }
 
     @Override
     void installListeners(BMotionSocketServer server) {
@@ -66,9 +73,16 @@ class ProBSocketListenerProvider implements BMotionSocketListenerProvider {
                 def String id = clients.get(client)
                 def BMotion bms = getSession(id)
                 if (bms != null) {
-                    sessions.remove(id)
+
+                    //sessions.remove(id)
                     clients.remove(client)
-                    bms.disconnect();
+                    bms.clients.remove(client)
+                    //bms.disconnect();
+
+                    if (bms.clients.isEmpty()) {
+                        startSessionTimer(bms)
+                    }
+
                 }
 
                 // In standalone mode exit server when no client exists
@@ -98,21 +112,28 @@ class ProBSocketListenerProvider implements BMotionSocketListenerProvider {
                     }
                 });
 
-        /*server.getSocket().addEventListener("reloadModel", JsonObject.class,
+        server.getSocket().addEventListener("initView", JsonObject.class,
                 new DataListener<JsonObject>() {
                     @Override
                     public void onData(final SocketIOClient client, JsonObject d,
                                        final AckRequest ackRequest) {
-                        def String traceId = d.data.traceId;
-                        def ProBVisualisation bmotion = getSession(traceId)
-                        if (bmotion != null) {
-                            def newTraceId = bmotion.reloadModel()
+                        def String id = d.data.id
+                        def ProBVisualisation bms = getSession(id)
+                        if (bms != null) {
+                            def sessionId = bms.getId().toString()
+                            bms.clients.add(client)
+                            def sessionThread = sessionThreads.get(sessionId)
+                            if (sessionThread != null) {
+                                sessionThread.interrupt()
+                                sessionThreads.remove(sessionId)
+                            }
+                            clients.put(client, id)
                             if (ackRequest.isAckRequested()) {
-                                ackRequest.sendAckData(newTraceId);
+                                ackRequest.sendAckData(bms.clientData);
                             }
                         }
                     }
-                });*/
+                });
 
         server.getSocket().addEventListener("initSession", JsonObject.class,
                 new DataListener<JsonObject>() {
@@ -121,30 +142,27 @@ class ProBSocketListenerProvider implements BMotionSocketListenerProvider {
                                        final AckRequest ackRequest) {
 
                         // Data from client
-                        def String path = d.data.path
-                        def String model = d.data.model
                         def String tool = d.data.tool
-                        def String id = d.data.id
-
-                        File templateFolder = new File(path)
-                        String modelFilePath = templateFolder.getPath() + File.separator + model
-
-                        de.bms.BMotion.log.info "BMotion Studio:  Templatefolder = " + templateFolder
-                        de.bms.BMotion.log.info "BMotion Studio: Modelfile = " + modelFilePath
+                        def String id = UUID.randomUUID() // The id should come from the client!
+                        def String manifest = d.data.manifest
+                        def String templateFolder = new File(manifest).getParent().toString()
+                        def String modelPath = templateFolder + File.separator + d.data.model
 
                         try {
 
                             def ProBVisualisation bms = createSession(id, tool, server.getServer().getVisualisationProvider());
                             if (bms != null) {
+                                bms.clientData = d.data
+                                bms.clientData.templateFolder = templateFolder
                                 bms.setMode(server.getServer().getMode())
-                                bms.initSession(modelFilePath)
-                                bms.setClient(client)
-                                clients.put(client, id)
+                                bms.initSession(modelPath)
                                 sessions.put(id, bms)
                                 de.bms.BMotion.log.info "Created new BMotion session " + id
                                 Trace t = bms.getTrace()
 
-                                def clientData = [id: bms.getId().toString(), stateId: t.getCurrentState().getId(), traceId: t.getUUID().toString(), initialised: t.getCurrentState().isInitialised()]
+                                bms.clientData.put('id', bms.getId().toString())
+                                bms.clientData.put('stateId', t.getCurrentState().getId())
+                                bms.clientData.put('initialised', t.getCurrentState().isInitialised())
 
                                 if (bms.getModel() instanceof EventBModel) {
                                     def EventBMachine eventBMachine = t.getModel().getMainComponent()
@@ -160,12 +178,12 @@ class ProBSocketListenerProvider implements BMotionSocketListenerProvider {
                                         }.flatten()
                                     }
                                     if (ackRequest.isAckRequested()) {
-                                        clientData.put('refinements', _getrefs(eventBMachine.refines).reverse() << eventBMachine.toString())
-                                        ackRequest.sendAckData(clientData);
+                                        bms.clientData.put('refinements', _getrefs(eventBMachine.refines).reverse() << eventBMachine.toString())
+                                        ackRequest.sendAckData(id);
                                     }
                                 } else {
                                     if (ackRequest.isAckRequested()) {
-                                        ackRequest.sendAckData(clientData);
+                                        ackRequest.sendAckData(id);
                                     }
                                 }
                             }
@@ -433,6 +451,43 @@ class ProBSocketListenerProvider implements BMotionSocketListenerProvider {
         });
         exitThread.start();
         //log.info("Is alive? " + exitThread.isAlive().toString())
+
+    }
+
+    private void startSessionTimer(BMotion bms) {
+
+        log.info("Going to start session timer thread")
+        //ExecutorService singleThreadExecutor = Executors.newSingleThreadExecutor();
+        //singleThreadExecutor.execute();
+
+        def sessionId = bms.getId().toString()
+        def sessionThread = sessionThreads.get(sessionId)
+
+        if (sessionThread == null) {
+
+            sessionThread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        Thread.sleep(sessionWaitTime);
+                        if (bms.clients.isEmpty()) {
+                            log.info("Remove session " + bms.getId())
+                            bms.disconnect()
+                            sessions.remove(sessionId)
+                        }
+                    } catch (InterruptedException e) {
+                        log.info("Session timer thread interrupted")
+                        //e.printStackTrace();
+                    } finally {
+                        log.info("Exit session timer thread")
+                        return;
+                    }
+                }
+            });
+            sessionThreads.put(sessionId, sessionThread)
+            sessionThread.start()
+
+        }
 
     }
 

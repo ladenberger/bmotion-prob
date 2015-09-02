@@ -1,6 +1,7 @@
 package de.bms.prob
 
 import de.bms.BMotion
+import de.bms.BMotionException
 import de.bms.BMotionScriptEngineProvider
 import de.prob.model.representation.AbstractModel
 import de.prob.scripting.Api
@@ -45,6 +46,7 @@ public abstract class ProBVisualisation extends BMotion implements IAnimationCha
 
     @Override
     public void disconnect() {
+        log.info("ProB Session " + id + " disconnected!")
         animations.deregisterAnimationChangeListener(this)
         animations.deregisterModelChangedListeners(this)
     }
@@ -60,16 +62,17 @@ public abstract class ProBVisualisation extends BMotion implements IAnimationCha
 
                 def currentTransition = changeTrace.getCurrentTransition()
                 def currentState = changeTrace.getCurrentState()
-                def clientData = [stateId: currentState.getId(), traceId: traceId]
-
+                clientData.stateId = currentState.getId()
+                def cData = [stateId: currentState.getId(), traceId: traceId]
                 // TODO: Is there a better way to check that the current transition is the initialise machine event?
                 if (currentTransition.toString().startsWith("\$initialise_machine")) {
-                    checkObserver(TRIGGER_MODEL_INITIALISED, clientData)
+                    checkObserver(TRIGGER_MODEL_INITIALISED, cData)
                 } else if (currentTransition.toString().startsWith("\$setup_constants")) {
-                    checkObserver(TRIGGER_MODEL_SETUP_CONSTANTS, clientData)
+                    checkObserver(TRIGGER_MODEL_SETUP_CONSTANTS, cData)
                 }
                 if (currentState.isInitialised()) {
-                    checkObserver(BMotion.TRIGGER_ANIMATION_CHANGED, clientData)
+                    checkObserver(BMotion.TRIGGER_ANIMATION_CHANGED, cData)
+                    clientData.initialised = true
                 }
 
                 this.currentTrace = changeTrace
@@ -92,39 +95,52 @@ public abstract class ProBVisualisation extends BMotion implements IAnimationCha
     }
 
     @Override
-    public void loadModel(File modelFile, boolean force) {
-        if (currentTrace != null) {
-            if (force || !currentTrace.getModel().getModelFile().getCanonicalPath().
-                    equals(modelFile.getCanonicalPath())) {
-                // If a current trace is set and a load was forced, add a new trace
-                // and remove the old one from the AnimationSelector
-                def oldTrace = this.currentTrace
-                this.currentTrace = createNewModelTrace(modelFile.getCanonicalPath())
-                this.traceId = this.currentTrace.getUUID()
-                animations.addNewAnimation(this.currentTrace)
-                animations.removeTrace(oldTrace)
+    public void initModel(String modelPath) throws BMotionException {
+
+        File modelFile = new File(modelPath)
+        if (modelFile.exists()) {
+
+            log.info "BMotion Studio: Loading model " + modelPath
+
+            if (currentTrace != null) {
+                if (!currentTrace.getModel().getModelFile().getCanonicalPath().
+                        equals(modelFile.getCanonicalPath())) {
+                    // If a current trace is set and a load was forced, add a new trace
+                    // and remove the old one from the AnimationSelector
+                    def oldTrace = this.currentTrace
+                    this.currentTrace = createNewModelTrace(modelFile.getCanonicalPath())
+                    this.traceId = this.currentTrace.getUUID()
+                    animations.addNewAnimation(this.currentTrace)
+                    animations.removeTrace(oldTrace)
+                } else {
+                    animations.changeCurrentAnimation(currentTrace)
+                }
             } else {
-                animations.changeCurrentAnimation(currentTrace)
-            }
-        } else {
-            def found = false;
-            //if (mode == BMotionServer.MODE_INTEGRATED || mode == BMotionServer.MODE_ONLINE) {
-            for (Trace t : animations.getTraces()) {
-                if (t.getModel().getModelFile().getCanonicalPath().equals(modelFile.getCanonicalPath())) {
-                    this.currentTrace = t
-                    this.traceId = t.getUUID()
-                    found = true;
-                    break;
+                def found = false;
+                //if (mode == BMotionServer.MODE_INTEGRATED || mode == BMotionServer.MODE_ONLINE) {
+                for (Trace t : animations.getTraces()) {
+                    if (t.getModel().getModelFile().getCanonicalPath().equals(modelFile.getCanonicalPath())) {
+                        this.currentTrace = t
+                        this.traceId = t.getUUID()
+                        found = true;
+                        break;
+                    }
+                }
+                //}
+                if (!found) {
+                    // Create a new trace for the model and add it to the AnimationSelector
+                    this.currentTrace = createNewModelTrace(modelFile.getCanonicalPath())
+                    this.traceId = this.currentTrace.getUUID()
+                    animations.addNewAnimation(this.currentTrace)
                 }
             }
-            //}
-            if (!found) {
-                // Create a new trace for the model and add it to the AnimationSelector
-                this.currentTrace = createNewModelTrace(modelFile.getCanonicalPath())
-                this.traceId = this.currentTrace.getUUID()
-                animations.addNewAnimation(this.currentTrace)
-            }
+
+            clientData.traceId = this.traceId
+
+        } else {
+            throw new BMotionException("Model " + modelPath + " does not exist")
         }
+
     }
 
     private Trace createNewModelTrace(String modelPath) {
