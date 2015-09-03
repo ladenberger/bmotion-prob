@@ -1,0 +1,101 @@
+apply plugin: 'java'
+
+project.version = '0.2.1-SNAPSHOT'
+project.group = 'de.hhu.stups'
+project.archivesBaseName = "bmotion-prob"
+
+project.sourceCompatibility = '1.7'
+project.targetCompatibility = '1.7'
+
+repositories {
+    mavenCentral()
+    maven {
+        name "sonatype snapshots"
+        url "https://oss.sonatype.org/content/repositories/snapshots"
+    }
+    maven {
+        name "cobra"
+        url "http://cobra.cs.uni-duesseldorf.de/artifactory/repo"
+    }
+}
+
+configurations.all {
+    resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+}
+
+def jetty_version = '8.1.8.v20121106'
+
+dependencies {
+    compile(group: 'de.bmotion', name: 'bmotion', version: '0.2.0-SNAPSHOT')
+    compile(group: 'de.prob2', name: 'de.prob2.kernel', version: '2.0.0-milestone-25')
+}
+
+if (project.hasProperty('ossrhUsername') && project.hasProperty('ossrhPassword')) {
+
+    apply plugin: 'signing'
+
+    signing {
+        sign configurations.archives
+    }
+
+    task javadocJar(type: Jar) {
+        classifier = 'javadoc'
+        from javadoc
+    }
+
+    task sourcesJar(type: Jar) {
+        classifier = 'sources'
+        from sourceSets.main.allSource
+    }
+
+    artifacts {
+        archives javadocJar, sourcesJar
+    }
+
+    uploadArchives {
+        repositories {
+            mavenDeployer {
+                beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+                repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+                    authentication(userName: ossrhUsername, password: ossrhPassword)
+                }
+
+                snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+                    authentication(userName: ossrhUsername, password: ossrhPassword)
+                }
+
+                pom.project {
+
+                    name 'BMotion Studio for ProB Server'
+                    packaging 'jar'
+                    // optionally artifactId can be defined here
+                    description "BMotion Studio for ProB Server"
+                    url 'https://github.com/ladenberger/bmotion-prob'
+
+                    licenses {
+                        license {
+                            name 'Eclipse Public License, Version 1.0'
+                            url 'https://www.eclipse.org/legal/epl-v10.html'
+                        }
+                    }
+
+                    scm {
+                        connection 'scm:git:https://github.com/ladenberger/bmotion-prob.git'
+                        developerConnection 'scm:git:git@github.com:ladenberger/bmotion-prob.git'
+                        url 'https://github.com/ladenberger/bmotion-prob'
+                    }
+
+                    developers {
+                        developer {
+                            id 'ladenberger'
+                            name 'Lukas Ladenberger'
+                            email 'ladenberger@cs.uni-duesseldorf.de'
+                        }
+                    }
+
+                }
+            }
+        }
+    }
+}

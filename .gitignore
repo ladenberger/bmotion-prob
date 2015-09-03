@@ -4,3 +4,4 @@
 *.iws
 release.properties
 .directory
+build
