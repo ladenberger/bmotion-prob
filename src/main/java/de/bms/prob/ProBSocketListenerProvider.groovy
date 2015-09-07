@@ -114,7 +114,7 @@ class ProBSocketListenerProvider implements BMotionSocketListenerProvider {
                 if (server.getServer().getMode() == BMotionServer.MODE_STANDALONE) {
                     log.info("Check if no clients exist " + server.getSocket().getAllClients().isEmpty().toString())
                     if (server.getSocket().getAllClients().isEmpty()) {
-                        startTimer(server);
+                        //startTimer(server);
                     }
                 }
 
