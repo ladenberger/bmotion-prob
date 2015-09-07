@@ -6,9 +6,7 @@ import com.corundumstudio.socketio.listener.ConnectListener
 import com.corundumstudio.socketio.listener.DataListener
 import com.corundumstudio.socketio.listener.DisconnectListener
 import de.bms.*
-import de.prob.animator.IAnimator
 import de.prob.animator.command.GetTransitionDiagramCommand
-import de.prob.animator.command.GetVersionCommand
 import de.prob.animator.domainobjects.EvalElementType
 import de.prob.animator.domainobjects.IEvalElement
 import de.prob.cli.CliVersionNumber
@@ -65,14 +63,7 @@ class ProBSocketListenerProvider implements BMotionSocketListenerProvider {
             @Override
             public void onData(final SocketIOClient client, JsonObject obj,
                                final AckRequest ackRequest) {
-
-                IAnimator animator = de.prob.Main.getInjector().getInstance(IAnimator.class);
-                GetVersionCommand versionCommand = new GetVersionCommand();
-                animator.execute(versionCommand);
-                animator.cli.shutdown()
-                CliVersionNumber version = versionCommand.getVersion();
-
-                log.info("ProB cli version " + version)
+                CliVersionNumber version = api.getVersion();
                 if (ackRequest.isAckRequested()) {
                     ackRequest.sendAckData([version: version]);
                 }
