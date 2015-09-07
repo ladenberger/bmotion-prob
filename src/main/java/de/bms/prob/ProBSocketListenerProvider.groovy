@@ -12,7 +12,10 @@ import de.prob.animator.domainobjects.IEvalElement
 import de.prob.cli.CliVersionNumber
 import de.prob.model.eventb.EventBModel
 import de.prob.scripting.Api
-import de.prob.statespace.*
+import de.prob.statespace.FormalismType
+import de.prob.statespace.StateSpace
+import de.prob.statespace.Trace
+import de.prob.statespace.Transition
 import de.prob.translator.Translator
 import de.prob.translator.types.Tuple
 import de.prob.webconsole.WebConsole
@@ -27,11 +30,9 @@ class ProBSocketListenerProvider implements BMotionSocketListenerProvider {
     public final long sessionWaitTime = 10000;
     private Thread exitThread;
     private final Map<String, Thread> sessionThreads = new HashMap<String, Thread>();
-    private final AnimationSelector animations;
     private final Api api;
 
     public ProBSocketListenerProvider() {
-        animations = de.prob.Main.getInjector().getInstance(AnimationSelector.class)
         api = de.prob.Main.getInjector().getInstance(Api.class)
     }
 
