@@ -21,7 +21,7 @@ public abstract class ProBVisualisation extends BMotion implements IAnimationCha
 
     public ProBVisualisation(final UUID id, final BMotionScriptEngineProvider scriptEngineProvider) {
         super(id, scriptEngineProvider)
-        animations = de.prob.Main.getInjector().getInstance(AnimationSelector.class)
+        animations = de.prob.servlet.Main.getInjector().getInstance(AnimationSelector.class)
         api = de.prob.Main.getInjector().getInstance(Api.class)
         animations.registerAnimationChangeListener(this)
         animations.registerModelChangedListener(this)
@@ -148,8 +148,8 @@ public abstract class ProBVisualisation extends BMotion implements IAnimationCha
             modelPath = modelPath.replace("\\", "\\\\")
         }
         def formalism = getFormalism(modelPath)
-        def model = Eval.x(api, "x.${formalism}_load('$modelPath')")
-        return new Trace(model);
+        def StateSpace s = Eval.x(api, "x.${formalism}_load('$modelPath')")
+        return new Trace(s);
     }
 
     protected String getFormalism(final String modelPath) {

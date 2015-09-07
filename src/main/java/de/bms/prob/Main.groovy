@@ -23,7 +23,7 @@ public class Main {
                     probargs << "-port"
                     probargs << server.cmdLine.getOptionValue("probPort")
                 }
-                de.prob.Main.main(probargs.toArray(new String[probargs.size()]))
+                de.prob.servlet.Main.main(probargs.toArray(new String[probargs.size()]))
             }
         }).start();
 

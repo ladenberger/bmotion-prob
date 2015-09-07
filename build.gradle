@@ -44,7 +44,7 @@ def jetty_version = '8.1.8.v20121106'
 
 dependencies {
     compile(group: 'de.hhu.stups', name: 'bmotion', version: '0.2.1')
-    compile(group: 'de.prob2', name: 'de.prob2.kernel', version: '2.0.0-milestone-25')
+    compile(group: 'de.hhu.stups', name: 'prob2-ui-servlets', version: '2.0.2-SNAPSHOT')
 }
 
 if (project.hasProperty('ossrhUsername') && project.hasProperty('ossrhPassword')) {

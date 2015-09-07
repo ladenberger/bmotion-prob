@@ -1,6 +1,7 @@
 package de.bms.prob
 
 import de.bms.BMotionServer
+import de.prob.scripting.Api
 import groovy.util.logging.Slf4j
 
 @Slf4j
@@ -24,7 +25,7 @@ public class Standalone {
                     probargs << "-port"
                     probargs << server.cmdLine.getOptionValue("probPort")
                 }
-                de.prob.Main.main(probargs.toArray(new String[probargs.size()]))
+                de.prob.servlet.Main.main(probargs.toArray(new String[probargs.size()]))
             }
         }).start();
 

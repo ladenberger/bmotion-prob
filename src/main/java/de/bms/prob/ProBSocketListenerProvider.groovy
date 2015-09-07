@@ -9,7 +9,7 @@ import de.bms.*
 import de.prob.animator.command.GetTransitionDiagramCommand
 import de.prob.animator.domainobjects.EvalElementType
 import de.prob.animator.domainobjects.IEvalElement
-import de.prob.model.eventb.EventBMachine
+import de.prob.cli.CliVersionNumber
 import de.prob.model.eventb.EventBModel
 import de.prob.scripting.Api
 import de.prob.statespace.*
@@ -54,6 +54,29 @@ class ProBSocketListenerProvider implements BMotionSocketListenerProvider {
                                final AckRequest ackRequest) {
                 if (ackRequest.isAckRequested()) {
                     ackRequest.sendAckData([workspace: server.getServer().getWorkspacePath()]);
+                }
+            }
+        });
+
+        server.getSocket().addEventListener("checkProBCli", JsonObject.class, new DataListener<JsonObject>() {
+            @Override
+            public void onData(final SocketIOClient client, JsonObject obj,
+                               final AckRequest ackRequest) {
+                CliVersionNumber version = api.getVersion();
+                if (ackRequest.isAckRequested()) {
+                    ackRequest.sendAckData([version: version]);
+                }
+            }
+        });
+
+        server.getSocket().addEventListener("downloadProBCli", JsonObject.class, new DataListener<JsonObject>() {
+            @Override
+            public void onData(final SocketIOClient client, JsonObject obj,
+                               final AckRequest ackRequest) {
+                def version = api.upgrade("latest")
+                api.downloader.installCSPM()
+                if (ackRequest.isAckRequested()) {
+                    ackRequest.sendAckData([version: version]);
                 }
             }
         });
@@ -165,20 +188,11 @@ class ProBSocketListenerProvider implements BMotionSocketListenerProvider {
                                 bms.clientData.put('initialised', t.getCurrentState().isInitialised())
 
                                 if (bms.getModel() instanceof EventBModel) {
-                                    def EventBMachine eventBMachine = t.getModel().getMainComponent()
-                                    def _getrefs
-                                    _getrefs = { refines ->
-                                        return refines.collect() {
-                                            def refs = it.refines
-                                            if (refs) {
-                                                [it.toString(), _getrefs(refs)]
-                                            } else {
-                                                it.toString()
-                                            }
-                                        }.flatten()
-                                    }
+                                    def EventBModel eventBModel = t.getModel()
                                     if (ackRequest.isAckRequested()) {
-                                        bms.clientData.put('refinements', _getrefs(eventBMachine.refines).reverse() << eventBMachine.toString())
+                                        bms.clientData.put('refinements', eventBModel.getMachines().collect {
+                                            return it.name;
+                                        })
                                         ackRequest.sendAckData(id);
                                     }
                                 } else {
