@@ -64,6 +64,7 @@ class ProBSocketListenerProvider implements BMotionSocketListenerProvider {
             public void onData(final SocketIOClient client, JsonObject obj,
                                final AckRequest ackRequest) {
                 CliVersionNumber version = api.getVersion();
+                log.info("ProB cli version " + version)
                 if (ackRequest.isAckRequested()) {
                     ackRequest.sendAckData([version: version]);
                 }
@@ -75,6 +76,7 @@ class ProBSocketListenerProvider implements BMotionSocketListenerProvider {
             public void onData(final SocketIOClient client, JsonObject obj,
                                final AckRequest ackRequest) {
                 def version = api.upgrade("latest")
+                log.info("Upgraded to ProB clic version " + version)
                 api.downloader.installCSPM()
                 if (ackRequest.isAckRequested()) {
                     ackRequest.sendAckData([version: version]);
