@@ -26,7 +26,7 @@ class ProBSocketListenerProvider implements BMotionSocketListenerProvider {
 
     public final Map<String, BMotion> sessions = new HashMap<String, BMotion>();
     public final Map<SocketIOClient, String> clients = new HashMap<SocketIOClient, String>();
-    public final long waitTime = 25000;
+    public final long waitTime = 50000;
     public final long sessionWaitTime = 10000;
     private Thread exitThread;
     private final Map<String, Thread> sessionThreads = new HashMap<String, Thread>();
@@ -63,9 +63,11 @@ class ProBSocketListenerProvider implements BMotionSocketListenerProvider {
             @Override
             public void onData(final SocketIOClient client, JsonObject obj,
                                final AckRequest ackRequest) {
-                CliVersionNumber version = api.getVersion();
+                CliVersionNumber v = api.getVersion();
+                def String version = v ?: null;
+                def String revision = v ? v.revision : null
                 if (ackRequest.isAckRequested()) {
-                    ackRequest.sendAckData([version: version]);
+                    ackRequest.sendAckData([version: version, revision: revision]);
                 }
             }
         });
@@ -74,7 +76,8 @@ class ProBSocketListenerProvider implements BMotionSocketListenerProvider {
             @Override
             public void onData(final SocketIOClient client, JsonObject obj,
                                final AckRequest ackRequest) {
-                def version = api.upgrade("latest")
+                def String targetVersion = obj.data.version
+                def version = api.upgrade(targetVersion)
                 log.info("Upgraded to ProB clic version " + version)
                 api.downloader.installCSPM()
                 if (ackRequest.isAckRequested()) {
