@@ -43,7 +43,7 @@ configurations.all {
 def jetty_version = '8.1.8.v20121106'
 
 dependencies {
-    compile(group: 'de.hhu.stups', name: 'bmotion', version: '0.2.2-SNAPSHOT')
+    compile(group: 'de.hhu.stups', name: 'bmotion', version: '0.2.3-SNAPSHOT')
     compile(group: 'de.hhu.stups', name: 'prob2-ui-servlets', version: '2.0.2-SNAPSHOT')
 }
 
