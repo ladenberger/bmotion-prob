@@ -315,11 +315,10 @@ class ProBSocketListenerProvider implements BMotionSocketListenerProvider {
 
                             def nodes = []
                             def edges = []
-                            def formulaMap = []
-
+                            /*def formulaMap = []
                             d.data.formulas.each {
                                 formulaMap += [formula: it, translate: false]
-                            }
+                            }*/
 
                             bms.getCurrentTrace().getTransitionList().each { Transition op ->
 
@@ -329,10 +328,10 @@ class ProBSocketListenerProvider implements BMotionSocketListenerProvider {
                                 def res1 = [:]
                                 def res2 = [:]
                                 if (sId != 'root' && sId != '0') {
-                                    res1 = bms.evaluateFormulas([data: [stateId: sId, formulas: formulaMap]])
+                                    res1 = bms.evaluateFormulas([data: [stateId: sId, formulas: d.data.formulas]])
                                 }
                                 if (dId != 'root' && dId != '0') {
-                                    res2 = bms.evaluateFormulas([data: [stateId: dId, formulas: formulaMap]])
+                                    res2 = bms.evaluateFormulas([data: [stateId: dId, formulas: d.data.formulas]])
                                 }
 
                                 nodes.push([group: 'nodes', data: [id: sId, label: sId, results: res1]]);
@@ -375,7 +374,7 @@ class ProBSocketListenerProvider implements BMotionSocketListenerProvider {
 
                             def expressions = d.data.formulas.collect {
 
-                                IEvalElement e = bms.getTrace().getModel().parseFormula(it);
+                                IEvalElement e = bms.getTrace().getModel().parseFormula(it.formula);
                                 if (e.getKind() == EvalElementType.PREDICATE.toString()) {
                                     return 'bool(' + e.getCode() + ')';
                                 } else {
@@ -417,7 +416,7 @@ class ProBSocketListenerProvider implements BMotionSocketListenerProvider {
                                     nn["results"] = [:]
 
                                     expressions.eachWithIndex { exp, index ->
-                                        nn["results"][(exp)] = [result: reTranslate(nn["translated"][index])]
+                                        nn["results"][(exp)] = [result: reTranslate(nn["translated"][index]), trans: nn["translated"][index]]
                                     }
 
                                     [data: nn]
