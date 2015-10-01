@@ -95,7 +95,7 @@ public abstract class ProBVisualisation extends BMotion implements IAnimationCha
     }
 
     @Override
-    public void initModel(String modelPath) throws BMotionException {
+    public void initModel(String modelPath, options) throws BMotionException {
 
         File modelFile = new File(modelPath)
         if (modelFile.exists()) {
@@ -108,7 +108,7 @@ public abstract class ProBVisualisation extends BMotion implements IAnimationCha
                     // If a current trace is set and a load was forced, add a new trace
                     // and remove the old one from the AnimationSelector
                     def oldTrace = this.currentTrace
-                    this.currentTrace = createNewModelTrace(modelFile.getCanonicalPath())
+                    this.currentTrace = createNewModelTrace(modelFile.getCanonicalPath(), options)
                     this.traceId = this.currentTrace.getUUID()
                     animations.addNewAnimation(this.currentTrace)
                     animations.removeTrace(oldTrace)
@@ -119,7 +119,7 @@ public abstract class ProBVisualisation extends BMotion implements IAnimationCha
                 def found = false;
                 //if (mode == BMotionServer.MODE_INTEGRATED || mode == BMotionServer.MODE_ONLINE) {
                 for (Trace t : animations.getTraces()) {
-                    if (t.getModel().getModelFile().getCanonicalPath().equals(modelFile.getCanonicalPath())) {
+                    if (t.getModel().getModelFile()?.getCanonicalPath().equals(modelFile.getCanonicalPath())) {
                         this.currentTrace = t
                         this.traceId = t.getUUID()
                         found = true;
@@ -129,7 +129,7 @@ public abstract class ProBVisualisation extends BMotion implements IAnimationCha
                 //}
                 if (!found) {
                     // Create a new trace for the model and add it to the AnimationSelector
-                    this.currentTrace = createNewModelTrace(modelFile.getCanonicalPath())
+                    this.currentTrace = createNewModelTrace(modelFile.getCanonicalPath(), options)
                     this.traceId = this.currentTrace.getUUID()
                     animations.addNewAnimation(this.currentTrace)
                 }
@@ -143,12 +143,13 @@ public abstract class ProBVisualisation extends BMotion implements IAnimationCha
 
     }
 
-    private Trace createNewModelTrace(String modelPath) {
+    private Trace createNewModelTrace(String modelPath, options) {
         if (System.getProperty("os.name").toLowerCase().indexOf("win") >= 0) {
             modelPath = modelPath.replace("\\", "\\\\")
         }
         def formalism = getFormalism(modelPath)
-        def StateSpace s = Eval.x(api, "x.${formalism}_load('$modelPath')")
+        //def StateSpace s = Eval.x(api, "x.${formalism}_load('$modelPath','$options')")
+        def StateSpace s = api."${formalism}_load"(modelPath, options)
         return new Trace(s);
     }
 

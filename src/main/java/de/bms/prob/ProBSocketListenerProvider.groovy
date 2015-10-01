@@ -183,7 +183,7 @@ class ProBSocketListenerProvider implements BMotionSocketListenerProvider {
                                 bms.clientData = d.data
                                 bms.clientData.templateFolder = templateFolder
                                 bms.setMode(server.getServer().getMode())
-                                bms.initSession(modelPath)
+                                bms.initSession(modelPath, d.data.prob.preferences)
                                 sessions.put(id, bms)
                                 de.bms.BMotion.log.info "Created new BMotion session " + id
                                 Trace t = bms.getTrace()
