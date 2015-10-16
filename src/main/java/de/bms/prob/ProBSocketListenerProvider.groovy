@@ -292,7 +292,11 @@ class ProBSocketListenerProvider implements BMotionSocketListenerProvider {
                                 }
                             }
                         } else {
-                            trans = t.getCurrentState().findTransition(op.name, op.predicate == null ? [] : op.predicate);
+                            def fpredicate = [];
+                            if (op.predicate != null && op.predicate.size() > 0) {
+                                fpredicate = op.predicate;
+                            }
+                            trans = t.getCurrentState().findTransition(op.name, fpredicate);
                         }
                         def canExecute = trans != null;
                         def transId = trans != null ? trans.getId() : null;
