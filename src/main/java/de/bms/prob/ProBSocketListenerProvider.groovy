@@ -180,7 +180,7 @@ class ProBSocketListenerProvider implements BMotionSocketListenerProvider {
 
                             def ProBVisualisation bms = createSession(id, tool, server.getServer().getVisualisationProvider());
                             if (bms != null) {
-                                bms.clientData = d.data
+                                //bms.clientData = d.data
                                 bms.clientData.templateFolder = templateFolder
                                 bms.setMode(server.getServer().getMode())
                                 bms.initSession(modelPath, d.data.prob.preferences)
@@ -190,6 +190,7 @@ class ProBSocketListenerProvider implements BMotionSocketListenerProvider {
 
                                 bms.clientData.put('id', bms.getId().toString())
                                 bms.clientData.put('stateId', t.getCurrentState().getId())
+                                bms.clientData.put('traceId', t.getUUID())
                                 bms.clientData.put('initialised', t.getCurrentState().isInitialised())
 
                                 if (bms.getModel() instanceof EventBModel) {
