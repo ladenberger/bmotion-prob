@@ -159,6 +159,8 @@ class ProBSocketListenerProvider implements BMotionSocketListenerProvider {
                             if (ackRequest.isAckRequested()) {
                                 ackRequest.sendAckData(bms.clientData);
                             }
+                        } else {
+                            ackRequest.sendAckData([errors: ["Session with id " + id + " does not exists!"]]);
                         }
                     }
                 });
@@ -174,14 +176,19 @@ class ProBSocketListenerProvider implements BMotionSocketListenerProvider {
                         def String id = UUID.randomUUID() // The id should come from the client!
                         def String manifest = d.data.manifest
                         def String templateFolder = new File(manifest).getParent().toString()
-                        def String modelPath = templateFolder + File.separator + d.data.model
+                        def String modelPath
+                        if (BMotionServer.MODE_ONLINE.equals(server.getServer().getMode())) {
+                            modelPath = server.getServer().getWorkspacePath() + File.separator + templateFolder + File.separator + d.data.model
+                        } else {
+                            modelPath = templateFolder + File.separator + d.data.model
+                        }
 
                         try {
 
                             def ProBVisualisation bms = createSession(id, tool, server.getServer().getVisualisationProvider());
                             if (bms != null) {
                                 //bms.clientData = d.data
-                                bms.clientData.templateFolder = templateFolder
+                                bms.clientData.put('templateFolder', templateFolder)
                                 bms.setMode(server.getServer().getMode())
                                 bms.initSession(modelPath, d.data.prob.preferences)
                                 sessions.put(id, bms)

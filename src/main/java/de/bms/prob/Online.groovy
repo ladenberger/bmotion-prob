@@ -10,7 +10,7 @@ public class Online {
         // Start BMotion Server
         BMotionServer server = ProBServerFactory.getServer(args)
         server.setMode(BMotionServer.MODE_ONLINE)
-        server.startWithJetty()
+        server.start()
 
         // Start ProB Server
         new Thread(new Runnable() {
@@ -28,8 +28,6 @@ public class Online {
         }).start();
 
         System.out.println("ProB 2 Server started on port " + WebConsole.getPort())
-
-        server.openBrowser()
 
     }
 
