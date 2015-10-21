@@ -7,6 +7,10 @@ public class Online {
 
     public static void main(final String[] args) throws InterruptedException {
 
+        if (!args.contains("-workspace")) {
+            throw new InterruptedException("Please specify workspace.");
+        }
+
         // Start BMotion Server
         BMotionServer server = ProBServerFactory.getServer(args)
         server.setMode(BMotionServer.MODE_ONLINE)
