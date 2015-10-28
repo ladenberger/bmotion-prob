@@ -177,10 +177,15 @@ class ProBSocketListenerProvider implements BMotionSocketListenerProvider {
                         def String manifest = d.data.manifest
                         def String templateFolder = new File(manifest).getParent().toString()
                         def String modelPath
+
                         if (BMotionServer.MODE_ONLINE.equals(server.getServer().getMode())) {
                             modelPath = server.getServer().getWorkspacePath() + File.separator + templateFolder + File.separator + d.data.model
                         } else {
-                            modelPath = templateFolder + File.separator + d.data.model
+                            if (new File(d.data.model).isAbsolute()) {
+                                modelPath = d.data.model
+                            } else {
+                                modelPath = templateFolder + File.separator + d.data.model
+                            }
                         }
 
                         try {
