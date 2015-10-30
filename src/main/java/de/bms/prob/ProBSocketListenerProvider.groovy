@@ -415,6 +415,7 @@ class ProBSocketListenerProvider implements BMotionSocketListenerProvider {
 
                                 nodes = cmd.getNodes().collect {
                                     def nn = it.value.properties
+                                    System.out.println(it.value.properties)
                                     nn["translated"] = []
 
                                     if (!it.value.labels.contains("<< undefined >>") && it.value.id != "1") {
@@ -432,8 +433,8 @@ class ProBSocketListenerProvider implements BMotionSocketListenerProvider {
 
                                     nn["results"] = [:]
 
-                                    expressions.eachWithIndex { exp, index ->
-                                        nn["results"][(exp)] = [result: reTranslate(nn["translated"][index]), trans: nn["translated"][index]]
+                                    d.data.formulas.eachWithIndex { exp, index ->
+                                        nn["results"][(exp.formula)] = [result: reTranslate(nn["translated"][index]), trans: nn["translated"][index]]
                                     }
 
                                     [data: nn]
