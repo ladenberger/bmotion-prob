@@ -415,7 +415,6 @@ class ProBSocketListenerProvider implements BMotionSocketListenerProvider {
 
                                 nodes = cmd.getNodes().collect {
                                     def nn = it.value.properties
-                                    System.out.println(it.value.properties)
                                     nn["translated"] = []
 
                                     if (!it.value.labels.contains("<< undefined >>") && it.value.id != "1") {
