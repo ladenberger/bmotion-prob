@@ -124,126 +124,116 @@ class ProBSocketListenerProvider implements BMotionSocketListenerProvider {
             }
         });
 
-        server.getSocket().addEventListener("executeEvent", JsonObject.class,
-                new DataListener<JsonObject>() {
-                    @Override
-                    public void onData(final SocketIOClient client, JsonObject d,
-                                       final AckRequest ackRequest) {
-                        def String id = d.data.id
-                        def ProBVisualisation bms = getSession(id)
-                        if (bms != null) {
-                            def returnValue = bms.executeEvent(d.data)
-                            if (ackRequest.isAckRequested()) {
-                                ackRequest.sendAckData(returnValue);
-                            }
-                        }
+        server.getSocket().addEventListener("executeEvent", JsonObject.class, new DataListener<JsonObject>() {
+            @Override
+            public void onData(final SocketIOClient client, JsonObject d,
+                               final AckRequest ackRequest) {
+                def String id = d.data.id
+                def ProBVisualisation bms = getSession(id)
+                if (bms != null) {
+                    def returnValue = bms.executeEvent(d.data)
+                    if (ackRequest.isAckRequested()) {
+                        ackRequest.sendAckData(returnValue);
                     }
-                });
+                }
+            }
+        });
 
-        server.getSocket().addEventListener("initView", JsonObject.class,
-                new DataListener<JsonObject>() {
-                    @Override
-                    public void onData(final SocketIOClient client, JsonObject d,
-                                       final AckRequest ackRequest) {
-                        def String id = d.data.id
-                        def ProBVisualisation bms = getSession(id)
-                        if (bms != null) {
-                            def sessionId = bms.getId().toString()
-                            bms.clients.add(client)
-                            def sessionThread = sessionThreads.get(sessionId)
-                            if (sessionThread != null) {
-                                sessionThread.interrupt()
-                                sessionThreads.remove(sessionId)
-                            }
-                            clients.put(client, id)
-                            if (ackRequest.isAckRequested()) {
-                                ackRequest.sendAckData(bms.clientData);
-                            }
+        server.getSocket().addEventListener("initView", JsonObject.class, new DataListener<JsonObject>() {
+            @Override
+            public void onData(final SocketIOClient client, JsonObject d,
+                               final AckRequest ackRequest) {
+                def String id = d.data.id
+                def ProBVisualisation bms = getSession(id)
+                if (bms != null) {
+                    def sessionId = bms.getId().toString()
+                    bms.clients.add(client)
+                    def sessionThread = sessionThreads.get(sessionId)
+                    if (sessionThread != null) {
+                        sessionThread.interrupt()
+                        sessionThreads.remove(sessionId)
+                    }
+                    clients.put(client, id)
+                    if (ackRequest.isAckRequested()) {
+                        ackRequest.sendAckData(bms.clientData);
+                    }
+                } else {
+                    ackRequest.sendAckData([errors: ["Session with id " + id + " does not exists!"]]);
+                }
+            }
+        });
+
+        server.getSocket().addEventListener("destroySession", JsonObject.class, new DataListener<JsonObject>() {
+            @Override
+            public void onData(final SocketIOClient client, JsonObject d,
+                               final AckRequest ackRequest) {
+                def String id = d.data.id
+                def BMotion bms = getSession(id)
+                if (bms != null) {
+                    bms.disconnect();
+                }
+            }
+        });
+
+        server.getSocket().addEventListener("initSession", JsonObject.class, new DataListener<JsonObject>() {
+            @Override
+            public void onData(final SocketIOClient client, JsonObject d,
+                               final AckRequest ackRequest) {
+
+                try {
+
+                    def String tool = d.data.tool
+                    def String manifest = d.data.manifest
+                    def String modelPath
+                    def options = d.data.options
+
+                    def BMotion bms
+
+                    def String templateFolder = ""
+                    if (manifest != null) { // If manifest file exists, load visualization
+                        templateFolder = new File(manifest).getParent().toString()
+                    }
+
+                    // Get correct path to model
+                    if (BMotionServer.MODE_ONLINE.equals(server.getServer().getMode())) {
+                        modelPath = server.getServer().getWorkspacePath() + File.separator + templateFolder + File.separator + d.data.model
+                    } else {
+                        if (new File(d.data.model).isAbsolute()) {
+                            modelPath = d.data.model
                         } else {
-                            ackRequest.sendAckData([errors: ["Session with id " + id + " does not exists!"]]);
+                            modelPath = templateFolder + File.separator + d.data.model
                         }
                     }
-                });
+                    bms = initSession(server, modelPath, tool, options)
+                    bms.clientData.put('templateFolder', templateFolder)
 
-        server.getSocket().addEventListener("initSession", JsonObject.class,
-                new DataListener<JsonObject>() {
-                    @Override
-                    public void onData(final SocketIOClient client, JsonObject d,
-                                       final AckRequest ackRequest) {
-
-                        // Data from client
-                        def String tool = d.data.tool
-                        def String id = UUID.randomUUID() // The id should come from the client!
-                        def String manifest = d.data.manifest
-                        def String templateFolder = new File(manifest).getParent().toString()
-                        def String modelPath
-
-                        if (BMotionServer.MODE_ONLINE.equals(server.getServer().getMode())) {
-                            modelPath = server.getServer().getWorkspacePath() + File.separator + templateFolder + File.separator + d.data.model
-                        } else {
-                            if (new File(d.data.model).isAbsolute()) {
-                                modelPath = d.data.model
-                            } else {
-                                modelPath = templateFolder + File.separator + d.data.model
-                            }
-                        }
-
-                        try {
-
-                            def ProBVisualisation bms = createSession(id, tool, server.getServer().getVisualisationProvider());
-                            if (bms != null) {
-                                //bms.clientData = d.data
-                                bms.clientData.put('templateFolder', templateFolder)
-                                bms.setMode(server.getServer().getMode())
-                                bms.initSession(modelPath, d.data.prob.preferences)
-                                sessions.put(id, bms)
-                                de.bms.BMotion.log.info "Created new BMotion session " + id
-                                Trace t = bms.getTrace()
-
-                                bms.clientData.put('id', bms.getId().toString())
-                                bms.clientData.put('stateId', t.getCurrentState().getId())
-                                bms.clientData.put('traceId', t.getUUID())
-                                bms.clientData.put('initialised', t.getCurrentState().isInitialised())
-
-                                if (bms.getModel() instanceof EventBModel) {
-                                    def EventBModel eventBModel = t.getModel()
-                                    if (ackRequest.isAckRequested()) {
-                                        bms.clientData.put('refinements', eventBModel.getMachines().collect {
-                                            return it.name;
-                                        })
-                                        ackRequest.sendAckData(id);
-                                    }
-                                } else {
-                                    if (ackRequest.isAckRequested()) {
-                                        ackRequest.sendAckData(id);
-                                    }
-                                }
-                            }
-
-                        } catch (BMotionException e) {
-                            ackRequest.sendAckData([errors: [e.getMessage()]]);
-                            return;
-                        }
-
+                    if (ackRequest.isAckRequested()) {
+                        ackRequest.sendAckData(bms.getId());
                     }
-                });
 
-        server.getSocket().addEventListener("evaluateFormulas", JsonObject.class,
-                new DataListener<JsonObject>() {
-                    @Override
-                    public void onData(final SocketIOClient client, JsonObject d,
-                                       final AckRequest ackRequest) {
-                        def String id = d.data.id
-                        def BMotion bms = getSession(id)
-                        if (bms != null) {
-                            try {
-                                ackRequest.sendAckData(bms.evaluateFormulas(d));
-                            } catch (BMotionException e) {
-                                ackRequest.sendAckData([errors: [e.getMessage()]]);
-                            }
-                        }
+                } catch (BMotionException e) {
+                    ackRequest.sendAckData([errors: [e.getMessage()]])
+                    return;
+                }
+
+            }
+        });
+
+        server.getSocket().addEventListener("evaluateFormulas", JsonObject.class, new DataListener<JsonObject>() {
+            @Override
+            public void onData(final SocketIOClient client, JsonObject d,
+                               final AckRequest ackRequest) {
+                def String id = d.data.id
+                def BMotion bms = getSession(id)
+                if (bms != null) {
+                    try {
+                        ackRequest.sendAckData(bms.evaluateFormulas(d));
+                    } catch (BMotionException e) {
+                        ackRequest.sendAckData([errors: [e.getMessage()]]);
                     }
-                });
+                }
+            }
+        });
 
         server.getSocket().addEventListener("getHistory", JsonObject.class, new DataListener<JsonObject>() {
             @Override
@@ -528,6 +518,36 @@ class ProBSocketListenerProvider implements BMotionSocketListenerProvider {
 
     private BMotion getSession(String id) {
         sessions.get(id);
+    }
+
+    private BMotion initSession(BMotionSocketServer server, String modelPath, String tool, options) throws BMotionException {
+
+        def String sessionId = UUID.randomUUID() // The id should come from the client!
+        def ProBVisualisation bms = createSession(sessionId, tool, server.getServer().getVisualisationProvider());
+        if (bms != null) {
+
+            bms.setMode(server.getServer().getMode())
+            bms.initSession(modelPath, options)
+            sessions.put(sessionId, bms)
+            de.bms.BMotion.log.info "Created new BMotion session " + sessionId
+            Trace t = bms.getTrace()
+            bms.clientData.put('id', bms.getId().toString())
+            bms.clientData.put('stateId', t.getCurrentState().getId())
+            bms.clientData.put('traceId', t.getUUID())
+            bms.clientData.put('initialised', t.getCurrentState().isInitialised())
+            if (bms.getModel() instanceof EventBModel) {
+                def EventBModel eventBModel = t.getModel()
+                bms.clientData.put('refinements', eventBModel.getMachines().collect {
+                    return it.name;
+                })
+            }
+
+            return bms;
+
+        } else {
+            throw new BMotionException("BMotion Studio session could not be initialised!")
+        }
+
     }
 
     private BMotion createSession(String id, String tool, BMotionVisualisationProvider visualisationProvider) throws BMotionException {
