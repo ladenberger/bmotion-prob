@@ -12,6 +12,7 @@ import de.prob.statespace.State
 import de.prob.statespace.StateSpace
 import de.prob.statespace.Trace
 import de.prob.translator.Translator
+import de.prob.translator.types.Boolean
 import groovy.util.logging.Slf4j
 
 @Slf4j
@@ -90,7 +91,13 @@ public class BVisualisation extends ProBVisualisation {
                 if (result != null) {
                     def resString = result['value']
                     def arr = [result: resString];
-                    if (t) arr.put('trans', translate(result))
+                    if (t) {
+                        def translated = translate(result)
+                        if (translated instanceof Boolean) {
+                            translated = translated.booleanValue()
+                        }
+                        arr.put('trans', translated)
+                    }
                     formulas.put(f, arr);
                 }
             } catch (BMotionException e) {
