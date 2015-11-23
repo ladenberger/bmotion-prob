@@ -12,6 +12,7 @@ import de.prob.statespace.State
 import de.prob.statespace.StateSpace
 import de.prob.statespace.Trace
 import de.prob.translator.Translator
+import de.prob.translator.types.BObject
 import de.prob.translator.types.Boolean
 import groovy.util.logging.Slf4j
 
@@ -59,23 +60,23 @@ public class BVisualisation extends ProBVisualisation {
         }
     }
 
-    public Object translate(String formula) throws BMotionException {
-        return translate(formula, getCurrentState());
-    }
-
-    public Object translate(String formula, String stateId) throws BMotionException {
-        def res = eval(formula, stateId);
-        if (res instanceof EvalResult) {
-            return translate(res)
+    public Object translate(String result) throws BMotionException {
+        try {
+            return translate(Translator.translate(result))
+        } catch (BException e) {
+            throw new BMotionException("Error while translating result " + result + " " + e.getMessage());
         }
     }
 
     public Object translate(EvalResult er) throws BMotionException {
-        try {
-            return Translator.translate(er.value);
-        } catch (BException e) {
-            throw new BMotionException("Error while translating formula " + er + " " + e.getMessage());
+        return translate(er.value)
+    }
+
+    public Object translate(BObject obj) throws BMotionException {
+        if (obj instanceof Boolean) {
+            return obj.booleanValue()
         }
+        return obj;
     }
 
     @Override
@@ -92,11 +93,7 @@ public class BVisualisation extends ProBVisualisation {
                     def resString = result['value']
                     def arr = [result: resString];
                     if (t) {
-                        def translated = translate(result)
-                        if (translated instanceof Boolean) {
-                            translated = translated.booleanValue()
-                        }
-                        arr.put('trans', translated)
+                        arr.put('trans', translate(result))
                     }
                     formulas.put(f, arr);
                 }

@@ -9,6 +9,7 @@ import de.prob.statespace.State
 import de.prob.statespace.StateSpace
 import de.prob.statespace.Trace
 import groovy.util.logging.Slf4j
+import sun.reflect.generics.reflectiveObjects.NotImplementedException
 
 @Slf4j
 public class CSPVisualisation extends ProBVisualisation {
@@ -48,6 +49,11 @@ public class CSPVisualisation extends ProBVisualisation {
             throw new BMotionException(e.getClass().toString() + " thrown: " + e.getMessage());
         }
         return formulaCache.get(formula);
+    }
+
+    @Override
+    public Object translate(String result) throws BMotionException {
+        throw new BMotionException("Translation not supported in CSP")
     }
 
     @Override

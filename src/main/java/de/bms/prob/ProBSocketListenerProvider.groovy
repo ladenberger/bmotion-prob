@@ -17,6 +17,7 @@ import de.prob.statespace.StateSpace
 import de.prob.statespace.Trace
 import de.prob.statespace.Transition
 import de.prob.translator.Translator
+import de.prob.translator.types.BObject
 import de.prob.translator.types.Tuple
 import de.prob.webconsole.WebConsole
 import groovy.util.logging.Slf4j
@@ -365,23 +366,23 @@ class ProBSocketListenerProvider implements BMotionSocketListenerProvider {
                                        final AckRequest ackRequest) {
                         def String id = d.data.id
                         def ProBVisualisation bms = getSession(id)
-                        if (bms != null) {
+                        if (bms != null && bms instanceof BVisualisation) {
 
                             def _getResults
-                            _getResults = { t ->
+                            _getResults = { Tuple t ->
                                 def list = []
                                 if (t.first instanceof Tuple) {
                                     list += _getResults(t.first)
                                 } else {
-                                    list << t.first
+                                    list << bms.translate(t.first)
                                 }
-                                list << t.second
+                                list << bms.translate(t.second)
                                 return list
                             }
 
                             def expressions = d.data.formulas.collect {
 
-                                IEvalElement e = bms.getTrace().getModel().parseFormula(it.formula);
+                                IEvalElement e = bms.getTrace().getModel().parseFormula(it["formula"]);
                                 if (e.getKind() == EvalElementType.PREDICATE.toString()) {
                                     return 'bool(' + e.getCode() + ')';
                                 } else {
@@ -400,21 +401,22 @@ class ProBSocketListenerProvider implements BMotionSocketListenerProvider {
                                 IEvalElement eval = bms.getTrace().getModel().parseFormula(joinExp)
 
                                 GetTransitionDiagramCommand cmd = new GetTransitionDiagramCommand(eval)
-                                def StateSpace statespace = bms.getStateSpace()
-                                statespace.execute(cmd)
+                                def StateSpace stateSpace = bms.getStateSpace()
+                                stateSpace.execute(cmd)
 
                                 nodes = cmd.getNodes().collect {
+
                                     def nn = it.value.properties
-                                    nn["translated"] = []
+                                    def translated = []
 
                                     if (!it.value.labels.contains("<< undefined >>") && it.value.id != "1") {
                                         it.value.labels.each { str ->
 
-                                            def res = Translator.translate(str);
+                                            def BObject res = Translator.translate(str)
                                             if (res instanceof Tuple) {
-                                                nn["translated"] += _getResults(res)
+                                                translated += _getResults(res)
                                             } else {
-                                                nn["translated"] << res
+                                                translated << bms.translate(res)
                                             }
 
                                         }
@@ -422,8 +424,8 @@ class ProBSocketListenerProvider implements BMotionSocketListenerProvider {
 
                                     nn["results"] = [:]
 
-                                    d.data.formulas.eachWithIndex { exp, index ->
-                                        nn["results"][(exp.formula)] = [result: reTranslate(nn["translated"][index]), trans: nn["translated"][index]]
+                                    d.data.formulas.eachWithIndex { exp, int index ->
+                                        nn["results"][(exp["formula"])] = [result: reTranslate(translated[index]), trans: translated[index]]
                                     }
 
                                     [data: nn]
@@ -432,7 +434,7 @@ class ProBSocketListenerProvider implements BMotionSocketListenerProvider {
 
                                 edges = cmd.getEdges().collect {
                                     def en = it.value.properties
-                                    en['id'] = it.value.source + it.value.target
+                                    en['id'] = it.value.source + it.value.target + '_' + it.value.label
                                     [data: en]
                                 }
 
@@ -467,6 +469,7 @@ class ProBSocketListenerProvider implements BMotionSocketListenerProvider {
                     }
                 } catch (InterruptedException e) {
                     log.info("Timer thread interrupted")
+                    def result = []
                     //e.printStackTrace();
                 } finally {
                     log.info("Exit timer thread")
