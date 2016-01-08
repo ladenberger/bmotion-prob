@@ -2,7 +2,7 @@ apply plugin: 'java'
 apply plugin: 'groovy'
 apply plugin: 'maven'
 
-project.version = '0.2.5-SNAPSHOT'
+project.version = '0.2.6-SNAPSHOT'
 project.group = 'de.hhu.stups'
 project.archivesBaseName = "bmotion-prob"
 
@@ -43,7 +43,7 @@ configurations.all {
 def jetty_version = '8.1.8.v20121106'
 
 dependencies {
-    compile(group: 'de.hhu.stups', name: 'bmotion', version: '0.2.5-SNAPSHOT')
+    compile(group: 'de.hhu.stups', name: 'bmotion', version: '0.2.6-SNAPSHOT')
     compile(group: 'de.hhu.stups', name: 'prob2-ui-servlets', version: '2.0.2-SNAPSHOT')
 }
 
