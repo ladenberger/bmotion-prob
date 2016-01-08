@@ -286,24 +286,21 @@ class ProBSocketListenerProvider implements BMotionSocketListenerProvider {
                 if (bms != null) {
                     Trace t = bms.getTrace()
                     def eventMap = d.data.events.collect { op ->
+                        def String opName = op.name
+                        def String opPredicate = op.predicate
                         def Transition trans
                         if (t.getModel().getFormalismType().equals(FormalismType.CSP)) {
-                            for (cop in t.getNextTransitions()) {
-                                if (cop.getRep().equals(op.name)) {
-                                    trans = cop;
-                                    break;
-                                }
-                            }
+                            trans = t.getNextTransitions().find { it.equals(opName) }
                         } else {
-                            def fpredicate = [];
-                            if (op.predicate != null && op.predicate.size() > 0) {
-                                fpredicate = op.predicate;
-                            }
-                            trans = t.getCurrentState().findTransition(op.name, fpredicate);
+                            def predicate = opPredicate?.size() > 0 ? [opPredicate] : [];
+                            trans = t.getCurrentState().findTransition(opName, predicate);
                         }
-                        def canExecute = trans != null;
-                        def transId = trans != null ? trans.getId() : null;
-                        [name: op.name, predicate: op.predicate, id: transId, canExecute: canExecute]
+                        return [
+                                name      : opName,
+                                predicate : opPredicate,
+                                id        : trans != null ? trans.getId() : null,
+                                canExecute: trans != null
+                        ]
                     }
                     if (ackRequest.isAckRequested()) {
                         ackRequest.sendAckData([events: eventMap]);
@@ -321,33 +318,39 @@ class ProBSocketListenerProvider implements BMotionSocketListenerProvider {
                         def ProBVisualisation bms = getSession(id)
                         if (bms != null) {
 
-                            def nodes = []
+                            def nodes = [[group: 'nodes', data: [id: 'root', label: 'root', results: [:], op: 'root']]]
                             def edges = []
-                            /*def formulaMap = []
-                            d.data.formulas.each {
-                                formulaMap += [formula: it, translate: false]
-                            }*/
 
                             bms.getCurrentTrace().getTransitionList().each { Transition op ->
 
                                 def sId = op.getSource().getId()
                                 def dId = op.getDestination().getId()
 
-                                def res1 = [:]
+                                // Add destination state as node
                                 def res2 = [:]
-                                if (sId != 'root' && sId != '0') {
-                                    res1 = bms.evaluateFormulas([data: [stateId: sId, formulas: d.data.formulas]])
-                                }
                                 if (dId != 'root' && dId != '0') {
                                     res2 = bms.evaluateFormulas([data: [stateId: dId, formulas: d.data.formulas]])
                                 }
+                                nodes.push([
+                                        group: 'nodes',
+                                        data : [
+                                                id     : dId,
+                                                label  : dId,
+                                                results: res2,
+                                                op     : op.toString()
+                                        ]
+                                ]);
 
-                                nodes.push([group: 'nodes', data: [id: sId, label: sId, results: res1]]);
-                                nodes.push([group: 'nodes', data: [id: dId, label: dId, results: res2]]);
-
-                                edges.push(
-                                        [group: 'edges', data: [id: 'e' + sId + '' + dId, source: sId, target: dId, label: op.
-                                                getName()]]);
+                                // Add transition as edge
+                                edges.push([
+                                        group: 'edges',
+                                        data : [
+                                                id    : 'e' + sId + '' + dId,
+                                                source: sId,
+                                                target: dId,
+                                                label : op.getName()
+                                        ]
+                                ]);
 
                             }
 
@@ -365,45 +368,46 @@ class ProBSocketListenerProvider implements BMotionSocketListenerProvider {
                     public void onData(final SocketIOClient client, JsonObject d,
                                        final AckRequest ackRequest) {
                         def String id = d.data.id
-                        def ProBVisualisation bms = getSession(id)
-                        if (bms != null && bms instanceof BVisualisation) {
+                        def ProBVisualisation session = getSession(id)
+                        if (session != null && session instanceof BVisualisation) {
+
+                            BVisualisation bms = (BVisualisation) session
 
                             def _getResults
-                            _getResults = { Tuple t ->
+                            _getResults = { obj ->
                                 def list = []
-                                if (t.first instanceof Tuple) {
-                                    list += _getResults(t.first)
+                                if(obj instanceof ArrayList) {
+                                    ArrayList l = (ArrayList) obj
+                                    l.forEach({
+                                        list += _getResults(it)
+                                    })
                                 } else {
-                                    list << bms.translate(t.first)
+                                    list += obj
                                 }
-                                list << bms.translate(t.second)
                                 return list
                             }
 
                             def expressions = d.data.formulas.collect {
-
                                 IEvalElement e = bms.getTrace().getModel().parseFormula(it["formula"]);
                                 if (e.getKind() == EvalElementType.PREDICATE.toString()) {
                                     return 'bool(' + e.getCode() + ')';
                                 } else {
                                     return e.getCode();
                                 }
-
                             }
 
                             def nodes = [];
                             def edges = [];
+                            def errors = [];
 
                             if (!expressions.isEmpty()) {
 
-                                String joinExp = expressions.join("|->")
-
-                                IEvalElement eval = bms.getTrace().getModel().parseFormula(joinExp)
-
-                                GetTransitionDiagramCommand cmd = new GetTransitionDiagramCommand(eval)
+                                def IEvalElement eval = bms.getTrace().getModel().parseFormula(expressions.join("|->"))
+                                def GetTransitionDiagramCommand cmd = new GetTransitionDiagramCommand(eval)
                                 def StateSpace stateSpace = bms.getStateSpace()
                                 stateSpace.execute(cmd)
 
+                                // Collect nodes
                                 nodes = cmd.getNodes().collect {
 
                                     def nn = it.value.properties
@@ -411,37 +415,41 @@ class ProBSocketListenerProvider implements BMotionSocketListenerProvider {
 
                                     if (!it.value.labels.contains("<< undefined >>") && it.value.id != "1") {
                                         it.value.labels.each { str ->
-
-                                            def BObject res = Translator.translate(str)
-                                            if (res instanceof Tuple) {
-                                                translated += _getResults(res)
-                                            } else {
-                                                translated << bms.translate(res)
+                                            try {
+                                                translated += _getResults(bms.translate(str))
+                                            } catch (BMotionException e) {
+                                                errors.push(e.getMessage())
                                             }
-
                                         }
                                     }
 
                                     nn["results"] = [:]
-
                                     d.data.formulas.eachWithIndex { exp, int index ->
-                                        nn["results"][(exp["formula"])] = [result: reTranslate(translated[index]), trans: translated[index]]
+                                        nn["results"][(exp["formula"])] = [
+                                                result: reTranslate(translated[index]),
+                                                trans : translated[index]
+                                        ]
                                     }
 
-                                    [data: nn]
+                                    return [data: nn]
 
                                 }
 
+                                // Collect edges
                                 edges = cmd.getEdges().collect {
                                     def en = it.value.properties
                                     en['id'] = it.value.source + it.value.target + '_' + it.value.label
-                                    [data: en]
+                                    return [data: en]
                                 }
 
                             }
 
                             if (ackRequest.isAckRequested()) {
-                                ackRequest.sendAckData([nodes: nodes.reverse(), edges: edges.reverse()]);
+                                ackRequest.sendAckData([
+                                        nodes : nodes.reverse(),
+                                        edges : edges.reverse(),
+                                        errors: errors
+                                ]);
                             }
 
                         }

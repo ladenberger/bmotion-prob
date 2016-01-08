@@ -63,6 +63,7 @@ public abstract class ProBVisualisation extends BMotion implements IAnimationCha
                 def currentTransition = changeTrace.getCurrentTransition()
                 def currentState = changeTrace.getCurrentState()
                 clientData.stateId = currentState.getId()
+                clientData.lastOperation = currentTransition.toString()
                 def cData = [stateId: currentState.getId(), traceId: traceId]
                 // TODO: Is there a better way to check that the current transition is the initialise machine event?
                 if (currentTransition.toString().startsWith("\$initialise_machine")) {

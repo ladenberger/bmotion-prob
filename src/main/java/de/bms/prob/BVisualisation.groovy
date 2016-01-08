@@ -14,6 +14,8 @@ import de.prob.statespace.Trace
 import de.prob.translator.Translator
 import de.prob.translator.types.BObject
 import de.prob.translator.types.Boolean
+import de.prob.translator.types.Set
+import de.prob.translator.types.Tuple
 import groovy.util.logging.Slf4j
 
 @Slf4j
@@ -60,23 +62,25 @@ public class BVisualisation extends ProBVisualisation {
         }
     }
 
-    public Object translate(String result) throws BMotionException {
-        try {
-            return translate(Translator.translate(result))
-        } catch (BException e) {
-            throw new BMotionException("Error while translating result " + result + " " + e.getMessage());
-        }
-    }
-
-    public Object translate(EvalResult er) throws BMotionException {
-        return translate(er.value)
-    }
-
-    public Object translate(BObject obj) throws BMotionException {
-        if (obj instanceof Boolean) {
-            return obj.booleanValue()
+    private Object convert(BObject obj) {
+        if(obj instanceof  Boolean) {
+            return obj.booleanValue();
+        } else if(obj instanceof Set) {
+            return obj.collect {
+                return convert(it);
+            }
+        } else if(obj instanceof Tuple) {
+            return [convert(obj.first), convert(obj.second)]
         }
         return obj;
+    }
+
+    public Object translate(String result) throws BMotionException {
+        try {
+            return convert(Translator.translate(result));
+        } catch (BException e) {
+            throw new BMotionException("Error while translating " + result + " " + e.getMessage());
+        }
     }
 
     @Override
@@ -93,7 +97,7 @@ public class BVisualisation extends ProBVisualisation {
                     def resString = result['value']
                     def arr = [result: resString];
                     if (t) {
-                        arr.put('trans', translate(result))
+                        arr.put('trans', translate(resString))
                     }
                     formulas.put(f, arr);
                 }
