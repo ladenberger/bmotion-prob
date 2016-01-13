@@ -477,7 +477,6 @@ class ProBSocketListenerProvider implements BMotionSocketListenerProvider {
                     }
                 } catch (InterruptedException e) {
                     log.info("Timer thread interrupted")
-                    def result = []
                     //e.printStackTrace();
                 } finally {
                     log.info("Exit timer thread")
