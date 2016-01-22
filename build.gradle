@@ -2,12 +2,14 @@ apply plugin: 'java'
 apply plugin: 'groovy'
 apply plugin: 'maven'
 
-project.version = '0.2.6'
+project.version = '0.2.7'
 project.group = 'de.hhu.stups'
 project.archivesBaseName = "bmotion-prob"
 
 project.sourceCompatibility = '1.7'
 project.targetCompatibility = '1.7'
+
+def bmotionVersion = '0.2.7'
 
 repositories {
     mavenCentral()
@@ -47,7 +49,7 @@ configurations.all {
 def jetty_version = '8.1.8.v20121106'
 
 dependencies {
-    compile(group: 'de.hhu.stups', name: 'bmotion', version: '0.2.6')
+    compile(group: 'de.hhu.stups', name: 'bmotion', version: bmotionVersion)
     compile(group: 'de.hhu.stups', name: 'prob2-ui-servlets', version: '2.0.2-SNAPSHOT')
 }
 
