@@ -3,7 +3,11 @@ package de.bms.prob
 import de.bms.BMotion
 import de.bms.BMotionException
 import de.bms.BMotionScriptEngineProvider
+import de.prob.model.eventb.Event
+import de.prob.model.representation.AbstractElement
 import de.prob.model.representation.AbstractModel
+import de.prob.model.representation.BEvent
+import de.prob.model.representation.Machine
 import de.prob.scripting.Api
 import de.prob.statespace.*
 import groovy.util.logging.Slf4j
@@ -18,6 +22,7 @@ public abstract class ProBVisualisation extends BMotion implements IAnimationCha
     def final Api api
     def Trace currentTrace;
     def UUID traceId;
+    def modelTransitions = [];
 
     public ProBVisualisation(final UUID id, final BMotionScriptEngineProvider scriptEngineProvider) {
         super(id, scriptEngineProvider)
@@ -95,6 +100,21 @@ public abstract class ProBVisualisation extends BMotion implements IAnimationCha
         return currentTrace != null ? currentTrace.getCurrentState().getId() : null;
     }
 
+    private updateModelTransitions(Trace t) {
+        modelTransitions = [];
+        AbstractElement mainComponent = t.getStateSpace().getMainComponent();
+        if (mainComponent instanceof Machine) {
+            def events = mainComponent.getChildrenOfType(BEvent.class);
+            for (BEvent e in events) {
+                if (e instanceof Event) {
+                    modelTransitions << [name: e.getName(), parameter: e.getParameters().collect {
+                        return it.getName();
+                    }]
+                }
+            }
+        }
+    }
+
     @Override
     public void initModel(String modelPath, options) throws BMotionException {
 
@@ -136,7 +156,8 @@ public abstract class ProBVisualisation extends BMotion implements IAnimationCha
                 }
             }
 
-            clientData.traceId = this.traceId
+            updateModelTransitions(this.currentTrace);
+            clientData.traceId = this.traceId;
 
         } else {
             throw new BMotionException("Model " + modelPath + " does not exist")

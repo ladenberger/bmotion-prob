@@ -10,7 +10,13 @@ import de.prob.animator.command.GetTransitionDiagramCommand
 import de.prob.animator.domainobjects.EvalElementType
 import de.prob.animator.domainobjects.IEvalElement
 import de.prob.cli.CliVersionNumber
+import de.prob.model.eventb.Event
 import de.prob.model.eventb.EventBModel
+import de.prob.model.eventb.EventParameter
+import de.prob.model.representation.AbstractElement
+import de.prob.model.representation.BEvent
+import de.prob.model.representation.Machine
+import de.prob.model.representation.ModelElementList
 import de.prob.scripting.Api
 import de.prob.statespace.FormalismType
 import de.prob.statespace.StateSpace
@@ -236,6 +242,64 @@ class ProBSocketListenerProvider implements BMotionSocketListenerProvider {
             }
         });
 
+        server.getSocket().addEventListener("getModelData", JsonObject.class, new DataListener<JsonObject>() {
+            @Override
+            public void onData(final SocketIOClient client, JsonObject d,
+                               final AckRequest ackRequest) {
+                def String id = d.data.id;
+                def ProBVisualisation bms = getSession(id);
+                if (bms != null) {
+                    def String what = d.data.what;
+                    def data = [];
+                    if(what == 'transitions') {
+                        data = bms.getModelTransitions()
+                    }
+                    if (ackRequest.isAckRequested()) {
+                        ackRequest.sendAckData([data]);
+                    }
+                }
+            }
+        });
+
+        server.getSocket().addEventListener("observeNextTransitions", JsonObject.class, new DataListener<JsonObject>() {
+            @Override
+            public void onData(final SocketIOClient client, JsonObject d,
+                               final AckRequest ackRequest) {
+                def String id = d.data.id
+                def ProBVisualisation bms = getSession(id)
+                if (bms != null) {
+                    def trace = bms.getTrace();
+                    def list = trace.getNextTransitions();
+                    def ops = list.collect { Transition op ->
+                        return [name: op.getName(), parameter: op.getParams()];
+                    }
+                    if (ackRequest.isAckRequested()) {
+                        ackRequest.sendAckData([events: ops]);
+                    }
+                }
+            }
+        });
+
+        server.getSocket().addEventListener("observeHistory", JsonObject.class, new DataListener<JsonObject>() {
+            @Override
+            public void onData(final SocketIOClient client, JsonObject d,
+                               final AckRequest ackRequest) {
+                def String id = d.data.id
+                def ProBVisualisation bms = getSession(id)
+                if (bms != null) {
+                    def trace = bms.getTrace()
+                    def list = trace.getTransitionList(true)
+                    def Transition currentTransition = trace.getCurrent().getTransition()
+                    def ops = list.collect { Transition op ->
+                        [name: op.getName(), parameter: op.getParams(), current: currentTransition.equals(op)]
+                    }
+                    if (ackRequest.isAckRequested()) {
+                        ackRequest.sendAckData([events: ops]);
+                    }
+                }
+            }
+        });
+
         server.getSocket().addEventListener("getHistory", JsonObject.class, new DataListener<JsonObject>() {
             @Override
             public void onData(final SocketIOClient client, JsonObject d,
@@ -376,7 +440,7 @@ class ProBSocketListenerProvider implements BMotionSocketListenerProvider {
                             def _getResults
                             _getResults = { obj ->
                                 def list = []
-                                if(obj instanceof ArrayList) {
+                                if (obj instanceof ArrayList) {
                                     ArrayList l = (ArrayList) obj
                                     l.forEach({
                                         list += _getResults(it)
