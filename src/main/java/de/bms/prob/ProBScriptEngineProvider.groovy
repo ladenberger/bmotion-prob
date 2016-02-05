@@ -47,9 +47,9 @@ public class ProBScriptEngineProvider implements BMotionScriptEngineProvider {
         return engine
     }
 
-    /*@Override
+    @Override
     public String[] getImports() {
         return IMPORTS
-    }*/
+    }
 
 }
