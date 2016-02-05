@@ -8,8 +8,8 @@ import de.prob.exception.ProBError
 import de.prob.statespace.State
 import de.prob.statespace.StateSpace
 import de.prob.statespace.Trace
+import de.prob.statespace.Transition
 import groovy.util.logging.Slf4j
-import sun.reflect.generics.reflectiveObjects.NotImplementedException
 
 @Slf4j
 public class CSPVisualisation extends ProBVisualisation {
@@ -17,38 +17,38 @@ public class CSPVisualisation extends ProBVisualisation {
     private final formulaCache = [:]
 
     public CSPVisualisation(final UUID id, final BMotionScriptEngineProvider scriptEngineProvider) {
-        super(id, scriptEngineProvider);
+        super(id, scriptEngineProvider)
     }
 
     @Override
     public Object eval(final String formula) throws BMotionException {
-        return eval(formula, getCurrentState());
+        return eval(formula, getCurrentState())
     }
 
     public Object eval(final String formula, final String stateId) throws BMotionException {
         if (trace == null) {
-            throw new BMotionException("No trace exists.");
+            throw new BMotionException("No trace exists.")
         }
         if (formula == null) {
-            throw new BMotionException("Formula must not be null.");
+            throw new BMotionException("Formula must not be null.")
         }
         try {
             if (!formulaCache.containsKey(formula) && formula != null) {
-                IEvalElement e = trace.getModel().parseFormula(formula);
-                StateSpace space = trace.getStateSpace();
-                State state = space.getState(stateId);
+                IEvalElement e = trace.getModel().parseFormula(formula)
+                StateSpace space = trace.getStateSpace()
+                State state = space.getState(stateId)
                 if (state != null) {
-                    formulaCache.put(formula, state.eval(e));
+                    formulaCache.put(formula, state.eval(e))
                 }
             }
         } catch (ProBError e) {
-            throw new BMotionException(e.getMessage());
+            throw new BMotionException(e.getMessage())
         } catch (EvaluationException e) {
-            throw new BMotionException("Formula " + formula + " could not be parsed: " + e.getMessage());
+            throw new BMotionException("Formula " + formula + " could not be parsed: " + e.getMessage())
         } catch (Exception e) {
-            throw new BMotionException(e.getClass().toString() + " thrown: " + e.getMessage());
+            throw new BMotionException(e.getClass().toString() + " thrown: " + e.getMessage())
         }
-        return formulaCache.get(formula);
+        return formulaCache.get(formula)
     }
 
     @Override
@@ -59,18 +59,18 @@ public class CSPVisualisation extends ProBVisualisation {
     @Override
     public Object evaluateFormulas(final d) throws BMotionException {
         def formulas = [:]
-        def stateId = d.data.stateId ?: getCurrentState()
+        def String stateId = d.data.stateId ?: getCurrentState()
         d.data.formulas.each {
-            def f = it['formula']
+            def String f = it['formula']
             try {
-                def result = eval(f, stateId);
-                def resString = null;
+                def result = eval(f, stateId)
+                def resString = null
                 if (result != null) {
-                    resString = result.value
+                    resString = result['value']
                 }
-                formulas.put(f, [result: resString]);
+                formulas.put(f, [result: resString])
             } catch (BMotionException e) {
-                formulas.put(f, [error: e.getMessage()]);
+                formulas.put(f, [error: e.getMessage()])
             }
         }
         return formulas
@@ -80,12 +80,11 @@ public class CSPVisualisation extends ProBVisualisation {
     public void animatorStatus(final boolean busy) {}
 
     @Override
-    protected Trace getNewTrace(Trace trace, transition) {
-        for (cop in trace.getNextTransitions()) {
-            if (cop.getRep().equals(transition.name)) {
-                return trace.add(cop);
-            }
+    protected Trace getNewTrace(Trace trace, String transitionName, String transitionPredicate) {
+        def cop = trace.getNextTransitions().find { Transition t ->
+            t.getRep().equals(transitionName)
         }
+        return cop != null ? trace.add(cop) : trace
     }
 
 }

@@ -6,19 +6,16 @@ import de.bms.BMotionVisualisationProvider
 public class ProBVisualisationProvider implements BMotionVisualisationProvider {
 
     @Override
-    BMotion get(String id, String type) {
-        BMotion visualisation
+    public BMotion get(String id, String type) {
         def scriptEngineProvider = new ProBScriptEngineProvider()
         def UUID uuid = UUID.fromString(id);
         switch (type) {
             case "BAnimation":
-                visualisation = new BVisualisation(uuid, scriptEngineProvider)
-                break
+                return new BVisualisation(uuid, scriptEngineProvider)
             case "CSPAnimation":
-                visualisation = new CSPVisualisation(uuid, scriptEngineProvider)
-                break
+                return new CSPVisualisation(uuid, scriptEngineProvider)
         }
-        return visualisation
+        return null
     }
 
 }

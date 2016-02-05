@@ -1,7 +1,6 @@
 package de.bms.prob
 
 import de.bms.BMotionServer
-import de.prob.scripting.Api
 import groovy.util.logging.Slf4j
 
 @Slf4j

@@ -4,6 +4,7 @@ import de.bms.BMotion
 import de.bms.BMotionException
 import de.bms.BMotionScriptEngineProvider
 import de.prob.model.eventb.Event
+import de.prob.model.eventb.EventBModel
 import de.prob.model.representation.AbstractElement
 import de.prob.model.representation.AbstractModel
 import de.prob.model.representation.BEvent
@@ -15,14 +16,13 @@ import groovy.util.logging.Slf4j
 @Slf4j
 public abstract class ProBVisualisation extends BMotion implements IAnimationChangeListener, IModelChangedListener {
 
-    public static final String TRIGGER_MODEL_CHANGED = "ModelChanged";
-    public static final String TRIGGER_MODEL_INITIALISED = "ModelInitialised";
-    public static final String TRIGGER_MODEL_SETUP_CONSTANTS = "ModelSetupConstants";
-    def final AnimationSelector animations;
+    def static final String TRIGGER_MODEL_CHANGED = "ModelChanged"
+    def static final String TRIGGER_MODEL_INITIALISED = "ModelInitialised"
+    def static final String TRIGGER_MODEL_SETUP_CONSTANTS = "ModelSetupConstants"
+    def final AnimationSelector animations
     def final Api api
-    def Trace currentTrace;
-    def UUID traceId;
-    def modelTransitions = [];
+    def Trace trace
+    def UUID traceId
 
     public ProBVisualisation(final UUID id, final BMotionScriptEngineProvider scriptEngineProvider) {
         super(id, scriptEngineProvider)
@@ -33,20 +33,20 @@ public abstract class ProBVisualisation extends BMotion implements IAnimationCha
     }
 
     public AbstractModel getModel() {
-        return this.currentTrace?.getModel();
+        return trace?.getModel()
     }
 
-    public void setTrace(Trace trace) {
-        this.currentTrace = trace
-        this.traceId = trace.getUUID()
-    }
-
-    public Trace getTrace() {
-        return currentTrace;
+    public void setTrace(Trace t) {
+        trace = t
+        traceId = trace.getUUID()
     }
 
     public StateSpace getStateSpace() {
-        return currentTrace != null ? currentTrace.getStateSpace() : null;
+        return trace?.getStateSpace()
+    }
+
+    public String getCurrentState() {
+        return trace?.getStateSpace()?.getId()
     }
 
     @Override
@@ -61,29 +61,26 @@ public abstract class ProBVisualisation extends BMotion implements IAnimationCha
 
         def changeTrace = animations.getTrace(traceId)
 
-        if (changeTrace != null) {
+        // Only execute if trace id is current trace id (same animation)
+        if (changeTrace != null && changeTrace.getUUID() == traceId) {
 
-            if (changeTrace.getUUID() == traceId) {
-
-                def currentTransition = changeTrace.getCurrentTransition()
-                def currentState = changeTrace.getCurrentState()
-                clientData.stateId = currentState.getId()
-                clientData.lastOperation = currentTransition.toString()
-                def cData = [stateId: currentState.getId(), traceId: traceId]
-                // TODO: Is there a better way to check that the current transition is the initialise machine event?
-                if (currentTransition.toString().startsWith("\$initialise_machine")) {
-                    checkObserver(TRIGGER_MODEL_INITIALISED, cData)
-                } else if (currentTransition.toString().startsWith("\$setup_constants")) {
-                    checkObserver(TRIGGER_MODEL_SETUP_CONSTANTS, cData)
-                }
-                if (currentState.isInitialised()) {
-                    checkObserver(BMotion.TRIGGER_ANIMATION_CHANGED, cData)
-                    clientData.initialised = true
-                }
-
-                this.currentTrace = changeTrace
-
+            def currentTransition = changeTrace.getCurrentTransition()
+            def currentState = changeTrace.getCurrentState()
+            clientData["stateId"] = currentState.getId()
+            clientData["lastOperation"] = currentTransition.toString()
+            def cData = [stateId: currentState.getId(), traceId: traceId]
+            // TODO: Is there a better way to check that the current transition is the initialise machine event?
+            if (currentTransition.toString().startsWith("\$initialise_machine")) {
+                checkObserver(TRIGGER_MODEL_INITIALISED, cData)
+            } else if (currentTransition.toString().startsWith("\$setup_constants")) {
+                checkObserver(TRIGGER_MODEL_SETUP_CONSTANTS, cData)
             }
+            if (currentState.isInitialised()) {
+                checkObserver(TRIGGER_ANIMATION_CHANGED, cData)
+                clientData["initialised"] = true
+            }
+
+            trace = changeTrace
 
         }
 
@@ -96,23 +93,35 @@ public abstract class ProBVisualisation extends BMotion implements IAnimationCha
         checkObserver(TRIGGER_MODEL_CHANGED, clientData)
     }
 
-    public String getCurrentState() {
-        return currentTrace != null ? currentTrace.getCurrentState().getId() : null;
-    }
+    private updateModelData(Trace t) {
 
-    private updateModelTransitions(Trace t) {
-        modelTransitions = [];
-        AbstractElement mainComponent = t.getStateSpace().getMainComponent();
+        // Update model events
+        clientData["model"]["events"] = []
+        AbstractElement mainComponent = t.getStateSpace().getMainComponent()
         if (mainComponent instanceof Machine) {
-            def events = mainComponent.getChildrenOfType(BEvent.class);
+            def events = mainComponent.getChildrenOfType(BEvent.class)
             for (BEvent e in events) {
                 if (e instanceof Event) {
-                    modelTransitions << [name: e.getName(), parameter: e.getParameters().collect {
-                        return it.getName();
-                    }]
+                    clientData["model"]["events"] << [
+                            name     : e.getName(),
+                            parameter: e.getParameters().collect {
+                                return [name: it.getName(), comment: it.getComment()]
+                            },
+                            guards   : e.getGuards().collect {
+                                return [name: it.getName(), comment: it.getComment(), isTheorem: it.isTheorem()]
+                            }
+                    ]
                 }
             }
         }
+
+        // Update model refinements
+        if (t.getModel() instanceof EventBModel) {
+            clientData["model"]["refinements"] = ((EventBModel) t.getModel()).getMachines().collect {
+                return it.name
+            }
+        }
+
     }
 
     @Override
@@ -123,41 +132,36 @@ public abstract class ProBVisualisation extends BMotion implements IAnimationCha
 
             log.info "BMotion Studio: Loading model " + modelPath
 
-            if (currentTrace != null) {
-                if (!currentTrace.getModel().getModelFile().getCanonicalPath().
+            clientData["model"] = [:]
+
+            // Get or create trace
+            if (trace != null) {
+                if (!trace.getModel().getModelFile().getCanonicalPath().
                         equals(modelFile.getCanonicalPath())) {
                     // If a current trace is set and a load was forced, add a new trace
                     // and remove the old one from the AnimationSelector
-                    def oldTrace = this.currentTrace
-                    this.currentTrace = createNewModelTrace(modelFile.getCanonicalPath(), options.preferences)
-                    this.traceId = this.currentTrace.getUUID()
-                    animations.addNewAnimation(this.currentTrace)
+                    def oldTrace = trace
+                    trace = createNewModelTrace(modelFile.getCanonicalPath(), options.preferences)
+                    traceId = trace.getUUID()
+                    animations.addNewAnimation(trace)
                     animations.removeTrace(oldTrace)
                 } else {
-                    animations.changeCurrentAnimation(currentTrace)
+                    animations.changeCurrentAnimation(trace)
                 }
             } else {
-                def found = false;
-                //if (mode == BMotionServer.MODE_INTEGRATED || mode == BMotionServer.MODE_ONLINE) {
-                for (Trace t : animations.getTraces()) {
-                    if (t.getModel().getModelFile()?.getCanonicalPath().equals(modelFile.getCanonicalPath())) {
-                        this.currentTrace = t
-                        this.traceId = t.getUUID()
-                        found = true;
-                        break;
-                    }
+                trace = animations.getTraces().find() { Trace t ->
+                    t.getModel()?.getModelFile()?.getCanonicalPath()?.equals(modelFile.getCanonicalPath())
                 }
-                //}
-                if (!found) {
+                if (trace == null) {
                     // Create a new trace for the model and add it to the AnimationSelector
-                    this.currentTrace = createNewModelTrace(modelFile.getCanonicalPath(), options.preferences)
-                    this.traceId = this.currentTrace.getUUID()
-                    animations.addNewAnimation(this.currentTrace)
+                    trace = createNewModelTrace(modelFile.getCanonicalPath(), options.preferences)
+                    traceId = trace.getUUID()
+                    animations.addNewAnimation(trace)
                 }
             }
 
-            updateModelTransitions(this.currentTrace);
-            clientData.traceId = this.traceId;
+            updateModelData(trace);
+            clientData["traceId"] = traceId;
 
         } else {
             throw new BMotionException("Model " + modelPath + " does not exist")
@@ -169,59 +173,66 @@ public abstract class ProBVisualisation extends BMotion implements IAnimationCha
         if (System.getProperty("os.name").toLowerCase().indexOf("win") >= 0) {
             modelPath = modelPath.replace("\\", "\\\\")
         }
-        def formalism = getFormalism(modelPath)
-        //def StateSpace s = Eval.x(api, "x.${formalism}_load('$modelPath','$options')")
-        def StateSpace s = api."${formalism}_load"(modelPath, preferences)
-        return new Trace(s);
+        def StateSpace s = api."${getFormalism(modelPath)}_load"(modelPath, preferences)
+        return new Trace(s)
     }
 
-    protected String getFormalism(final String modelPath) {
-        String lang = null;
-        if (modelPath.endsWith(".csp")) {
-            return "csp";
-        } else if (modelPath.endsWith(".buc") || modelPath.endsWith(".bcc") || modelPath.
-                endsWith(".bum") || modelPath.endsWith(".bcm")) {
-            return "eventb";
-        } else if (modelPath.endsWith(".mch")) {
-            return "b";
-        } else if (modelPath.endsWith(".tla")) {
-            return "tla";
+    protected static String getFormalism(final String modelPath) {
+        switch (modelPath[-3..-1]) {
+            case "csp":
+                return "csp";
+                break
+            case { it == ("buc" || "bcc" || "bum" || "bcm") }:
+                return "eventb";
+                break
+            case "mch":
+                return "b";
+                break
+            case "tla":
+                return "tla";
+                break
+            default:
+                return null;
+                break;
         }
-        return lang;
+    }
+
+    private Trace findTrace(event) {
+
+        def String tid = event['id']
+        if (tid != null) {
+            try {
+                return trace.add(tid);
+            } catch (IllegalArgumentException e) {
+                log.error "BMotion Studio: " + e.getMessage()
+            }
+        } else {
+            return getNewTrace(trace, (String) event['name'], (String) event['predicate'])
+        }
+
+        return null;
+
     }
 
     @Override
     public Object executeEvent(final data) {
 
         if (trace == null) {
-            log.error "BMotion Studio: No currentTrace exists."
+            log.error "BMotion Studio: No trace exists."
         }
 
-        def Trace newTrace
-        for (def transition : data.events) {
-            if (transition.id != null) {
-                try {
-                    newTrace = trace.add(transition.id);
-                } catch (IllegalArgumentException e) {
-                }
-            } else {
-                // Delegate to formalism
-                newTrace = getNewTrace(trace, transition);
-            }
-            if (newTrace != null) break;
-        }
-
+        def Trace newTrace = findTrace(data['event'])
         if (newTrace != null) {
             animations.traceChange(newTrace)
-            currentTrace = newTrace
+            trace = newTrace
         } else {
             log.error "BMotion Studio: Could not execute any event ..."
         }
 
-        return trace.getCurrentState().getId();
+        return trace.getCurrentState().getId()
 
     }
 
-    protected abstract Trace getNewTrace(Trace trace, transition);
+    protected abstract Trace getNewTrace(Trace trace, String transitionName, String transitionPredicate)
 
 }

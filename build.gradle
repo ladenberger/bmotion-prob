@@ -21,10 +21,6 @@ repositories {
         name "sonatype releases"
         url "    https://oss.sonatype.org/content/repositories/releases/"
     }
-    maven {
-        name "cobra"
-        url "http://cobra.cs.uni-duesseldorf.de/artifactory/repo"
-    }
 }
 
 sourceSets {
@@ -45,8 +41,6 @@ sourceSets {
 configurations.all {
     resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
 }
-
-def jetty_version = '8.1.8.v20121106'
 
 dependencies {
     compile(group: 'de.hhu.stups', name: 'bmotion', version: bmotionVersion)
