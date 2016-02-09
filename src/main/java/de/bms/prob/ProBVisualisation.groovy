@@ -3,6 +3,7 @@ package de.bms.prob
 import de.bms.BMotion
 import de.bms.BMotionException
 import de.bms.BMotionScriptEngineProvider
+import de.prob.model.classicalb.Operation
 import de.prob.model.eventb.Event
 import de.prob.model.eventb.EventBModel
 import de.prob.model.representation.AbstractElement
@@ -46,7 +47,7 @@ public abstract class ProBVisualisation extends BMotion implements IAnimationCha
     }
 
     public String getCurrentState() {
-        return trace?.getStateSpace()?.getId()
+        return trace?.getCurrentState()
     }
 
     @Override
@@ -99,6 +100,13 @@ public abstract class ProBVisualisation extends BMotion implements IAnimationCha
         clientData["model"]["events"] = []
         AbstractElement mainComponent = t.getStateSpace().getMainComponent()
         if (mainComponent instanceof Machine) {
+
+            // Collect sets
+            clientData["model"]["sets"] = mainComponent.getChildrenOfType(de.prob.model.representation.Set.class).collect {
+                return it.getName()
+            }
+
+            // Collect events/operations
             def events = mainComponent.getChildrenOfType(BEvent.class)
             for (BEvent e in events) {
                 if (e instanceof Event) {
@@ -111,8 +119,16 @@ public abstract class ProBVisualisation extends BMotion implements IAnimationCha
                                 return [name: it.getName(), comment: it.getComment(), isTheorem: it.isTheorem()]
                             }
                     ]
+                } else if(e instanceof Operation) {
+                    clientData["model"]["events"] << [
+                            name     : e.getName(),
+                            parameter: e.getParameters().collect {
+                                return [name: it]
+                            }
+                    ]
                 }
             }
+
         }
 
         // Update model refinements
@@ -182,7 +198,7 @@ public abstract class ProBVisualisation extends BMotion implements IAnimationCha
             case "csp":
                 return "csp";
                 break
-            case { it == ("buc" || "bcc" || "bum" || "bcm") }:
+            case { it == "buc" || it == "bcc" || it == "bum" || it == "bcm" }:
                 return "eventb";
                 break
             case "mch":
