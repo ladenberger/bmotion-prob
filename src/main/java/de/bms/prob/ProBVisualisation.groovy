@@ -141,7 +141,15 @@ public abstract class ProBVisualisation extends BMotion implements IAnimationCha
     }
 
     @Override
-    public void initModel(String modelPath, options) throws BMotionException {
+    protected void initSession(options) throws BMotionException {
+        Trace t = getTrace()
+        getClientData().put("stateId", t.getCurrentState().getId())
+        getClientData().put("traceId", t.getUUID())
+        getClientData().put("initialised", t.getCurrentState().isInitialised())
+    }
+
+    @Override
+    protected void initModel(String modelPath, options) throws BMotionException {
 
         File modelFile = new File(modelPath)
         if (modelFile.exists()) {
