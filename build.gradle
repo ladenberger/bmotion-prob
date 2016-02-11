@@ -2,14 +2,14 @@ apply plugin: 'java'
 apply plugin: 'groovy'
 apply plugin: 'maven'
 
-project.version = '0.2.7'
+project.version = '0.2.8-SNAPSHOT'
 project.group = 'de.hhu.stups'
 project.archivesBaseName = "bmotion-prob"
 
 project.sourceCompatibility = '1.7'
 project.targetCompatibility = '1.7'
 
-def bmotionVersion = '0.2.7'
+def bmotionVersion = '0.2.8-SNAPSHOT'
 
 repositories {
     mavenCentral()
