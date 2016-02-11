@@ -149,8 +149,9 @@ public abstract class ProBVisualisation extends BMotion implements IAnimationCha
     }
 
     @Override
-    protected void initModel(String modelPath, options) throws BMotionException {
+    protected void initModel(options) throws BMotionException {
 
+        def String modelPath = options.model
         File modelFile = new File(modelPath)
         if (modelFile.exists()) {
 
