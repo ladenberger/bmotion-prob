@@ -80,7 +80,7 @@ public class CSPVisualisation extends ProBVisualisation {
     public void animatorStatus(final boolean busy) {}
 
     @Override
-    protected Trace getNewTrace(Trace trace, String transitionName, String transitionPredicate) {
+    protected Trace getNewTrace(Trace trace, String transitionName, String transitionPredicate) throws IllegalArgumentException {
         def cop = trace.getNextTransitions().find { Transition t ->
             t.getRep().equals(transitionName)
         }

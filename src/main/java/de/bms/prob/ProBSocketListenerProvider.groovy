@@ -251,7 +251,7 @@ class ProBSocketListenerProvider implements BMotionSocketListenerProvider {
             }
         });*/
 
-        server.getSocket().addEventListener("initTooltip", JsonObject.class, new DataListener<JsonObject>() {
+        server.getSocket().addEventListener("checkEvents", JsonObject.class, new DataListener<JsonObject>() {
             @Override
             public void onData(final SocketIOClient client, JsonObject d,
                                final AckRequest ackRequest) {

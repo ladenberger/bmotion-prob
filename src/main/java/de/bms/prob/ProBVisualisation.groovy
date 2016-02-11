@@ -119,7 +119,7 @@ public abstract class ProBVisualisation extends BMotion implements IAnimationCha
                                 return [name: it.getName(), comment: it.getComment(), isTheorem: it.isTheorem()]
                             }
                     ]
-                } else if(e instanceof Operation) {
+                } else if (e instanceof Operation) {
                     clientData["model"]["events"] << [
                             name     : e.getName(),
                             parameter: e.getParameters().collect {
@@ -213,42 +213,37 @@ public abstract class ProBVisualisation extends BMotion implements IAnimationCha
         }
     }
 
-    private Trace findTrace(event) {
-
-        def String tid = event['id']
-        if (tid != null) {
-            try {
-                return trace.add(tid);
-            } catch (IllegalArgumentException e) {
-                log.error "BMotion Studio: " + e.getMessage()
-            }
-        } else {
-            return getNewTrace(trace, (String) event['name'], (String) event['predicate'])
-        }
-
-        return null;
-
-    }
-
     @Override
     public Object executeEvent(final data) {
 
+        def returnValue = [:]
+        def errors = []
+
         if (trace == null) {
-            log.error "BMotion Studio: No trace exists."
-        }
-
-        def Trace newTrace = findTrace(data['event'])
-        if (newTrace != null) {
-            animations.traceChange(newTrace)
-            trace = newTrace
+            errors << "No trace exists."
         } else {
-            log.error "BMotion Studio: Could not execute any event ..."
+            def String eventId = data['event']['id']
+            def String eventName = data['event']['name']
+            def String eventPredicate = data['event']['predicate']
+            returnValue['event'] = data['event']
+            try {
+                def Trace newTrace = eventId != null ? trace.add(eventId) : getNewTrace(trace, eventName, eventPredicate)
+                animations.traceChange(newTrace)
+                trace = newTrace
+                returnValue['stateId'] = trace.getCurrentState().getId()
+                returnValue['returnValues'] = newTrace.getCurrentTransition().getReturnValues()
+            } catch (IllegalArgumentException e) {
+                errors << 'Could not execute any event with name ' + eventName + ' and predicate ' + eventPredicate + ', Message: ' + e.getMessage()
+            }
         }
 
-        return trace.getCurrentState().getId()
+        if (!errors.isEmpty()) returnValue['errors'] = errors
+
+        return returnValue
 
     }
 
-    protected abstract Trace getNewTrace(Trace trace, String transitionName, String transitionPredicate)
+    protected
+    abstract Trace getNewTrace(Trace trace, String transitionName, String transitionPredicate) throws IllegalArgumentException
 
 }

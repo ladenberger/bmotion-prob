@@ -98,7 +98,7 @@ public class BVisualisation extends ProBVisualisation {
                 if (result != null) {
                     def String resString = result['value']
                     def arr = [result: resString]
-                    if (trans) arr['trans'] =  translate(resString)
+                    if (trans) arr['trans'] = translate(resString)
                     formulas.put(formula, arr);
                 }
             } catch (BMotionException e) {
@@ -112,13 +112,8 @@ public class BVisualisation extends ProBVisualisation {
     public void animatorStatus(final boolean busy) {}
 
     @Override
-    protected Trace getNewTrace(Trace trace, String transitionName, String transitionPredicate) {
-        try {
-            return trace.execute(transitionName, transitionPredicate ? [transitionPredicate] : [])
-        } catch (IllegalArgumentException e) {
-            log.error e.getMessage()
-            return null
-        }
+    protected Trace getNewTrace(Trace trace, String transitionName, String transitionPredicate) throws IllegalArgumentException {
+        return trace.execute(transitionName, transitionPredicate ? [transitionPredicate] : [])
     }
 
 }
