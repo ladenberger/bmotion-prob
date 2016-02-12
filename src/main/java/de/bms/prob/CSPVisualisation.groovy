@@ -21,6 +21,11 @@ public class CSPVisualisation extends ProBVisualisation {
     }
 
     @Override
+    protected void updateModelData(Trace t) {
+
+    }
+
+    @Override
     public Object eval(final String formula) throws BMotionException {
         return eval(formula, getCurrentState())
     }

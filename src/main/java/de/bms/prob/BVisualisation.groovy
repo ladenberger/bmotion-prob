@@ -7,6 +7,8 @@ import de.prob.animator.domainobjects.EvaluationException
 import de.prob.animator.domainobjects.IEvalElement
 import de.prob.animator.domainobjects.IdentifierNotInitialised
 import de.prob.exception.ProBError
+import de.prob.model.representation.AbstractElement
+import de.prob.model.representation.Machine
 import de.prob.statespace.State
 import de.prob.statespace.StateSpace
 import de.prob.statespace.Trace
@@ -16,13 +18,33 @@ import de.prob.translator.types.BObject
 import groovy.util.logging.Slf4j
 
 @Slf4j
-public class BVisualisation extends ProBVisualisation {
+public abstract class BVisualisation extends ProBVisualisation {
 
     private final Map<String, IEvalElement> formulas = new HashMap<String, IEvalElement>()
 
     public BVisualisation(final UUID id, final BMotionScriptEngineProvider scriptEngineProvider) {
         super(id, scriptEngineProvider)
     }
+
+    @Override
+    protected void updateModelData(Trace t) {
+
+        clientData["model"]["events"] = []
+        clientData["model"]["variables"] = []
+
+        AbstractElement mainComponent = t.getStateSpace().getMainComponent()
+        if (mainComponent instanceof Machine) {
+            // Collect sets
+            clientData["model"]["sets"] = mainComponent.getChildrenOfType(de.prob.model.representation.Set.class).collect {
+                return [name: it.getName(), comment: it.getComment()]
+            }
+        }
+
+        updateBModelData(t)
+
+    }
+
+    protected abstract void updateBModelData(Trace t)
 
     @Override
     public Object eval(String formula) throws BMotionException {

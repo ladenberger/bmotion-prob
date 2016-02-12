@@ -3,12 +3,8 @@ package de.bms.prob
 import de.bms.BMotion
 import de.bms.BMotionException
 import de.bms.BMotionScriptEngineProvider
-import de.prob.model.classicalb.Operation
-import de.prob.model.eventb.Event
-import de.prob.model.eventb.EventBModel
 import de.prob.model.representation.AbstractElement
 import de.prob.model.representation.AbstractModel
-import de.prob.model.representation.BEvent
 import de.prob.model.representation.Machine
 import de.prob.scripting.Api
 import de.prob.statespace.*
@@ -94,51 +90,7 @@ public abstract class ProBVisualisation extends BMotion implements IAnimationCha
         checkObserver(TRIGGER_MODEL_CHANGED, clientData)
     }
 
-    private updateModelData(Trace t) {
-
-        // Update model events
-        clientData["model"]["events"] = []
-        AbstractElement mainComponent = t.getStateSpace().getMainComponent()
-        if (mainComponent instanceof Machine) {
-
-            // Collect sets
-            clientData["model"]["sets"] = mainComponent.getChildrenOfType(de.prob.model.representation.Set.class).collect {
-                return it.getName()
-            }
-
-            // Collect events/operations
-            def events = mainComponent.getChildrenOfType(BEvent.class)
-            for (BEvent e in events) {
-                if (e instanceof Event) {
-                    clientData["model"]["events"] << [
-                            name     : e.getName(),
-                            parameter: e.getParameters().collect {
-                                return [name: it.getName(), comment: it.getComment()]
-                            },
-                            guards   : e.getGuards().collect {
-                                return [name: it.getName(), comment: it.getComment(), isTheorem: it.isTheorem()]
-                            }
-                    ]
-                } else if (e instanceof Operation) {
-                    clientData["model"]["events"] << [
-                            name     : e.getName(),
-                            parameter: e.getParameters().collect {
-                                return [name: it]
-                            }
-                    ]
-                }
-            }
-
-        }
-
-        // Update model refinements
-        if (t.getModel() instanceof EventBModel) {
-            clientData["model"]["refinements"] = ((EventBModel) t.getModel()).getMachines().collect {
-                return it.name
-            }
-        }
-
-    }
+    protected abstract void updateModelData(Trace t)
 
     @Override
     protected void initSession(options) throws BMotionException {

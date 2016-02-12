@@ -12,8 +12,10 @@ public class ProBVisualisationProvider implements BMotionVisualisationProvider {
         def UUID uuid = UUID.randomUUID()
 
         switch (getFormalism((String) options.model)) {
-            case { it == "eventb" || it == "b" || it == "tla" }:
-                return new BVisualisation(uuid, scriptEngineProvider)
+            case "b":
+                return new ClassicalBVisualisation(uuid, scriptEngineProvider)
+            case "eventb":
+                return new EventBVisualisation(uuid, scriptEngineProvider)
             case "csp":
                 return new CSPVisualisation(uuid, scriptEngineProvider)
         }
