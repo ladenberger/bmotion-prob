@@ -81,7 +81,7 @@ public abstract class BVisualisation extends ProBVisualisation {
         }
     }
 
-    private Object convert(BObject obj) {
+    protected Object convert(BObject obj) {
         if (obj instanceof de.prob.translator.types.Set) {
             return obj.collect { return convert(it) }
         } else if (obj instanceof de.prob.translator.types.Sequence) {
