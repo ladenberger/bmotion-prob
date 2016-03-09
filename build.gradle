@@ -44,7 +44,7 @@ configurations.all {
 
 dependencies {
     compile(group: 'de.hhu.stups', name: 'bmotion', version: bmotionVersion)
-    compile(group: 'de.hhu.stups', name: 'prob2-ui-servlets', version: '2.0.2-SNAPSHOT')
+    compile(group: 'de.hhu.stups', name: 'prob2-ui-servlets', version: '2.0.2')
 }
 
 if (project.hasProperty('ossrhUsername') && project.hasProperty('ossrhPassword')) {
