@@ -5,7 +5,6 @@ import com.google.common.io.Resources
 import de.bms.BMotionGroovy
 import de.bms.BMotionScriptEngineProvider
 import de.prob.scripting.Api
-import de.prob.scripting.Downloader
 import de.prob.statespace.AnimationSelector
 
 import javax.script.ScriptEngineManager
@@ -15,7 +14,6 @@ public class ProBScriptEngineProvider implements BMotionScriptEngineProvider {
     private Api api;
     private AnimationSelector animations;
     private ScriptEngineManager manager;
-    private Downloader downloader;
     private static final String[] IMPORTS = ["import de.prob.statespace.*;",
                                              "import de.prob.currentModel.representation.*;",
                                              "import de.prob.currentModel.classicalb.*;",
@@ -28,7 +26,6 @@ public class ProBScriptEngineProvider implements BMotionScriptEngineProvider {
     public ProBScriptEngineProvider() {
         this.api = de.prob.Main.getInjector().getInstance(Api.class)
         this.animations = de.prob.Main.getInjector().getInstance(AnimationSelector.class)
-        this.downloader = de.prob.Main.getInjector().getInstance(Downloader.class)
         this.manager = new ScriptEngineManager(this.getClass().getClassLoader())
     }
 
@@ -37,7 +34,6 @@ public class ProBScriptEngineProvider implements BMotionScriptEngineProvider {
         def engine = new GroovyShell()
         engine.setVariable("api", api)
         engine.setVariable("animations", animations)
-        engine.setVariable("downloader", downloader)
         engine.setVariable("engine", engine)
         URL url = Resources.getResource("probscript");
         String bmsscript = Resources.toString(url, Charsets.UTF_8);
