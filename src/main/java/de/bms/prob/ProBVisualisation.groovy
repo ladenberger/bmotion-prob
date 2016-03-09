@@ -3,9 +3,7 @@ package de.bms.prob
 import de.bms.BMotion
 import de.bms.BMotionException
 import de.bms.BMotionScriptEngineProvider
-import de.prob.model.representation.AbstractElement
 import de.prob.model.representation.AbstractModel
-import de.prob.model.representation.Machine
 import de.prob.scripting.Api
 import de.prob.statespace.*
 import groovy.util.logging.Slf4j
@@ -20,6 +18,7 @@ public abstract class ProBVisualisation extends BMotion implements IAnimationCha
     def final Api api
     def Trace trace
     def UUID traceId
+    def final transitionExecutors = [:]
 
     public ProBVisualisation(final UUID id, final BMotionScriptEngineProvider scriptEngineProvider) {
         super(id, scriptEngineProvider)
@@ -53,10 +52,57 @@ public abstract class ProBVisualisation extends BMotion implements IAnimationCha
         animations.deregisterModelChangedListeners(this)
     }
 
+    protected String getOpString(Transition op) {
+
+        def String paraString = "";
+        def List<String> opParameter = op.getParams();
+        opParameter.each() {
+
+            if (this instanceof CSPVisualisation) {
+                paraString += ".";
+            } else if (it != opParameter.first()) {
+                paraString += ",";
+            }
+            paraString += it;
+
+        }
+        return op.getName() + (this instanceof BVisualisation ? "(" + paraString + ")" : paraString);
+
+    }
+
+    public Object getHistory(TraceElement currentTraceElement) {
+
+        def group = "past"
+
+        def ops = []
+        trace.getTransitionList(true).eachWithIndex { Transition op, index ->
+
+            if (group == "current") {
+                group = "future"
+            } else if (currentTraceElement.getIndex() == index) {
+                group = "current"
+            }
+
+            ops << [
+                    id          : op.getId(),
+                    name        : op.getName(),
+                    parameter   : op.getParams(),
+                    returnValues: op.getReturnValues(),
+                    opString    : getOpString(op),
+                    executor    : transitionExecutors[index],
+                    group       : group
+            ];
+
+        }
+
+        return ops
+
+    }
+
     @Override
     public void traceChange(final Trace ct, final boolean currentAnimationChanged) {
 
-        def changeTrace = animations.getTrace(traceId)
+        def changeTrace = animations.getTrace(ct.getUUID())
 
         // Only execute if trace id is current trace id (same animation)
         if (changeTrace != null && changeTrace.getUUID() == traceId) {
@@ -78,6 +124,10 @@ public abstract class ProBVisualisation extends BMotion implements IAnimationCha
             }
 
             trace = changeTrace
+
+            clients.each {
+                it.sendEvent('observeHistory', getHistory(trace.getCurrent()))
+            }
 
         }
 
@@ -119,7 +169,6 @@ public abstract class ProBVisualisation extends BMotion implements IAnimationCha
                     // and remove the old one from the AnimationSelector
                     def oldTrace = trace
                     trace = createNewModelTrace(modelFile.getCanonicalPath(), options.preferences)
-                    traceId = trace.getUUID()
                     animations.addNewAnimation(trace)
                     animations.removeTrace(oldTrace)
                 } else {
@@ -132,11 +181,11 @@ public abstract class ProBVisualisation extends BMotion implements IAnimationCha
                 if (trace == null) {
                     // Create a new trace for the model and add it to the AnimationSelector
                     trace = createNewModelTrace(modelFile.getCanonicalPath(), options.preferences)
-                    traceId = trace.getUUID()
                     animations.addNewAnimation(trace)
                 }
             }
 
+            traceId = trace.getUUID()
             updateModelData(trace);
             clientData["traceId"] = traceId;
 
@@ -183,19 +232,37 @@ public abstract class ProBVisualisation extends BMotion implements IAnimationCha
         if (trace == null) {
             errors << "No trace exists."
         } else {
-            def String eventId = data['event']['id']
-            def String eventName = data['event']['name']
-            def String eventPredicate = data['event']['predicate']
-            returnValue['event'] = data['event']
-            try {
-                def Trace newTrace = eventId != null ? trace.add(eventId) : getNewTrace(trace, eventName, eventPredicate)
-                animations.traceChange(newTrace)
-                trace = newTrace
-                returnValue['stateId'] = trace.getCurrentState().getId()
-                returnValue['returnValues'] = newTrace.getCurrentTransition().getReturnValues()
-            } catch (IllegalArgumentException e) {
-                errors << 'Could not execute any event with name ' + eventName + ' and predicate ' + eventPredicate + ', Message: ' + e.getMessage()
+
+            def Trace newTrace
+
+            if (data['event'] != null) {
+                def String eventId = data['event']['id']
+                def String eventName = data['event']['name']
+                def String eventPredicate = data['event']['predicate']
+                returnValue['event'] = data['event']
+                try {
+                    newTrace = eventId != null ? trace.add(eventId) : getNewTrace(trace, eventName, eventPredicate)
+                    transitionExecutors[newTrace.getCurrent().getIndex()] = data['executor']
+                } catch (IllegalArgumentException e) {
+                    e.printStackTrace()
+                    errors << 'Could not execute any event, Message: ' + e.getMessage()
+                }
+            } else if (data['index'] != null) {
+                newTrace = trace.gotoPosition(data['index'])
             }
+
+            if (newTrace != null) {
+                try {
+                    animations.traceChange(newTrace)
+                    trace = newTrace
+                    returnValue['stateId'] = trace.getCurrentState().getId()
+                    returnValue['returnValues'] = newTrace.getCurrentTransition().getReturnValues()
+                } catch (IllegalArgumentException e) {
+                    e.printStackTrace()
+                    errors << 'Could not execute any event, Message: ' + e.getMessage()
+                }
+            }
+
         }
 
         if (!errors.isEmpty()) returnValue['errors'] = errors

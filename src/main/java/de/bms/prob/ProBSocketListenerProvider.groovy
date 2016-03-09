@@ -100,19 +100,8 @@ class ProBSocketListenerProvider implements BMotionSocketListenerProvider {
                 if (bms != null && bms instanceof ProBVisualisation) {
                     def ProBVisualisation prob = (ProBVisualisation) bms
                     def trace = prob.getTrace();
-                    def Transition currentTransition = trace.getCurrent().getTransition();
-                    def ops = trace.getTransitionList(true).collect { Transition op ->
-                        return [
-                                id          : op.getId(),
-                                name        : op.getName(),
-                                parameter   : op.getParams(),
-                                returnValues: op.getReturnValues(),
-                                current     : currentTransition.equals(op),
-                                opString    : getOpString(op, bms)
-                        ];
-                    }
                     if (ackRequest.isAckRequested()) {
-                        ackRequest.sendAckData([ops]);
+                        ackRequest.sendAckData([prob.getHistory(trace.getCurrent())]);
                     }
                 }
             }
