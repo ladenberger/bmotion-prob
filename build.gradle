@@ -19,7 +19,7 @@ repositories {
     }
     maven {
         name "sonatype releases"
-        url "    https://oss.sonatype.org/content/repositories/releases/"
+        url "https://oss.sonatype.org/content/repositories/releases"
     }
 }
 
