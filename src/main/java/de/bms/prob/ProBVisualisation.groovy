@@ -102,10 +102,11 @@ public abstract class ProBVisualisation extends BMotion implements IAnimationCha
     @Override
     public void traceChange(final Trace ct, final boolean currentAnimationChanged) {
 
-        def changeTrace = animations.getTrace(ct.getUUID())
+        def changeTrace = animations.getTrace(traceId)
 
         // Only execute if trace id is current trace id (same animation)
-        if (changeTrace != null && changeTrace.getUUID() == traceId) {
+        //if (changeTrace != null && changeTrace.getUUID() == traceId) {
+        if (changeTrace != null && !changeTrace.equals(trace)) {
 
             def currentTransition = changeTrace.getCurrentTransition()
             def currentState = changeTrace.getCurrentState()
