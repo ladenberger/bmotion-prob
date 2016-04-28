@@ -54,6 +54,10 @@ dependencies {
     
 }
 
+javadoc {
+    failOnError = false
+}
+
 if (project.hasProperty('ossrhUsername') && project.hasProperty('ossrhPassword')) {
 
     apply plugin: 'signing'
