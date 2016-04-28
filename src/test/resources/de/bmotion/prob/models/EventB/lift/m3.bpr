@@ -1,0 +1,998 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<org.eventb.core.prFile version="1">
+<org.eventb.core.prProof name="INITIALISATION/inv1/INV" org.eventb.core.confidence="1000" org.eventb.core.prFresh="" org.eventb.core.prGoal="p0" org.eventb.core.prHyps="">
+<org.eventb.core.prRule name="r0" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="Partition rewrites in hyp (partition(M,{UP},{DN},{ST}))" org.eventb.core.prHyps="">
+<org.eventb.core.prAnte name="'">
+<org.eventb.core.prHypAction name="FORWARD_INF0" org.eventb.core.prHyps="p1" org.eventb.core.prInfHyps="p2,p3,p4,p5"/>
+<org.eventb.core.prHypAction name="HIDE1" org.eventb.core.prHyps="p1"/>
+<org.eventb.core.prHypAction name="SELECT2" org.eventb.core.prHyps="p2,p3,p4,p5"/>
+<org.eventb.core.prRule name="r0" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="Partition rewrites in hyp (partition(D,{OP},{CL}))" org.eventb.core.prHyps="">
+<org.eventb.core.prAnte name="'">
+<org.eventb.core.prHypAction name="FORWARD_INF0" org.eventb.core.prHyps="p6" org.eventb.core.prInfHyps="p7,p8"/>
+<org.eventb.core.prHypAction name="HIDE1" org.eventb.core.prHyps="p6"/>
+<org.eventb.core.prHypAction name="SELECT2" org.eventb.core.prHyps="p7,p8"/>
+<org.eventb.core.prRule name="r1" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="simplification rewrites" org.eventb.core.prGoal="p0" org.eventb.core.prHyps="">
+<org.eventb.core.prAnte name="'" org.eventb.core.prGoal="p11">
+<org.eventb.core.prHypAction name="HIDE0" org.eventb.core.prHyps="p9"/>
+<org.eventb.core.prHypAction name="HIDE1" org.eventb.core.prHyps="p10"/>
+<org.eventb.core.prRule name="r2" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="⊤ goal" org.eventb.core.prGoal="p11" org.eventb.core.prHyps=""/>
+</org.eventb.core.prAnte>
+</org.eventb.core.prRule>
+</org.eventb.core.prAnte>
+<org.eventb.core.prString name=".pos" org.eventb.core.prSValue=""/>
+</org.eventb.core.prRule>
+</org.eventb.core.prAnte>
+<org.eventb.core.prString name=".pos" org.eventb.core.prSValue=""/>
+</org.eventb.core.prRule>
+<org.eventb.core.prIdent name="ground_floor" org.eventb.core.type="ℤ"/>
+<org.eventb.core.prPred name="p11" org.eventb.core.predicate="⊤"/>
+<org.eventb.core.prPred name="p8" org.eventb.core.predicate="¬OP=CL">
+<org.eventb.core.prIdent name="CL" org.eventb.core.type="D"/>
+<org.eventb.core.prIdent name="OP" org.eventb.core.type="D"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p1" org.eventb.core.predicate="partition(M,{UP},{DN},{ST})">
+<org.eventb.core.prIdent name="DN" org.eventb.core.type="M"/>
+<org.eventb.core.prIdent name="M" org.eventb.core.type="ℙ(M)"/>
+<org.eventb.core.prIdent name="ST" org.eventb.core.type="M"/>
+<org.eventb.core.prIdent name="UP" org.eventb.core.type="M"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p10" org.eventb.core.predicate="N+1=N − 0+1">
+<org.eventb.core.prIdent name="N" org.eventb.core.type="ℤ"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p3" org.eventb.core.predicate="¬UP=DN">
+<org.eventb.core.prIdent name="DN" org.eventb.core.type="M"/>
+<org.eventb.core.prIdent name="UP" org.eventb.core.type="M"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p2" org.eventb.core.predicate="M={UP,DN,ST}">
+<org.eventb.core.prIdent name="DN" org.eventb.core.type="M"/>
+<org.eventb.core.prIdent name="M" org.eventb.core.type="ℙ(M)"/>
+<org.eventb.core.prIdent name="ST" org.eventb.core.type="M"/>
+<org.eventb.core.prIdent name="UP" org.eventb.core.type="M"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p6" org.eventb.core.predicate="partition(D,{OP},{CL})">
+<org.eventb.core.prIdent name="CL" org.eventb.core.type="D"/>
+<org.eventb.core.prIdent name="D" org.eventb.core.type="ℙ(D)"/>
+<org.eventb.core.prIdent name="OP" org.eventb.core.type="D"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p4" org.eventb.core.predicate="¬UP=ST">
+<org.eventb.core.prIdent name="ST" org.eventb.core.type="M"/>
+<org.eventb.core.prIdent name="UP" org.eventb.core.type="M"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p9" org.eventb.core.predicate="finite(ground_floor ‥ top_floor)">
+<org.eventb.core.prIdent name="top_floor" org.eventb.core.type="ℤ"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p0" org.eventb.core.predicate="(∅ ⦂ ℙ(ℤ))⊆{ground_floor}"/>
+<org.eventb.core.prPred name="p7" org.eventb.core.predicate="D={OP,CL}">
+<org.eventb.core.prIdent name="CL" org.eventb.core.type="D"/>
+<org.eventb.core.prIdent name="D" org.eventb.core.type="ℙ(D)"/>
+<org.eventb.core.prIdent name="OP" org.eventb.core.type="D"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p5" org.eventb.core.predicate="¬DN=ST">
+<org.eventb.core.prIdent name="DN" org.eventb.core.type="M"/>
+<org.eventb.core.prIdent name="ST" org.eventb.core.type="M"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prReas name="r0" org.eventb.core.prRID="org.eventb.core.seqprover.partitionRewrites"/>
+<org.eventb.core.prReas name="r1" org.eventb.core.prRID="org.eventb.core.seqprover.autoRewritesL3:0"/>
+<org.eventb.core.prReas name="r2" org.eventb.core.prRID="org.eventb.core.seqprover.trueGoal"/>
+</org.eventb.core.prProof>
+<org.eventb.core.prProof name="move_up/inv1/INV" org.eventb.core.confidence="1000" org.eventb.core.prFresh="" org.eventb.core.prGoal="p0" org.eventb.core.prHyps="p1">
+<org.eventb.core.prRule name="r0" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="Partition rewrites in hyp (partition(M,{up},{down},{idle}))" org.eventb.core.prHyps="">
+<org.eventb.core.prAnte name="'">
+<org.eventb.core.prHypAction name="FORWARD_INF0" org.eventb.core.prHyps="p2" org.eventb.core.prInfHyps="p3,p4,p5,p6"/>
+<org.eventb.core.prHypAction name="HIDE1" org.eventb.core.prHyps="p2"/>
+<org.eventb.core.prHypAction name="SELECT2" org.eventb.core.prHyps="p3,p4,p5,p6"/>
+<org.eventb.core.prRule name="r0" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="Partition rewrites in hyp (partition(D,{open},{closed}))" org.eventb.core.prHyps="">
+<org.eventb.core.prAnte name="'">
+<org.eventb.core.prHypAction name="FORWARD_INF0" org.eventb.core.prHyps="p7" org.eventb.core.prInfHyps="p8,p9"/>
+<org.eventb.core.prHypAction name="HIDE1" org.eventb.core.prHyps="p7"/>
+<org.eventb.core.prHypAction name="SELECT2" org.eventb.core.prHyps="p8,p9"/>
+<org.eventb.core.prRule name="r1" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="simplification rewrites" org.eventb.core.prHyps="">
+<org.eventb.core.prAnte name="'">
+<org.eventb.core.prHypAction name="HIDE0" org.eventb.core.prHyps="p10"/>
+<org.eventb.core.prHypAction name="HIDE1" org.eventb.core.prHyps="p11"/>
+<org.eventb.core.prHypAction name="FORWARD_INF2" org.eventb.core.prHyps="p12" org.eventb.core.prInfHyps="p13"/>
+<org.eventb.core.prHypAction name="HIDE3" org.eventb.core.prHyps="p12"/>
+<org.eventb.core.prRule name="r2" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="type rewrites" org.eventb.core.prHyps="">
+<org.eventb.core.prAnte name="'">
+<org.eventb.core.prHypAction name="HIDE0" org.eventb.core.prHyps="p14"/>
+<org.eventb.core.prHypAction name="HIDE1" org.eventb.core.prHyps="p15"/>
+<org.eventb.core.prRule name="r3" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="eh with send=∅" org.eventb.core.prGoal="p0" org.eventb.core.prHyps="p1">
+<org.eventb.core.prAnte name="'" org.eventb.core.prGoal="p18">
+<org.eventb.core.prHypAction name="FORWARD_INF0" org.eventb.core.prHyps="p16" org.eventb.core.prInfHyps="p17"/>
+<org.eventb.core.prHypAction name="DESELECT1" org.eventb.core.prHyps="p16"/>
+<org.eventb.core.prRule name="r1" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="simplification rewrites" org.eventb.core.prGoal="p18" org.eventb.core.prHyps="">
+<org.eventb.core.prAnte name="'" org.eventb.core.prGoal="p19">
+<org.eventb.core.prHypAction name="HIDE0" org.eventb.core.prHyps="p17"/>
+<org.eventb.core.prRule name="r4" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="⊤ goal" org.eventb.core.prGoal="p19" org.eventb.core.prHyps=""/>
+</org.eventb.core.prAnte>
+</org.eventb.core.prRule>
+</org.eventb.core.prAnte>
+</org.eventb.core.prRule>
+</org.eventb.core.prAnte>
+</org.eventb.core.prRule>
+</org.eventb.core.prAnte>
+</org.eventb.core.prRule>
+</org.eventb.core.prAnte>
+<org.eventb.core.prString name=".pos" org.eventb.core.prSValue=""/>
+</org.eventb.core.prRule>
+</org.eventb.core.prAnte>
+<org.eventb.core.prString name=".pos" org.eventb.core.prSValue=""/>
+</org.eventb.core.prRule>
+<org.eventb.core.prIdent name="floor" org.eventb.core.type="ℤ"/>
+<org.eventb.core.prIdent name="send" org.eventb.core.type="ℙ(ℤ)"/>
+<org.eventb.core.prPred name="p19" org.eventb.core.predicate="⊤"/>
+<org.eventb.core.prPred name="p0" org.eventb.core.predicate="send⊆{floor+1}"/>
+<org.eventb.core.prPred name="p4" org.eventb.core.predicate="¬up=down">
+<org.eventb.core.prIdent name="down" org.eventb.core.type="M"/>
+<org.eventb.core.prIdent name="up" org.eventb.core.type="M"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p9" org.eventb.core.predicate="¬open=closed">
+<org.eventb.core.prIdent name="closed" org.eventb.core.type="D"/>
+<org.eventb.core.prIdent name="open" org.eventb.core.type="D"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p16" org.eventb.core.predicate="send⊆{floor}"/>
+<org.eventb.core.prPred name="p5" org.eventb.core.predicate="¬up=idle">
+<org.eventb.core.prIdent name="idle" org.eventb.core.type="M"/>
+<org.eventb.core.prIdent name="up" org.eventb.core.type="M"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p11" org.eventb.core.predicate="N+1=N − 0+1">
+<org.eventb.core.prIdent name="N" org.eventb.core.type="ℤ"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p8" org.eventb.core.predicate="D={open,closed}">
+<org.eventb.core.prIdent name="D" org.eventb.core.type="ℙ(D)"/>
+<org.eventb.core.prIdent name="closed" org.eventb.core.type="D"/>
+<org.eventb.core.prIdent name="open" org.eventb.core.type="D"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p14" org.eventb.core.predicate="move∈M">
+<org.eventb.core.prIdent name="M" org.eventb.core.type="ℙ(M)"/>
+<org.eventb.core.prIdent name="move" org.eventb.core.type="M"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p1" org.eventb.core.predicate="send=(∅ ⦂ ℙ(ℤ))"/>
+<org.eventb.core.prPred name="p7" org.eventb.core.predicate="partition(D,{open},{closed})">
+<org.eventb.core.prIdent name="D" org.eventb.core.type="ℙ(D)"/>
+<org.eventb.core.prIdent name="closed" org.eventb.core.type="D"/>
+<org.eventb.core.prIdent name="open" org.eventb.core.type="D"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p2" org.eventb.core.predicate="partition(M,{up},{down},{idle})">
+<org.eventb.core.prIdent name="M" org.eventb.core.type="ℙ(M)"/>
+<org.eventb.core.prIdent name="down" org.eventb.core.type="M"/>
+<org.eventb.core.prIdent name="idle" org.eventb.core.type="M"/>
+<org.eventb.core.prIdent name="up" org.eventb.core.type="M"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p6" org.eventb.core.predicate="¬down=idle">
+<org.eventb.core.prIdent name="down" org.eventb.core.type="M"/>
+<org.eventb.core.prIdent name="idle" org.eventb.core.type="M"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p15" org.eventb.core.predicate="door∈D">
+<org.eventb.core.prIdent name="D" org.eventb.core.type="ℙ(D)"/>
+<org.eventb.core.prIdent name="door" org.eventb.core.type="D"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p18" org.eventb.core.predicate="(∅ ⦂ ℙ(ℤ))⊆{floor+1}"/>
+<org.eventb.core.prPred name="p17" org.eventb.core.predicate="(∅ ⦂ ℙ(ℤ))⊆{floor}"/>
+<org.eventb.core.prPred name="p12" org.eventb.core.predicate="floor∉call">
+<org.eventb.core.prIdent name="call" org.eventb.core.type="ℙ(ℤ)"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p13" org.eventb.core.predicate="¬floor∈call">
+<org.eventb.core.prIdent name="call" org.eventb.core.type="ℙ(ℤ)"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p10" org.eventb.core.predicate="finite(ground_floor ‥ top_floor)">
+<org.eventb.core.prIdent name="ground_floor" org.eventb.core.type="ℤ"/>
+<org.eventb.core.prIdent name="top_floor" org.eventb.core.type="ℤ"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p3" org.eventb.core.predicate="M={up,down,idle}">
+<org.eventb.core.prIdent name="M" org.eventb.core.type="ℙ(M)"/>
+<org.eventb.core.prIdent name="down" org.eventb.core.type="M"/>
+<org.eventb.core.prIdent name="idle" org.eventb.core.type="M"/>
+<org.eventb.core.prIdent name="up" org.eventb.core.type="M"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prReas name="r2" org.eventb.core.prRID="org.eventb.core.seqprover.typeRewrites:1"/>
+<org.eventb.core.prReas name="r3" org.eventb.core.prRID="org.eventb.core.seqprover.eq:1"/>
+<org.eventb.core.prReas name="r0" org.eventb.core.prRID="org.eventb.core.seqprover.partitionRewrites"/>
+<org.eventb.core.prReas name="r1" org.eventb.core.prRID="org.eventb.core.seqprover.autoRewritesL3:0"/>
+<org.eventb.core.prReas name="r4" org.eventb.core.prRID="org.eventb.core.seqprover.trueGoal"/>
+</org.eventb.core.prProof>
+<org.eventb.core.prProof name="move_dn/inv1/INV" org.eventb.core.confidence="1000" org.eventb.core.prFresh="" org.eventb.core.prGoal="p0" org.eventb.core.prHyps="p1">
+<org.eventb.core.prRule name="r0" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="Partition rewrites in hyp (partition(M,{up},{down},{idle}))" org.eventb.core.prHyps="">
+<org.eventb.core.prAnte name="'">
+<org.eventb.core.prHypAction name="FORWARD_INF0" org.eventb.core.prHyps="p2" org.eventb.core.prInfHyps="p3,p4,p5,p6"/>
+<org.eventb.core.prHypAction name="HIDE1" org.eventb.core.prHyps="p2"/>
+<org.eventb.core.prHypAction name="SELECT2" org.eventb.core.prHyps="p3,p4,p5,p6"/>
+<org.eventb.core.prRule name="r0" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="Partition rewrites in hyp (partition(D,{open},{closed}))" org.eventb.core.prHyps="">
+<org.eventb.core.prAnte name="'">
+<org.eventb.core.prHypAction name="FORWARD_INF0" org.eventb.core.prHyps="p7" org.eventb.core.prInfHyps="p8,p9"/>
+<org.eventb.core.prHypAction name="HIDE1" org.eventb.core.prHyps="p7"/>
+<org.eventb.core.prHypAction name="SELECT2" org.eventb.core.prHyps="p8,p9"/>
+<org.eventb.core.prRule name="r1" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="simplification rewrites" org.eventb.core.prHyps="">
+<org.eventb.core.prAnte name="'">
+<org.eventb.core.prHypAction name="HIDE0" org.eventb.core.prHyps="p10"/>
+<org.eventb.core.prHypAction name="HIDE1" org.eventb.core.prHyps="p11"/>
+<org.eventb.core.prHypAction name="FORWARD_INF2" org.eventb.core.prHyps="p12" org.eventb.core.prInfHyps="p13"/>
+<org.eventb.core.prHypAction name="HIDE3" org.eventb.core.prHyps="p12"/>
+<org.eventb.core.prRule name="r2" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="type rewrites" org.eventb.core.prHyps="">
+<org.eventb.core.prAnte name="'">
+<org.eventb.core.prHypAction name="HIDE0" org.eventb.core.prHyps="p14"/>
+<org.eventb.core.prHypAction name="HIDE1" org.eventb.core.prHyps="p15"/>
+<org.eventb.core.prRule name="r3" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="eh with send=∅" org.eventb.core.prGoal="p0" org.eventb.core.prHyps="p1">
+<org.eventb.core.prAnte name="'" org.eventb.core.prGoal="p18">
+<org.eventb.core.prHypAction name="FORWARD_INF0" org.eventb.core.prHyps="p16" org.eventb.core.prInfHyps="p17"/>
+<org.eventb.core.prHypAction name="DESELECT1" org.eventb.core.prHyps="p16"/>
+<org.eventb.core.prRule name="r1" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="simplification rewrites" org.eventb.core.prGoal="p18" org.eventb.core.prHyps="">
+<org.eventb.core.prAnte name="'" org.eventb.core.prGoal="p19">
+<org.eventb.core.prHypAction name="HIDE0" org.eventb.core.prHyps="p17"/>
+<org.eventb.core.prRule name="r4" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="⊤ goal" org.eventb.core.prGoal="p19" org.eventb.core.prHyps=""/>
+</org.eventb.core.prAnte>
+</org.eventb.core.prRule>
+</org.eventb.core.prAnte>
+</org.eventb.core.prRule>
+</org.eventb.core.prAnte>
+</org.eventb.core.prRule>
+</org.eventb.core.prAnte>
+</org.eventb.core.prRule>
+</org.eventb.core.prAnte>
+<org.eventb.core.prString name=".pos" org.eventb.core.prSValue=""/>
+</org.eventb.core.prRule>
+</org.eventb.core.prAnte>
+<org.eventb.core.prString name=".pos" org.eventb.core.prSValue=""/>
+</org.eventb.core.prRule>
+<org.eventb.core.prIdent name="floor" org.eventb.core.type="ℤ"/>
+<org.eventb.core.prIdent name="send" org.eventb.core.type="ℙ(ℤ)"/>
+<org.eventb.core.prPred name="p19" org.eventb.core.predicate="⊤"/>
+<org.eventb.core.prPred name="p4" org.eventb.core.predicate="¬up=down">
+<org.eventb.core.prIdent name="down" org.eventb.core.type="M"/>
+<org.eventb.core.prIdent name="up" org.eventb.core.type="M"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p9" org.eventb.core.predicate="¬open=closed">
+<org.eventb.core.prIdent name="closed" org.eventb.core.type="D"/>
+<org.eventb.core.prIdent name="open" org.eventb.core.type="D"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p16" org.eventb.core.predicate="send⊆{floor}"/>
+<org.eventb.core.prPred name="p5" org.eventb.core.predicate="¬up=idle">
+<org.eventb.core.prIdent name="idle" org.eventb.core.type="M"/>
+<org.eventb.core.prIdent name="up" org.eventb.core.type="M"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p11" org.eventb.core.predicate="N+1=N − 0+1">
+<org.eventb.core.prIdent name="N" org.eventb.core.type="ℤ"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p8" org.eventb.core.predicate="D={open,closed}">
+<org.eventb.core.prIdent name="D" org.eventb.core.type="ℙ(D)"/>
+<org.eventb.core.prIdent name="closed" org.eventb.core.type="D"/>
+<org.eventb.core.prIdent name="open" org.eventb.core.type="D"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p14" org.eventb.core.predicate="move∈M">
+<org.eventb.core.prIdent name="M" org.eventb.core.type="ℙ(M)"/>
+<org.eventb.core.prIdent name="move" org.eventb.core.type="M"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p1" org.eventb.core.predicate="send=(∅ ⦂ ℙ(ℤ))"/>
+<org.eventb.core.prPred name="p7" org.eventb.core.predicate="partition(D,{open},{closed})">
+<org.eventb.core.prIdent name="D" org.eventb.core.type="ℙ(D)"/>
+<org.eventb.core.prIdent name="closed" org.eventb.core.type="D"/>
+<org.eventb.core.prIdent name="open" org.eventb.core.type="D"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p18" org.eventb.core.predicate="(∅ ⦂ ℙ(ℤ))⊆{floor − 1}"/>
+<org.eventb.core.prPred name="p2" org.eventb.core.predicate="partition(M,{up},{down},{idle})">
+<org.eventb.core.prIdent name="M" org.eventb.core.type="ℙ(M)"/>
+<org.eventb.core.prIdent name="down" org.eventb.core.type="M"/>
+<org.eventb.core.prIdent name="idle" org.eventb.core.type="M"/>
+<org.eventb.core.prIdent name="up" org.eventb.core.type="M"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p0" org.eventb.core.predicate="send⊆{floor − 1}"/>
+<org.eventb.core.prPred name="p6" org.eventb.core.predicate="¬down=idle">
+<org.eventb.core.prIdent name="down" org.eventb.core.type="M"/>
+<org.eventb.core.prIdent name="idle" org.eventb.core.type="M"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p15" org.eventb.core.predicate="door∈D">
+<org.eventb.core.prIdent name="D" org.eventb.core.type="ℙ(D)"/>
+<org.eventb.core.prIdent name="door" org.eventb.core.type="D"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p17" org.eventb.core.predicate="(∅ ⦂ ℙ(ℤ))⊆{floor}"/>
+<org.eventb.core.prPred name="p12" org.eventb.core.predicate="floor∉call">
+<org.eventb.core.prIdent name="call" org.eventb.core.type="ℙ(ℤ)"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p13" org.eventb.core.predicate="¬floor∈call">
+<org.eventb.core.prIdent name="call" org.eventb.core.type="ℙ(ℤ)"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p10" org.eventb.core.predicate="finite(ground_floor ‥ top_floor)">
+<org.eventb.core.prIdent name="ground_floor" org.eventb.core.type="ℤ"/>
+<org.eventb.core.prIdent name="top_floor" org.eventb.core.type="ℤ"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p3" org.eventb.core.predicate="M={up,down,idle}">
+<org.eventb.core.prIdent name="M" org.eventb.core.type="ℙ(M)"/>
+<org.eventb.core.prIdent name="down" org.eventb.core.type="M"/>
+<org.eventb.core.prIdent name="idle" org.eventb.core.type="M"/>
+<org.eventb.core.prIdent name="up" org.eventb.core.type="M"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prReas name="r2" org.eventb.core.prRID="org.eventb.core.seqprover.typeRewrites:1"/>
+<org.eventb.core.prReas name="r3" org.eventb.core.prRID="org.eventb.core.seqprover.eq:1"/>
+<org.eventb.core.prReas name="r0" org.eventb.core.prRID="org.eventb.core.seqprover.partitionRewrites"/>
+<org.eventb.core.prReas name="r1" org.eventb.core.prRID="org.eventb.core.seqprover.autoRewritesL3:0"/>
+<org.eventb.core.prReas name="r4" org.eventb.core.prRID="org.eventb.core.seqprover.trueGoal"/>
+</org.eventb.core.prProof>
+<org.eventb.core.prProof name="move_serve/inv1/INV" org.eventb.core.confidence="1000" org.eventb.core.prFresh="" org.eventb.core.prGoal="p0" org.eventb.core.prHyps="p1">
+<org.eventb.core.prRule name="r0" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="Partition rewrites in hyp (partition(M,{up},{down},{idle}))" org.eventb.core.prHyps="">
+<org.eventb.core.prAnte name="'">
+<org.eventb.core.prHypAction name="FORWARD_INF0" org.eventb.core.prHyps="p2" org.eventb.core.prInfHyps="p3,p4,p5,p6"/>
+<org.eventb.core.prHypAction name="HIDE1" org.eventb.core.prHyps="p2"/>
+<org.eventb.core.prHypAction name="SELECT2" org.eventb.core.prHyps="p3,p4,p5,p6"/>
+<org.eventb.core.prRule name="r0" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="Partition rewrites in hyp (partition(D,{open},{closed}))" org.eventb.core.prHyps="">
+<org.eventb.core.prAnte name="'">
+<org.eventb.core.prHypAction name="FORWARD_INF0" org.eventb.core.prHyps="p7" org.eventb.core.prInfHyps="p8,p9"/>
+<org.eventb.core.prHypAction name="HIDE1" org.eventb.core.prHyps="p7"/>
+<org.eventb.core.prHypAction name="SELECT2" org.eventb.core.prHyps="p8,p9"/>
+<org.eventb.core.prRule name="r1" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="simplification rewrites" org.eventb.core.prGoal="p0" org.eventb.core.prHyps="">
+<org.eventb.core.prAnte name="'" org.eventb.core.prGoal="p1">
+<org.eventb.core.prHypAction name="HIDE0" org.eventb.core.prHyps="p10"/>
+<org.eventb.core.prHypAction name="HIDE1" org.eventb.core.prHyps="p11"/>
+<org.eventb.core.prRule name="r2" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="hyp" org.eventb.core.prGoal="p1" org.eventb.core.prHyps="p1"/>
+</org.eventb.core.prAnte>
+</org.eventb.core.prRule>
+</org.eventb.core.prAnte>
+<org.eventb.core.prString name=".pos" org.eventb.core.prSValue=""/>
+</org.eventb.core.prRule>
+</org.eventb.core.prAnte>
+<org.eventb.core.prString name=".pos" org.eventb.core.prSValue=""/>
+</org.eventb.core.prRule>
+<org.eventb.core.prIdent name="floor" org.eventb.core.type="ℤ"/>
+<org.eventb.core.prIdent name="send" org.eventb.core.type="ℙ(ℤ)"/>
+<org.eventb.core.prPred name="p9" org.eventb.core.predicate="¬open=closed">
+<org.eventb.core.prIdent name="closed" org.eventb.core.type="D"/>
+<org.eventb.core.prIdent name="open" org.eventb.core.type="D"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p4" org.eventb.core.predicate="¬up=down">
+<org.eventb.core.prIdent name="down" org.eventb.core.type="M"/>
+<org.eventb.core.prIdent name="up" org.eventb.core.type="M"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p2" org.eventb.core.predicate="partition(M,{up},{down},{idle})">
+<org.eventb.core.prIdent name="M" org.eventb.core.type="ℙ(M)"/>
+<org.eventb.core.prIdent name="down" org.eventb.core.type="M"/>
+<org.eventb.core.prIdent name="idle" org.eventb.core.type="M"/>
+<org.eventb.core.prIdent name="up" org.eventb.core.type="M"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p11" org.eventb.core.predicate="N+1=N − 0+1">
+<org.eventb.core.prIdent name="N" org.eventb.core.type="ℤ"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p6" org.eventb.core.predicate="¬down=idle">
+<org.eventb.core.prIdent name="down" org.eventb.core.type="M"/>
+<org.eventb.core.prIdent name="idle" org.eventb.core.type="M"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p5" org.eventb.core.predicate="¬up=idle">
+<org.eventb.core.prIdent name="idle" org.eventb.core.type="M"/>
+<org.eventb.core.prIdent name="up" org.eventb.core.type="M"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p1" org.eventb.core.predicate="send⊆{floor}"/>
+<org.eventb.core.prPred name="p8" org.eventb.core.predicate="D={open,closed}">
+<org.eventb.core.prIdent name="D" org.eventb.core.type="ℙ(D)"/>
+<org.eventb.core.prIdent name="closed" org.eventb.core.type="D"/>
+<org.eventb.core.prIdent name="open" org.eventb.core.type="D"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p10" org.eventb.core.predicate="finite(ground_floor ‥ top_floor)">
+<org.eventb.core.prIdent name="ground_floor" org.eventb.core.type="ℤ"/>
+<org.eventb.core.prIdent name="top_floor" org.eventb.core.type="ℤ"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p7" org.eventb.core.predicate="partition(D,{open},{closed})">
+<org.eventb.core.prIdent name="D" org.eventb.core.type="ℙ(D)"/>
+<org.eventb.core.prIdent name="closed" org.eventb.core.type="D"/>
+<org.eventb.core.prIdent name="open" org.eventb.core.type="D"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p3" org.eventb.core.predicate="M={up,down,idle}">
+<org.eventb.core.prIdent name="M" org.eventb.core.type="ℙ(M)"/>
+<org.eventb.core.prIdent name="down" org.eventb.core.type="M"/>
+<org.eventb.core.prIdent name="idle" org.eventb.core.type="M"/>
+<org.eventb.core.prIdent name="up" org.eventb.core.type="M"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p0" org.eventb.core.predicate="send∪{floor}⊆{floor}"/>
+<org.eventb.core.prReas name="r2" org.eventb.core.prRID="org.eventb.core.seqprover.hyp"/>
+<org.eventb.core.prReas name="r0" org.eventb.core.prRID="org.eventb.core.seqprover.partitionRewrites"/>
+<org.eventb.core.prReas name="r1" org.eventb.core.prRID="org.eventb.core.seqprover.autoRewritesL3:0"/>
+</org.eventb.core.prProof>
+<org.eventb.core.prProof name="open_door/inv1/INV" org.eventb.core.confidence="1000" org.eventb.core.prFresh="" org.eventb.core.prGoal="p0" org.eventb.core.prHyps="p1,p2,p3,p4,p5,p6,p7,p8,p9,p10,p11,p12,p13" org.eventb.core.prSets="D,M">
+<org.eventb.core.prRule name="r0" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="Partition rewrites in hyp (partition(M,{UP},{DN},{ST}))" org.eventb.core.prHyps="">
+<org.eventb.core.prAnte name="'">
+<org.eventb.core.prHypAction name="FORWARD_INF0" org.eventb.core.prHyps="p1" org.eventb.core.prInfHyps="p14,p15,p16,p17"/>
+<org.eventb.core.prHypAction name="HIDE1" org.eventb.core.prHyps="p1"/>
+<org.eventb.core.prHypAction name="SELECT2" org.eventb.core.prHyps="p14,p15,p16,p17"/>
+<org.eventb.core.prRule name="r0" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="Partition rewrites in hyp (partition(D,{OP},{CL}))" org.eventb.core.prHyps="">
+<org.eventb.core.prAnte name="'">
+<org.eventb.core.prHypAction name="FORWARD_INF0" org.eventb.core.prHyps="p9" org.eventb.core.prInfHyps="p18,p19"/>
+<org.eventb.core.prHypAction name="HIDE1" org.eventb.core.prHyps="p9"/>
+<org.eventb.core.prHypAction name="SELECT2" org.eventb.core.prHyps="p18,p19"/>
+<org.eventb.core.prRule name="r1" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="generalized MP" org.eventb.core.prHyps="">
+<org.eventb.core.prAnte name="'">
+<org.eventb.core.prHypAction name="FORWARD_INF0" org.eventb.core.prHyps="p11,p20" org.eventb.core.prInfHyps="p21"/>
+<org.eventb.core.prHypAction name="HIDE1" org.eventb.core.prHyps="p20"/>
+<org.eventb.core.prRule name="r2" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="simplification rewrites" org.eventb.core.prHyps="">
+<org.eventb.core.prAnte name="'">
+<org.eventb.core.prHypAction name="HIDE0" org.eventb.core.prHyps="p22"/>
+<org.eventb.core.prHypAction name="HIDE1" org.eventb.core.prHyps="p23"/>
+<org.eventb.core.prHypAction name="HIDE2" org.eventb.core.prHyps="p21"/>
+<org.eventb.core.prRule name="r3" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="type rewrites" org.eventb.core.prHyps="">
+<org.eventb.core.prAnte name="'">
+<org.eventb.core.prHypAction name="HIDE0" org.eventb.core.prHyps="p24"/>
+<org.eventb.core.prHypAction name="HIDE1" org.eventb.core.prHyps="p25"/>
+<org.eventb.core.prRule name="r4" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="ML" org.eventb.core.prGoal="p0" org.eventb.core.prHyps="p6,p13,p2,p8,p12,p7,p10,p3,p11,p4,p5,p14,p15,p16,p17,p18,p19">
+<org.eventb.core.prString name=".arg" org.eventb.core.prSValue="0;1:500"/>
+</org.eventb.core.prRule>
+</org.eventb.core.prAnte>
+</org.eventb.core.prRule>
+</org.eventb.core.prAnte>
+</org.eventb.core.prRule>
+</org.eventb.core.prAnte>
+</org.eventb.core.prRule>
+</org.eventb.core.prAnte>
+<org.eventb.core.prString name=".pos" org.eventb.core.prSValue=""/>
+</org.eventb.core.prRule>
+</org.eventb.core.prAnte>
+<org.eventb.core.prString name=".pos" org.eventb.core.prSValue=""/>
+</org.eventb.core.prRule>
+<org.eventb.core.prIdent name="CL" org.eventb.core.type="D"/>
+<org.eventb.core.prIdent name="DN" org.eventb.core.type="M"/>
+<org.eventb.core.prIdent name="N" org.eventb.core.type="ℤ"/>
+<org.eventb.core.prIdent name="OP" org.eventb.core.type="D"/>
+<org.eventb.core.prIdent name="ST" org.eventb.core.type="M"/>
+<org.eventb.core.prIdent name="UP" org.eventb.core.type="M"/>
+<org.eventb.core.prIdent name="door" org.eventb.core.type="D"/>
+<org.eventb.core.prIdent name="floor" org.eventb.core.type="ℤ"/>
+<org.eventb.core.prIdent name="gf" org.eventb.core.type="ℤ"/>
+<org.eventb.core.prIdent name="move" org.eventb.core.type="M"/>
+<org.eventb.core.prIdent name="req" org.eventb.core.type="ℙ(ℤ)"/>
+<org.eventb.core.prIdent name="serve" org.eventb.core.type="ℙ(ℤ)"/>
+<org.eventb.core.prIdent name="tf" org.eventb.core.type="ℤ"/>
+<org.eventb.core.prPred name="p1" org.eventb.core.predicate="partition(M,{UP},{DN},{ST})"/>
+<org.eventb.core.prPred name="p23" org.eventb.core.predicate="N+1=N − 0+1"/>
+<org.eventb.core.prPred name="p3" org.eventb.core.predicate="serve⊆{floor}"/>
+<org.eventb.core.prPred name="p4" org.eventb.core.predicate="move=ST"/>
+<org.eventb.core.prPred name="p17" org.eventb.core.predicate="¬DN=ST"/>
+<org.eventb.core.prPred name="p6" org.eventb.core.predicate="N&gt;1"/>
+<org.eventb.core.prPred name="p9" org.eventb.core.predicate="partition(D,{OP},{CL})"/>
+<org.eventb.core.prPred name="p25" org.eventb.core.predicate="door∈D"/>
+<org.eventb.core.prPred name="p11" org.eventb.core.predicate="door=CL"/>
+<org.eventb.core.prPred name="p12" org.eventb.core.predicate="tf=N"/>
+<org.eventb.core.prPred name="p0" org.eventb.core.predicate="serve ∖ {floor}⊆{floor}"/>
+<org.eventb.core.prPred name="p20" org.eventb.core.predicate="move∈{UP,DN}⇒door=CL"/>
+<org.eventb.core.prPred name="p2" org.eventb.core.predicate="N+1=tf − gf+1"/>
+<org.eventb.core.prPred name="p19" org.eventb.core.predicate="¬OP=CL"/>
+<org.eventb.core.prPred name="p21" org.eventb.core.predicate="move∈{UP,DN}⇒⊤"/>
+<org.eventb.core.prPred name="p22" org.eventb.core.predicate="finite(gf ‥ tf)"/>
+<org.eventb.core.prPred name="p16" org.eventb.core.predicate="¬UP=ST"/>
+<org.eventb.core.prPred name="p24" org.eventb.core.predicate="move∈M"/>
+<org.eventb.core.prPred name="p18" org.eventb.core.predicate="D={OP,CL}"/>
+<org.eventb.core.prPred name="p5" org.eventb.core.predicate="floor∈serve"/>
+<org.eventb.core.prPred name="p7" org.eventb.core.predicate="floor∈gf ‥ tf"/>
+<org.eventb.core.prPred name="p8" org.eventb.core.predicate="gf=0"/>
+<org.eventb.core.prPred name="p15" org.eventb.core.predicate="¬UP=DN"/>
+<org.eventb.core.prPred name="p14" org.eventb.core.predicate="M={UP,DN,ST}"/>
+<org.eventb.core.prPred name="p10" org.eventb.core.predicate="req⊆gf ‥ tf"/>
+<org.eventb.core.prPred name="p13" org.eventb.core.predicate="card(gf ‥ tf)=N+1"/>
+<org.eventb.core.prReas name="r2" org.eventb.core.prRID="org.eventb.core.seqprover.autoRewritesL3:0"/>
+<org.eventb.core.prReas name="r1" org.eventb.core.prRID="org.eventb.core.seqprover.genMPL1"/>
+<org.eventb.core.prReas name="r0" org.eventb.core.prRID="org.eventb.core.seqprover.partitionRewrites"/>
+<org.eventb.core.prReas name="r3" org.eventb.core.prRID="org.eventb.core.seqprover.typeRewrites:1"/>
+<org.eventb.core.prReas name="r4" org.eventb.core.prRID="com.clearsy.atelierb.provers.core.externalML:1"/>
+</org.eventb.core.prProof>
+<org.eventb.core.prProof name="move_serve/send/EQL" org.eventb.core.confidence="0" org.eventb.core.prFresh="" org.eventb.core.prGoal="p0" org.eventb.core.prHyps="">
+<org.eventb.core.prRule name="r0" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="Partition rewrites in hyp (partition(M,{up},{down},{idle}))" org.eventb.core.prHyps="">
+<org.eventb.core.prAnte name="'">
+<org.eventb.core.prHypAction name="FORWARD_INF0" org.eventb.core.prHyps="p1" org.eventb.core.prInfHyps="p2,p3,p4,p5"/>
+<org.eventb.core.prHypAction name="HIDE1" org.eventb.core.prHyps="p1"/>
+<org.eventb.core.prHypAction name="SELECT2" org.eventb.core.prHyps="p2,p3,p4,p5"/>
+<org.eventb.core.prRule name="r0" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="Partition rewrites in hyp (partition(D,{open},{closed}))" org.eventb.core.prHyps="">
+<org.eventb.core.prAnte name="'">
+<org.eventb.core.prHypAction name="FORWARD_INF0" org.eventb.core.prHyps="p6" org.eventb.core.prInfHyps="p7,p8"/>
+<org.eventb.core.prHypAction name="HIDE1" org.eventb.core.prHyps="p6"/>
+<org.eventb.core.prHypAction name="SELECT2" org.eventb.core.prHyps="p7,p8"/>
+<org.eventb.core.prRule name="r1" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="simplification rewrites" org.eventb.core.prGoal="p0" org.eventb.core.prHyps="">
+<org.eventb.core.prAnte name="'" org.eventb.core.prGoal="p11">
+<org.eventb.core.prHypAction name="HIDE0" org.eventb.core.prHyps="p9"/>
+<org.eventb.core.prHypAction name="HIDE1" org.eventb.core.prHyps="p10"/>
+<org.eventb.core.prRule name="r2" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="type rewrites" org.eventb.core.prHyps="">
+<org.eventb.core.prAnte name="'">
+<org.eventb.core.prHypAction name="HIDE0" org.eventb.core.prHyps="p12"/>
+<org.eventb.core.prHypAction name="HIDE1" org.eventb.core.prHyps="p13"/>
+</org.eventb.core.prAnte>
+</org.eventb.core.prRule>
+</org.eventb.core.prAnte>
+</org.eventb.core.prRule>
+</org.eventb.core.prAnte>
+<org.eventb.core.prString name=".pos" org.eventb.core.prSValue=""/>
+</org.eventb.core.prRule>
+</org.eventb.core.prAnte>
+<org.eventb.core.prString name=".pos" org.eventb.core.prSValue=""/>
+</org.eventb.core.prRule>
+<org.eventb.core.prIdent name="floor" org.eventb.core.type="ℤ"/>
+<org.eventb.core.prIdent name="send" org.eventb.core.type="ℙ(ℤ)"/>
+<org.eventb.core.prPred name="p3" org.eventb.core.predicate="¬up=down">
+<org.eventb.core.prIdent name="down" org.eventb.core.type="M"/>
+<org.eventb.core.prIdent name="up" org.eventb.core.type="M"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p8" org.eventb.core.predicate="¬open=closed">
+<org.eventb.core.prIdent name="closed" org.eventb.core.type="D"/>
+<org.eventb.core.prIdent name="open" org.eventb.core.type="D"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p4" org.eventb.core.predicate="¬up=idle">
+<org.eventb.core.prIdent name="idle" org.eventb.core.type="M"/>
+<org.eventb.core.prIdent name="up" org.eventb.core.type="M"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p10" org.eventb.core.predicate="N+1=N − 0+1">
+<org.eventb.core.prIdent name="N" org.eventb.core.type="ℤ"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p7" org.eventb.core.predicate="D={open,closed}">
+<org.eventb.core.prIdent name="D" org.eventb.core.type="ℙ(D)"/>
+<org.eventb.core.prIdent name="closed" org.eventb.core.type="D"/>
+<org.eventb.core.prIdent name="open" org.eventb.core.type="D"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p12" org.eventb.core.predicate="move∈M">
+<org.eventb.core.prIdent name="M" org.eventb.core.type="ℙ(M)"/>
+<org.eventb.core.prIdent name="move" org.eventb.core.type="M"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p0" org.eventb.core.predicate="send∪{floor}=send"/>
+<org.eventb.core.prPred name="p6" org.eventb.core.predicate="partition(D,{open},{closed})">
+<org.eventb.core.prIdent name="D" org.eventb.core.type="ℙ(D)"/>
+<org.eventb.core.prIdent name="closed" org.eventb.core.type="D"/>
+<org.eventb.core.prIdent name="open" org.eventb.core.type="D"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p1" org.eventb.core.predicate="partition(M,{up},{down},{idle})">
+<org.eventb.core.prIdent name="M" org.eventb.core.type="ℙ(M)"/>
+<org.eventb.core.prIdent name="down" org.eventb.core.type="M"/>
+<org.eventb.core.prIdent name="idle" org.eventb.core.type="M"/>
+<org.eventb.core.prIdent name="up" org.eventb.core.type="M"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p5" org.eventb.core.predicate="¬down=idle">
+<org.eventb.core.prIdent name="down" org.eventb.core.type="M"/>
+<org.eventb.core.prIdent name="idle" org.eventb.core.type="M"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p11" org.eventb.core.predicate="floor∈send"/>
+<org.eventb.core.prPred name="p13" org.eventb.core.predicate="door∈D">
+<org.eventb.core.prIdent name="D" org.eventb.core.type="ℙ(D)"/>
+<org.eventb.core.prIdent name="door" org.eventb.core.type="D"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p9" org.eventb.core.predicate="finite(ground_floor ‥ top_floor)">
+<org.eventb.core.prIdent name="ground_floor" org.eventb.core.type="ℤ"/>
+<org.eventb.core.prIdent name="top_floor" org.eventb.core.type="ℤ"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p2" org.eventb.core.predicate="M={up,down,idle}">
+<org.eventb.core.prIdent name="M" org.eventb.core.type="ℙ(M)"/>
+<org.eventb.core.prIdent name="down" org.eventb.core.type="M"/>
+<org.eventb.core.prIdent name="idle" org.eventb.core.type="M"/>
+<org.eventb.core.prIdent name="up" org.eventb.core.type="M"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prReas name="r2" org.eventb.core.prRID="org.eventb.core.seqprover.typeRewrites:1"/>
+<org.eventb.core.prReas name="r0" org.eventb.core.prRID="org.eventb.core.seqprover.partitionRewrites"/>
+<org.eventb.core.prReas name="r1" org.eventb.core.prRID="org.eventb.core.seqprover.autoRewritesL3:0"/>
+</org.eventb.core.prProof>
+<org.eventb.core.prProof name="open_door/send/EQL" org.eventb.core.confidence="0" org.eventb.core.prFresh="" org.eventb.core.prHyps="">
+<org.eventb.core.prRule name="r0" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="Partition rewrites in hyp (partition(M,{up},{down},{idle}))" org.eventb.core.prHyps="">
+<org.eventb.core.prAnte name="'">
+<org.eventb.core.prHypAction name="FORWARD_INF0" org.eventb.core.prHyps="p0" org.eventb.core.prInfHyps="p1,p2,p3,p4"/>
+<org.eventb.core.prHypAction name="HIDE1" org.eventb.core.prHyps="p0"/>
+<org.eventb.core.prHypAction name="SELECT2" org.eventb.core.prHyps="p1,p2,p3,p4"/>
+<org.eventb.core.prRule name="r0" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="Partition rewrites in hyp (partition(D,{open},{closed}))" org.eventb.core.prHyps="">
+<org.eventb.core.prAnte name="'">
+<org.eventb.core.prHypAction name="FORWARD_INF0" org.eventb.core.prHyps="p5" org.eventb.core.prInfHyps="p6,p7"/>
+<org.eventb.core.prHypAction name="HIDE1" org.eventb.core.prHyps="p5"/>
+<org.eventb.core.prHypAction name="SELECT2" org.eventb.core.prHyps="p6,p7"/>
+<org.eventb.core.prRule name="r1" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="generalized MP" org.eventb.core.prHyps="">
+<org.eventb.core.prAnte name="'">
+<org.eventb.core.prHypAction name="FORWARD_INF0" org.eventb.core.prHyps="p8,p9" org.eventb.core.prInfHyps="p10"/>
+<org.eventb.core.prHypAction name="HIDE1" org.eventb.core.prHyps="p9"/>
+<org.eventb.core.prRule name="r2" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="simplification rewrites" org.eventb.core.prHyps="">
+<org.eventb.core.prAnte name="'">
+<org.eventb.core.prHypAction name="HIDE0" org.eventb.core.prHyps="p11"/>
+<org.eventb.core.prHypAction name="HIDE1" org.eventb.core.prHyps="p12"/>
+<org.eventb.core.prHypAction name="HIDE2" org.eventb.core.prHyps="p10"/>
+<org.eventb.core.prRule name="r3" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="type rewrites" org.eventb.core.prHyps="">
+<org.eventb.core.prAnte name="'">
+<org.eventb.core.prHypAction name="HIDE0" org.eventb.core.prHyps="p13"/>
+<org.eventb.core.prHypAction name="HIDE1" org.eventb.core.prHyps="p14"/>
+</org.eventb.core.prAnte>
+</org.eventb.core.prRule>
+</org.eventb.core.prAnte>
+</org.eventb.core.prRule>
+</org.eventb.core.prAnte>
+</org.eventb.core.prRule>
+</org.eventb.core.prAnte>
+<org.eventb.core.prString name=".pos" org.eventb.core.prSValue=""/>
+</org.eventb.core.prRule>
+</org.eventb.core.prAnte>
+<org.eventb.core.prString name=".pos" org.eventb.core.prSValue=""/>
+</org.eventb.core.prRule>
+<org.eventb.core.prPred name="p2" org.eventb.core.predicate="¬up=down">
+<org.eventb.core.prIdent name="down" org.eventb.core.type="M"/>
+<org.eventb.core.prIdent name="up" org.eventb.core.type="M"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p7" org.eventb.core.predicate="¬open=closed">
+<org.eventb.core.prIdent name="closed" org.eventb.core.type="D"/>
+<org.eventb.core.prIdent name="open" org.eventb.core.type="D"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p3" org.eventb.core.predicate="¬up=idle">
+<org.eventb.core.prIdent name="idle" org.eventb.core.type="M"/>
+<org.eventb.core.prIdent name="up" org.eventb.core.type="M"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p12" org.eventb.core.predicate="N+1=N − 0+1">
+<org.eventb.core.prIdent name="N" org.eventb.core.type="ℤ"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p6" org.eventb.core.predicate="D={open,closed}">
+<org.eventb.core.prIdent name="D" org.eventb.core.type="ℙ(D)"/>
+<org.eventb.core.prIdent name="closed" org.eventb.core.type="D"/>
+<org.eventb.core.prIdent name="open" org.eventb.core.type="D"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p10" org.eventb.core.predicate="move∈{up,down}⇒⊤">
+<org.eventb.core.prIdent name="down" org.eventb.core.type="M"/>
+<org.eventb.core.prIdent name="move" org.eventb.core.type="M"/>
+<org.eventb.core.prIdent name="up" org.eventb.core.type="M"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p13" org.eventb.core.predicate="move∈M">
+<org.eventb.core.prIdent name="M" org.eventb.core.type="ℙ(M)"/>
+<org.eventb.core.prIdent name="move" org.eventb.core.type="M"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p5" org.eventb.core.predicate="partition(D,{open},{closed})">
+<org.eventb.core.prIdent name="D" org.eventb.core.type="ℙ(D)"/>
+<org.eventb.core.prIdent name="closed" org.eventb.core.type="D"/>
+<org.eventb.core.prIdent name="open" org.eventb.core.type="D"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p0" org.eventb.core.predicate="partition(M,{up},{down},{idle})">
+<org.eventb.core.prIdent name="M" org.eventb.core.type="ℙ(M)"/>
+<org.eventb.core.prIdent name="down" org.eventb.core.type="M"/>
+<org.eventb.core.prIdent name="idle" org.eventb.core.type="M"/>
+<org.eventb.core.prIdent name="up" org.eventb.core.type="M"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p9" org.eventb.core.predicate="move∈{up,down}⇒door=closed">
+<org.eventb.core.prIdent name="closed" org.eventb.core.type="D"/>
+<org.eventb.core.prIdent name="door" org.eventb.core.type="D"/>
+<org.eventb.core.prIdent name="down" org.eventb.core.type="M"/>
+<org.eventb.core.prIdent name="move" org.eventb.core.type="M"/>
+<org.eventb.core.prIdent name="up" org.eventb.core.type="M"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p4" org.eventb.core.predicate="¬down=idle">
+<org.eventb.core.prIdent name="down" org.eventb.core.type="M"/>
+<org.eventb.core.prIdent name="idle" org.eventb.core.type="M"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p14" org.eventb.core.predicate="door∈D">
+<org.eventb.core.prIdent name="D" org.eventb.core.type="ℙ(D)"/>
+<org.eventb.core.prIdent name="door" org.eventb.core.type="D"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p11" org.eventb.core.predicate="finite(ground_floor ‥ top_floor)">
+<org.eventb.core.prIdent name="ground_floor" org.eventb.core.type="ℤ"/>
+<org.eventb.core.prIdent name="top_floor" org.eventb.core.type="ℤ"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p8" org.eventb.core.predicate="door=closed">
+<org.eventb.core.prIdent name="closed" org.eventb.core.type="D"/>
+<org.eventb.core.prIdent name="door" org.eventb.core.type="D"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p1" org.eventb.core.predicate="M={up,down,idle}">
+<org.eventb.core.prIdent name="M" org.eventb.core.type="ℙ(M)"/>
+<org.eventb.core.prIdent name="down" org.eventb.core.type="M"/>
+<org.eventb.core.prIdent name="idle" org.eventb.core.type="M"/>
+<org.eventb.core.prIdent name="up" org.eventb.core.type="M"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prReas name="r1" org.eventb.core.prRID="org.eventb.core.seqprover.genMPL1"/>
+<org.eventb.core.prReas name="r3" org.eventb.core.prRID="org.eventb.core.seqprover.typeRewrites:1"/>
+<org.eventb.core.prReas name="r0" org.eventb.core.prRID="org.eventb.core.seqprover.partitionRewrites"/>
+<org.eventb.core.prReas name="r2" org.eventb.core.prRID="org.eventb.core.seqprover.autoRewritesL3:0"/>
+</org.eventb.core.prProof>
+<org.eventb.core.prProof name="switch_move_up/grd1/GRD" org.eventb.core.confidence="0" org.eventb.core.prFresh="" org.eventb.core.prGoal="p0" org.eventb.core.prHyps="">
+<org.eventb.core.prRule name="r0" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="Partition rewrites in hyp (partition(M,{up},{down},{idle}))" org.eventb.core.prHyps="">
+<org.eventb.core.prAnte name="'">
+<org.eventb.core.prHypAction name="FORWARD_INF0" org.eventb.core.prHyps="p1" org.eventb.core.prInfHyps="p2,p3,p4,p5"/>
+<org.eventb.core.prHypAction name="HIDE1" org.eventb.core.prHyps="p1"/>
+<org.eventb.core.prHypAction name="SELECT2" org.eventb.core.prHyps="p2,p3,p4,p5"/>
+<org.eventb.core.prRule name="r0" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="Partition rewrites in hyp (partition(D,{open},{closed}))" org.eventb.core.prHyps="">
+<org.eventb.core.prAnte name="'">
+<org.eventb.core.prHypAction name="FORWARD_INF0" org.eventb.core.prHyps="p6" org.eventb.core.prInfHyps="p7,p8"/>
+<org.eventb.core.prHypAction name="HIDE1" org.eventb.core.prHyps="p6"/>
+<org.eventb.core.prHypAction name="SELECT2" org.eventb.core.prHyps="p7,p8"/>
+<org.eventb.core.prRule name="r1" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="generalized MP" org.eventb.core.prGoal="p0" org.eventb.core.prHyps="">
+<org.eventb.core.prAnte name="'" org.eventb.core.prGoal="p0">
+<org.eventb.core.prHypAction name="FORWARD_INF0" org.eventb.core.prHyps="p9" org.eventb.core.prInfHyps="p10"/>
+<org.eventb.core.prHypAction name="HIDE1" org.eventb.core.prHyps="p9"/>
+<org.eventb.core.prRule name="r2" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="simplification rewrites" org.eventb.core.prHyps="">
+<org.eventb.core.prAnte name="'">
+<org.eventb.core.prHypAction name="HIDE0" org.eventb.core.prHyps="p11"/>
+<org.eventb.core.prHypAction name="FORWARD_INF1" org.eventb.core.prHyps="p10" org.eventb.core.prInfHyps="p12"/>
+<org.eventb.core.prHypAction name="HIDE2" org.eventb.core.prHyps="p10"/>
+<org.eventb.core.prRule name="r3" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="type rewrites" org.eventb.core.prHyps="">
+<org.eventb.core.prAnte name="'">
+<org.eventb.core.prHypAction name="HIDE0" org.eventb.core.prHyps="p13"/>
+</org.eventb.core.prAnte>
+</org.eventb.core.prRule>
+</org.eventb.core.prAnte>
+</org.eventb.core.prRule>
+</org.eventb.core.prAnte>
+</org.eventb.core.prRule>
+</org.eventb.core.prAnte>
+<org.eventb.core.prString name=".pos" org.eventb.core.prSValue=""/>
+</org.eventb.core.prRule>
+</org.eventb.core.prAnte>
+<org.eventb.core.prString name=".pos" org.eventb.core.prSValue=""/>
+</org.eventb.core.prRule>
+<org.eventb.core.prIdent name="closed" org.eventb.core.type="D"/>
+<org.eventb.core.prIdent name="door" org.eventb.core.type="D"/>
+<org.eventb.core.prPred name="p3" org.eventb.core.predicate="¬up=down">
+<org.eventb.core.prIdent name="down" org.eventb.core.type="M"/>
+<org.eventb.core.prIdent name="up" org.eventb.core.type="M"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p8" org.eventb.core.predicate="¬open=closed">
+<org.eventb.core.prIdent name="open" org.eventb.core.type="D"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p4" org.eventb.core.predicate="¬up=idle">
+<org.eventb.core.prIdent name="idle" org.eventb.core.type="M"/>
+<org.eventb.core.prIdent name="up" org.eventb.core.type="M"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p11" org.eventb.core.predicate="N+1=N − 0+1">
+<org.eventb.core.prIdent name="N" org.eventb.core.type="ℤ"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p7" org.eventb.core.predicate="D={open,closed}">
+<org.eventb.core.prIdent name="D" org.eventb.core.type="ℙ(D)"/>
+<org.eventb.core.prIdent name="open" org.eventb.core.type="D"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p6" org.eventb.core.predicate="partition(D,{open},{closed})">
+<org.eventb.core.prIdent name="D" org.eventb.core.type="ℙ(D)"/>
+<org.eventb.core.prIdent name="open" org.eventb.core.type="D"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p1" org.eventb.core.predicate="partition(M,{up},{down},{idle})">
+<org.eventb.core.prIdent name="M" org.eventb.core.type="ℙ(M)"/>
+<org.eventb.core.prIdent name="down" org.eventb.core.type="M"/>
+<org.eventb.core.prIdent name="idle" org.eventb.core.type="M"/>
+<org.eventb.core.prIdent name="up" org.eventb.core.type="M"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p9" org.eventb.core.predicate="move∈{up,down}⇒door=closed">
+<org.eventb.core.prIdent name="down" org.eventb.core.type="M"/>
+<org.eventb.core.prIdent name="move" org.eventb.core.type="M"/>
+<org.eventb.core.prIdent name="up" org.eventb.core.type="M"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p5" org.eventb.core.predicate="¬down=idle">
+<org.eventb.core.prIdent name="down" org.eventb.core.type="M"/>
+<org.eventb.core.prIdent name="idle" org.eventb.core.type="M"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p12" org.eventb.core.predicate="¬move∈{up,down}">
+<org.eventb.core.prIdent name="down" org.eventb.core.type="M"/>
+<org.eventb.core.prIdent name="move" org.eventb.core.type="M"/>
+<org.eventb.core.prIdent name="up" org.eventb.core.type="M"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p13" org.eventb.core.predicate="door∈D">
+<org.eventb.core.prIdent name="D" org.eventb.core.type="ℙ(D)"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p10" org.eventb.core.predicate="move∈{up,down}⇒⊥">
+<org.eventb.core.prIdent name="down" org.eventb.core.type="M"/>
+<org.eventb.core.prIdent name="move" org.eventb.core.type="M"/>
+<org.eventb.core.prIdent name="up" org.eventb.core.type="M"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p0" org.eventb.core.predicate="door=closed"/>
+<org.eventb.core.prPred name="p2" org.eventb.core.predicate="M={up,down,idle}">
+<org.eventb.core.prIdent name="M" org.eventb.core.type="ℙ(M)"/>
+<org.eventb.core.prIdent name="down" org.eventb.core.type="M"/>
+<org.eventb.core.prIdent name="idle" org.eventb.core.type="M"/>
+<org.eventb.core.prIdent name="up" org.eventb.core.type="M"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prReas name="r2" org.eventb.core.prRID="org.eventb.core.seqprover.autoRewritesL3:0"/>
+<org.eventb.core.prReas name="r1" org.eventb.core.prRID="org.eventb.core.seqprover.genMPL1"/>
+<org.eventb.core.prReas name="r3" org.eventb.core.prRID="org.eventb.core.seqprover.typeRewrites:1"/>
+<org.eventb.core.prReas name="r0" org.eventb.core.prRID="org.eventb.core.seqprover.partitionRewrites"/>
+</org.eventb.core.prProof>
+<org.eventb.core.prProof name="switch_move_up/act1/SIM" org.eventb.core.confidence="0" org.eventb.core.prFresh="" org.eventb.core.prHyps="">
+<org.eventb.core.prRule name="r0" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="Partition rewrites in hyp (partition(M,{up},{down},{idle}))" org.eventb.core.prHyps="">
+<org.eventb.core.prAnte name="'">
+<org.eventb.core.prHypAction name="FORWARD_INF0" org.eventb.core.prHyps="p0" org.eventb.core.prInfHyps="p1,p2,p3,p4"/>
+<org.eventb.core.prHypAction name="HIDE1" org.eventb.core.prHyps="p0"/>
+<org.eventb.core.prHypAction name="SELECT2" org.eventb.core.prHyps="p1,p2,p3,p4"/>
+<org.eventb.core.prRule name="r0" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="Partition rewrites in hyp (partition(D,{open},{closed}))" org.eventb.core.prHyps="">
+<org.eventb.core.prAnte name="'">
+<org.eventb.core.prHypAction name="FORWARD_INF0" org.eventb.core.prHyps="p5" org.eventb.core.prInfHyps="p6,p7"/>
+<org.eventb.core.prHypAction name="HIDE1" org.eventb.core.prHyps="p5"/>
+<org.eventb.core.prHypAction name="SELECT2" org.eventb.core.prHyps="p6,p7"/>
+<org.eventb.core.prRule name="r1" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="simplification rewrites" org.eventb.core.prHyps="">
+<org.eventb.core.prAnte name="'">
+<org.eventb.core.prHypAction name="HIDE0" org.eventb.core.prHyps="p8"/>
+<org.eventb.core.prRule name="r2" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="type rewrites" org.eventb.core.prHyps="">
+<org.eventb.core.prAnte name="'">
+<org.eventb.core.prHypAction name="HIDE0" org.eventb.core.prHyps="p9"/>
+</org.eventb.core.prAnte>
+</org.eventb.core.prRule>
+</org.eventb.core.prAnte>
+</org.eventb.core.prRule>
+</org.eventb.core.prAnte>
+<org.eventb.core.prString name=".pos" org.eventb.core.prSValue=""/>
+</org.eventb.core.prRule>
+</org.eventb.core.prAnte>
+<org.eventb.core.prString name=".pos" org.eventb.core.prSValue=""/>
+</org.eventb.core.prRule>
+<org.eventb.core.prPred name="p7" org.eventb.core.predicate="¬open=closed">
+<org.eventb.core.prIdent name="closed" org.eventb.core.type="D"/>
+<org.eventb.core.prIdent name="open" org.eventb.core.type="D"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p2" org.eventb.core.predicate="¬up=down">
+<org.eventb.core.prIdent name="down" org.eventb.core.type="M"/>
+<org.eventb.core.prIdent name="up" org.eventb.core.type="M"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p0" org.eventb.core.predicate="partition(M,{up},{down},{idle})">
+<org.eventb.core.prIdent name="M" org.eventb.core.type="ℙ(M)"/>
+<org.eventb.core.prIdent name="down" org.eventb.core.type="M"/>
+<org.eventb.core.prIdent name="idle" org.eventb.core.type="M"/>
+<org.eventb.core.prIdent name="up" org.eventb.core.type="M"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p8" org.eventb.core.predicate="N+1=N − 0+1">
+<org.eventb.core.prIdent name="N" org.eventb.core.type="ℤ"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p4" org.eventb.core.predicate="¬down=idle">
+<org.eventb.core.prIdent name="down" org.eventb.core.type="M"/>
+<org.eventb.core.prIdent name="idle" org.eventb.core.type="M"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p3" org.eventb.core.predicate="¬up=idle">
+<org.eventb.core.prIdent name="idle" org.eventb.core.type="M"/>
+<org.eventb.core.prIdent name="up" org.eventb.core.type="M"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p9" org.eventb.core.predicate="door∈D">
+<org.eventb.core.prIdent name="D" org.eventb.core.type="ℙ(D)"/>
+<org.eventb.core.prIdent name="door" org.eventb.core.type="D"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p6" org.eventb.core.predicate="D={open,closed}">
+<org.eventb.core.prIdent name="D" org.eventb.core.type="ℙ(D)"/>
+<org.eventb.core.prIdent name="closed" org.eventb.core.type="D"/>
+<org.eventb.core.prIdent name="open" org.eventb.core.type="D"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p5" org.eventb.core.predicate="partition(D,{open},{closed})">
+<org.eventb.core.prIdent name="D" org.eventb.core.type="ℙ(D)"/>
+<org.eventb.core.prIdent name="closed" org.eventb.core.type="D"/>
+<org.eventb.core.prIdent name="open" org.eventb.core.type="D"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p1" org.eventb.core.predicate="M={up,down,idle}">
+<org.eventb.core.prIdent name="M" org.eventb.core.type="ℙ(M)"/>
+<org.eventb.core.prIdent name="down" org.eventb.core.type="M"/>
+<org.eventb.core.prIdent name="idle" org.eventb.core.type="M"/>
+<org.eventb.core.prIdent name="up" org.eventb.core.type="M"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prReas name="r1" org.eventb.core.prRID="org.eventb.core.seqprover.autoRewritesL3:0"/>
+<org.eventb.core.prReas name="r2" org.eventb.core.prRID="org.eventb.core.seqprover.typeRewrites:1"/>
+<org.eventb.core.prReas name="r0" org.eventb.core.prRID="org.eventb.core.seqprover.partitionRewrites"/>
+</org.eventb.core.prProof>
+<org.eventb.core.prProof name="switch_move_up/grd2/GRD" org.eventb.core.confidence="0" org.eventb.core.prFresh="" org.eventb.core.prHyps="">
+<org.eventb.core.prRule name="r0" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="Partition rewrites in hyp (partition(M,{up},{down},{idle}))" org.eventb.core.prHyps="">
+<org.eventb.core.prAnte name="'">
+<org.eventb.core.prHypAction name="FORWARD_INF0" org.eventb.core.prHyps="p0" org.eventb.core.prInfHyps="p1,p2,p3,p4"/>
+<org.eventb.core.prHypAction name="HIDE1" org.eventb.core.prHyps="p0"/>
+<org.eventb.core.prHypAction name="SELECT2" org.eventb.core.prHyps="p1,p2,p3,p4"/>
+<org.eventb.core.prRule name="r0" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="Partition rewrites in hyp (partition(D,{open},{closed}))" org.eventb.core.prHyps="">
+<org.eventb.core.prAnte name="'">
+<org.eventb.core.prHypAction name="FORWARD_INF0" org.eventb.core.prHyps="p5" org.eventb.core.prInfHyps="p6,p7"/>
+<org.eventb.core.prHypAction name="HIDE1" org.eventb.core.prHyps="p5"/>
+<org.eventb.core.prHypAction name="SELECT2" org.eventb.core.prHyps="p6,p7"/>
+<org.eventb.core.prRule name="r1" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="simplification rewrites" org.eventb.core.prHyps="">
+<org.eventb.core.prAnte name="'">
+<org.eventb.core.prHypAction name="HIDE0" org.eventb.core.prHyps="p8"/>
+<org.eventb.core.prRule name="r2" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="type rewrites" org.eventb.core.prHyps="">
+<org.eventb.core.prAnte name="'">
+<org.eventb.core.prHypAction name="HIDE0" org.eventb.core.prHyps="p9"/>
+</org.eventb.core.prAnte>
+</org.eventb.core.prRule>
+</org.eventb.core.prAnte>
+</org.eventb.core.prRule>
+</org.eventb.core.prAnte>
+<org.eventb.core.prString name=".pos" org.eventb.core.prSValue=""/>
+</org.eventb.core.prRule>
+</org.eventb.core.prAnte>
+<org.eventb.core.prString name=".pos" org.eventb.core.prSValue=""/>
+</org.eventb.core.prRule>
+<org.eventb.core.prPred name="p7" org.eventb.core.predicate="¬open=closed">
+<org.eventb.core.prIdent name="closed" org.eventb.core.type="D"/>
+<org.eventb.core.prIdent name="open" org.eventb.core.type="D"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p2" org.eventb.core.predicate="¬up=down">
+<org.eventb.core.prIdent name="down" org.eventb.core.type="M"/>
+<org.eventb.core.prIdent name="up" org.eventb.core.type="M"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p0" org.eventb.core.predicate="partition(M,{up},{down},{idle})">
+<org.eventb.core.prIdent name="M" org.eventb.core.type="ℙ(M)"/>
+<org.eventb.core.prIdent name="down" org.eventb.core.type="M"/>
+<org.eventb.core.prIdent name="idle" org.eventb.core.type="M"/>
+<org.eventb.core.prIdent name="up" org.eventb.core.type="M"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p8" org.eventb.core.predicate="N+1=N − 0+1">
+<org.eventb.core.prIdent name="N" org.eventb.core.type="ℤ"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p4" org.eventb.core.predicate="¬down=idle">
+<org.eventb.core.prIdent name="down" org.eventb.core.type="M"/>
+<org.eventb.core.prIdent name="idle" org.eventb.core.type="M"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p3" org.eventb.core.predicate="¬up=idle">
+<org.eventb.core.prIdent name="idle" org.eventb.core.type="M"/>
+<org.eventb.core.prIdent name="up" org.eventb.core.type="M"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p9" org.eventb.core.predicate="door∈D">
+<org.eventb.core.prIdent name="D" org.eventb.core.type="ℙ(D)"/>
+<org.eventb.core.prIdent name="door" org.eventb.core.type="D"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p6" org.eventb.core.predicate="D={open,closed}">
+<org.eventb.core.prIdent name="D" org.eventb.core.type="ℙ(D)"/>
+<org.eventb.core.prIdent name="closed" org.eventb.core.type="D"/>
+<org.eventb.core.prIdent name="open" org.eventb.core.type="D"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p5" org.eventb.core.predicate="partition(D,{open},{closed})">
+<org.eventb.core.prIdent name="D" org.eventb.core.type="ℙ(D)"/>
+<org.eventb.core.prIdent name="closed" org.eventb.core.type="D"/>
+<org.eventb.core.prIdent name="open" org.eventb.core.type="D"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p1" org.eventb.core.predicate="M={up,down,idle}">
+<org.eventb.core.prIdent name="M" org.eventb.core.type="ℙ(M)"/>
+<org.eventb.core.prIdent name="down" org.eventb.core.type="M"/>
+<org.eventb.core.prIdent name="idle" org.eventb.core.type="M"/>
+<org.eventb.core.prIdent name="up" org.eventb.core.type="M"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prReas name="r1" org.eventb.core.prRID="org.eventb.core.seqprover.autoRewritesL3:0"/>
+<org.eventb.core.prReas name="r2" org.eventb.core.prRID="org.eventb.core.seqprover.typeRewrites:1"/>
+<org.eventb.core.prReas name="r0" org.eventb.core.prRID="org.eventb.core.seqprover.partitionRewrites"/>
+</org.eventb.core.prProof>
+<org.eventb.core.prProof name="switch_move_up/grd3/GRD" org.eventb.core.confidence="0" org.eventb.core.prFresh="" org.eventb.core.prHyps="">
+<org.eventb.core.prRule name="r0" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="Partition rewrites in hyp (partition(M,{up},{down},{idle}))" org.eventb.core.prHyps="">
+<org.eventb.core.prAnte name="'">
+<org.eventb.core.prHypAction name="FORWARD_INF0" org.eventb.core.prHyps="p0" org.eventb.core.prInfHyps="p1,p2,p3,p4"/>
+<org.eventb.core.prHypAction name="HIDE1" org.eventb.core.prHyps="p0"/>
+<org.eventb.core.prHypAction name="SELECT2" org.eventb.core.prHyps="p1,p2,p3,p4"/>
+<org.eventb.core.prRule name="r0" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="Partition rewrites in hyp (partition(D,{open},{closed}))" org.eventb.core.prHyps="">
+<org.eventb.core.prAnte name="'">
+<org.eventb.core.prHypAction name="FORWARD_INF0" org.eventb.core.prHyps="p5" org.eventb.core.prInfHyps="p6,p7"/>
+<org.eventb.core.prHypAction name="HIDE1" org.eventb.core.prHyps="p5"/>
+<org.eventb.core.prHypAction name="SELECT2" org.eventb.core.prHyps="p6,p7"/>
+<org.eventb.core.prRule name="r1" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="simplification rewrites" org.eventb.core.prHyps="">
+<org.eventb.core.prAnte name="'">
+<org.eventb.core.prHypAction name="HIDE0" org.eventb.core.prHyps="p8"/>
+<org.eventb.core.prRule name="r2" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="type rewrites" org.eventb.core.prHyps="">
+<org.eventb.core.prAnte name="'">
+<org.eventb.core.prHypAction name="HIDE0" org.eventb.core.prHyps="p9"/>
+</org.eventb.core.prAnte>
+</org.eventb.core.prRule>
+</org.eventb.core.prAnte>
+</org.eventb.core.prRule>
+</org.eventb.core.prAnte>
+<org.eventb.core.prString name=".pos" org.eventb.core.prSValue=""/>
+</org.eventb.core.prRule>
+</org.eventb.core.prAnte>
+<org.eventb.core.prString name=".pos" org.eventb.core.prSValue=""/>
+</org.eventb.core.prRule>
+<org.eventb.core.prPred name="p7" org.eventb.core.predicate="¬open=closed">
+<org.eventb.core.prIdent name="closed" org.eventb.core.type="D"/>
+<org.eventb.core.prIdent name="open" org.eventb.core.type="D"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p2" org.eventb.core.predicate="¬up=down">
+<org.eventb.core.prIdent name="down" org.eventb.core.type="M"/>
+<org.eventb.core.prIdent name="up" org.eventb.core.type="M"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p0" org.eventb.core.predicate="partition(M,{up},{down},{idle})">
+<org.eventb.core.prIdent name="M" org.eventb.core.type="ℙ(M)"/>
+<org.eventb.core.prIdent name="down" org.eventb.core.type="M"/>
+<org.eventb.core.prIdent name="idle" org.eventb.core.type="M"/>
+<org.eventb.core.prIdent name="up" org.eventb.core.type="M"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p8" org.eventb.core.predicate="N+1=N − 0+1">
+<org.eventb.core.prIdent name="N" org.eventb.core.type="ℤ"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p4" org.eventb.core.predicate="¬down=idle">
+<org.eventb.core.prIdent name="down" org.eventb.core.type="M"/>
+<org.eventb.core.prIdent name="idle" org.eventb.core.type="M"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p3" org.eventb.core.predicate="¬up=idle">
+<org.eventb.core.prIdent name="idle" org.eventb.core.type="M"/>
+<org.eventb.core.prIdent name="up" org.eventb.core.type="M"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p9" org.eventb.core.predicate="door∈D">
+<org.eventb.core.prIdent name="D" org.eventb.core.type="ℙ(D)"/>
+<org.eventb.core.prIdent name="door" org.eventb.core.type="D"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p6" org.eventb.core.predicate="D={open,closed}">
+<org.eventb.core.prIdent name="D" org.eventb.core.type="ℙ(D)"/>
+<org.eventb.core.prIdent name="closed" org.eventb.core.type="D"/>
+<org.eventb.core.prIdent name="open" org.eventb.core.type="D"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p5" org.eventb.core.predicate="partition(D,{open},{closed})">
+<org.eventb.core.prIdent name="D" org.eventb.core.type="ℙ(D)"/>
+<org.eventb.core.prIdent name="closed" org.eventb.core.type="D"/>
+<org.eventb.core.prIdent name="open" org.eventb.core.type="D"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p1" org.eventb.core.predicate="M={up,down,idle}">
+<org.eventb.core.prIdent name="M" org.eventb.core.type="ℙ(M)"/>
+<org.eventb.core.prIdent name="down" org.eventb.core.type="M"/>
+<org.eventb.core.prIdent name="idle" org.eventb.core.type="M"/>
+<org.eventb.core.prIdent name="up" org.eventb.core.type="M"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prReas name="r1" org.eventb.core.prRID="org.eventb.core.seqprover.autoRewritesL3:0"/>
+<org.eventb.core.prReas name="r2" org.eventb.core.prRID="org.eventb.core.seqprover.typeRewrites:1"/>
+<org.eventb.core.prReas name="r0" org.eventb.core.prRID="org.eventb.core.seqprover.partitionRewrites"/>
+</org.eventb.core.prProof>
+</org.eventb.core.prFile>

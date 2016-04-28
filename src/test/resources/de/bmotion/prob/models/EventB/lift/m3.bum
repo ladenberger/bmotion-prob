@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<org.eventb.core.machineFile org.eventb.core.configuration="org.eventb.core.fwd" org.eventb.texttools.text_lastmodified="1340705568812" org.eventb.texttools.text_representation="machine m3 refines m2  sees c0 c1 c2&#10;&#10;variables floor move door request service&#10;&#10;events&#10;  event INITIALISATION extends INITIALISATION&#10;  end&#10;&#10;  event move_serve extends move_serve&#10;  end&#10;&#10;  event send_request extends send_request&#10;  end&#10;&#10;  event move_up extends move_up&#10;  end&#10;&#10;  event move_up_stop extends move_up_stop&#10;  end&#10;&#10;  event move_dn extends move_dn&#10;  end&#10;&#10;  event move_dn_stop extends move_dn_stop&#10;  end&#10;&#10;  event switch_move_up extends switch_move_up&#10;    where&#10;      @grd4 move = down ⇒ floor−1‥ground_floor ∩ request = ∅&#10;  end&#10;&#10;  event open_door extends open_door&#10;  end&#10;&#10;  event close_door extends close_door&#10;  end&#10;&#10;  event switch_move_dn extends switch_move_dn&#10;    where&#10;      @grd3 move = up ⇒ floor+1‥top_floor ∩ request = ∅&#10;  end&#10;end&#10;" version="5">
+<org.eventb.core.refinesMachine name="_e01qML93EeGeSMM5XAMsMg" org.eventb.core.target="m2"/>
+<org.eventb.core.seesContext name="_e01qMb93EeGeSMM5XAMsMg" org.eventb.core.target="c0"/>
+<org.eventb.core.seesContext name="_e02RQL93EeGeSMM5XAMsMg" org.eventb.core.target="c1"/>
+<org.eventb.core.seesContext name="_e02RQb93EeGeSMM5XAMsMg" org.eventb.core.target="c2"/>
+<org.eventb.core.variable name="_PCEdo5LYEeGDnrSJsRnBWA" org.eventb.core.identifier="floor"/>
+<org.eventb.core.variable name="_0U3GEJLVEeGDnrSJsRnBWA" org.eventb.core.identifier="move"/>
+<org.eventb.core.variable name="_0U3GEZLVEeGDnrSJsRnBWA" org.eventb.core.identifier="door"/>
+<org.eventb.core.variable name="_PCEdpJLYEeGDnrSJsRnBWA" org.eventb.core.identifier="request"/>
+<org.eventb.core.variable name="_0cR_4JLZEeGDnrSJsRnBWA" org.eventb.core.identifier="service"/>
+<org.eventb.core.event name="'" org.eventb.core.convergence="0" org.eventb.core.extended="true" org.eventb.core.label="INITIALISATION"/>
+<org.eventb.core.event name="_PCFEspLYEeGDnrSJsRnBWA" org.eventb.core.convergence="0" org.eventb.core.extended="true" org.eventb.core.label="move_serve">
+<org.eventb.core.refinesEvent name="_e03fYL93EeGeSMM5XAMsMg" org.eventb.core.target="move_serve"/>
+</org.eventb.core.event>
+<org.eventb.core.event name="_W2fq9JLSEeGDnrSJsRnBWA" org.eventb.core.convergence="0" org.eventb.core.extended="true" org.eventb.core.label="move_up">
+<org.eventb.core.refinesEvent name="_e03fYb93EeGeSMM5XAMsMg" org.eventb.core.target="move_up"/>
+</org.eventb.core.event>
+<org.eventb.core.event name="_W2gSA5LSEeGDnrSJsRnBWA" org.eventb.core.convergence="0" org.eventb.core.extended="true" org.eventb.core.label="move_up_stop">
+<org.eventb.core.refinesEvent name="_e04GcL93EeGeSMM5XAMsMg" org.eventb.core.target="move_up_stop"/>
+</org.eventb.core.event>
+<org.eventb.core.event name="_W2g5EZLSEeGDnrSJsRnBWA" org.eventb.core.convergence="0" org.eventb.core.extended="true" org.eventb.core.label="move_dn">
+<org.eventb.core.refinesEvent name="_e04tgL93EeGeSMM5XAMsMg" org.eventb.core.target="move_dn"/>
+</org.eventb.core.event>
+<org.eventb.core.event name="_W2hgIZLSEeGDnrSJsRnBWA" org.eventb.core.convergence="0" org.eventb.core.extended="true" org.eventb.core.label="move_dn_stop">
+<org.eventb.core.refinesEvent name="_e04tgb93EeGeSMM5XAMsMg" org.eventb.core.target="move_dn_stop"/>
+</org.eventb.core.event>
+<org.eventb.core.event name="_QQLSsZLcEeGDnrSJsRnBWA" org.eventb.core.convergence="0" org.eventb.core.extended="true" org.eventb.core.label="switch_move_up">
+<org.eventb.core.refinesEvent name="_e05UkL93EeGeSMM5XAMsMg" org.eventb.core.target="switch_move_up"/>
+<org.eventb.core.guard name="_QQLSs5LcEeGDnrSJsRnBWA" org.eventb.core.label="grd4" org.eventb.core.predicate="move = down ⇒ floor−1‥ground_floor ∩ request = ∅"/>
+</org.eventb.core.event>
+<org.eventb.core.event name="_0U4UM5LVEeGDnrSJsRnBWA" org.eventb.core.convergence="0" org.eventb.core.extended="true" org.eventb.core.label="open_door">
+<org.eventb.core.refinesEvent name="_e057oL93EeGeSMM5XAMsMg" org.eventb.core.target="open_door"/>
+</org.eventb.core.event>
+<org.eventb.core.event name="_0U47QZLVEeGDnrSJsRnBWA" org.eventb.core.convergence="0" org.eventb.core.extended="true" org.eventb.core.label="close_door">
+<org.eventb.core.refinesEvent name="_e057ob93EeGeSMM5XAMsMg" org.eventb.core.target="close_door"/>
+</org.eventb.core.event>
+<org.eventb.core.event name="_0U47RJLVEeGDnrSJsRnBWA" org.eventb.core.convergence="0" org.eventb.core.extended="true" org.eventb.core.label="switch_move_dn">
+<org.eventb.core.refinesEvent name="_e06isL93EeGeSMM5XAMsMg" org.eventb.core.target="switch_move_dn"/>
+<org.eventb.core.guard name="_QQL5wZLcEeGDnrSJsRnBWA" org.eventb.core.label="grd3" org.eventb.core.predicate="move = up ⇒ floor+1‥top_floor ∩ request = ∅"/>
+</org.eventb.core.event>
+<org.eventb.core.event name="_e07JwL93EeGeSMM5XAMsMg" org.eventb.core.convergence="0" org.eventb.core.extended="true" org.eventb.core.label="send_request">
+<org.eventb.core.refinesEvent name="_e07Jwb93EeGeSMM5XAMsMg" org.eventb.core.target="send_request"/>
+</org.eventb.core.event>
+</org.eventb.core.machineFile>

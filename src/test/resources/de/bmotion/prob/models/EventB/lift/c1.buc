@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<org.eventb.core.contextFile org.eventb.core.configuration="org.eventb.core.fwd" org.eventb.texttools.text_lastmodified="1335795915617" org.eventb.texttools.text_representation="context c1&#10;&#10;constants UP DN ST&#10;&#10;sets M&#10;&#10;axioms&#10;  @axm1 partition(M,{UP},{DN},{ST})&#10;end&#10;" version="3">
+<org.eventb.core.carrierSet name="'" org.eventb.core.identifier="M"/>
+<org.eventb.core.constant name="(" org.eventb.core.identifier="up"/>
+<org.eventb.core.constant name=")" org.eventb.core.identifier="down"/>
+<org.eventb.core.constant name="*" org.eventb.core.identifier="idle"/>
+<org.eventb.core.axiom name="+" org.eventb.core.label="axm6" org.eventb.core.predicate="partition(M, {up}, {down}, {idle})"/>
+</org.eventb.core.contextFile>

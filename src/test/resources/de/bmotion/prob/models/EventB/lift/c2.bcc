@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<org.eventb.core.scContextFile org.eventb.core.accurate="true" org.eventb.core.configuration="org.eventb.core.fwd">
+<org.eventb.core.scAxiom name="'" org.eventb.core.label="axm7" org.eventb.core.predicate="partition(D,{open},{closed})" org.eventb.core.source="/LiftCaseStudy/c2.buc|org.eventb.core.contextFile#c2|org.eventb.core.axiom#_k2W4EZLSEeGDnrSJsRnBWA" org.eventb.core.theorem="false"/>
+<org.eventb.core.scCarrierSet name="D" org.eventb.core.source="/LiftCaseStudy/c2.buc|org.eventb.core.contextFile#c2|org.eventb.core.carrierSet#_k2WRAJLSEeGDnrSJsRnBWA" org.eventb.core.type="ℙ(D)"/>
+<org.eventb.core.scConstant name="closed" org.eventb.core.source="/LiftCaseStudy/c2.buc|org.eventb.core.contextFile#c2|org.eventb.core.constant#_k2W4EJLSEeGDnrSJsRnBWA" org.eventb.core.type="D"/>
+<org.eventb.core.scConstant name="open" org.eventb.core.source="/LiftCaseStudy/c2.buc|org.eventb.core.contextFile#c2|org.eventb.core.constant#_k2WRAZLSEeGDnrSJsRnBWA" org.eventb.core.type="D"/>
+</org.eventb.core.scContextFile>

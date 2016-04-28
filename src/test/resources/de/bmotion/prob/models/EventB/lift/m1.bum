@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<org.eventb.core.machineFile org.eventb.core.comment="Specification for the door behaviour" org.eventb.core.configuration="org.eventb.core.fwd" org.eventb.texttools.text_lastmodified="1429513320982" org.eventb.texttools.text_representation="machine m1 // Specification for the door behaviour&#10; refines m0  sees c0 c1 c2&#10;&#10;variables floor move door&#10;&#10;invariants&#10;  theorem @inv3 move ∈ {up,down} ⇒ door = closed&#10;  @inv4 door ∈ D&#10;&#10;events&#10;  event INITIALISATION extends INITIALISATION&#10;    then&#10;      @act3 door ≔ open&#10;  end&#10;&#10;  event move_up extends move_up&#10;  end&#10;&#10;  event move_up_stop extends move_up_stop&#10;  end&#10;&#10;  event move_dn extends move_dn&#10;  end&#10;&#10;  event move_dn_stop extends move_dn_stop&#10;  end&#10;&#10;  event switch_move_up refines switch_move&#10;    where&#10;      @grd1 door = closed&#10;      @grd2 move = idle&#10;      @grd3 floor &lt; top_floor&#10;    then&#10;      @act1 move ≔ up&#10;  end&#10;&#10;  event open_door&#10;    where&#10;      @grd1 door = closed&#10;      @grd2 move = idle&#10;    then&#10;      @act1 door ≔ open&#10;  end&#10;&#10;  event close_door&#10;    where&#10;      @grd1 door = open&#10;    then&#10;      @act1 door ≔ closed&#10;  end&#10;&#10;  event switch_move_dn refines switch_move&#10;    where&#10;      @grd1 door = closed&#10;      @grd2 move = idle&#10;    then&#10;      @act1 move ≔ down&#10;  end&#10;&#10;  event switch_move_st refines switch_move&#10;    then&#10;      @act1 move ≔ idle&#10;  end&#10;end&#10;" version="5">
+<org.eventb.core.refinesMachine name="_DCm3cJLXEeGDnrSJsRnBWA" org.eventb.core.target="m0"/>
+<org.eventb.core.seesContext name="_DCm3cZLXEeGDnrSJsRnBWA" org.eventb.core.target="c0"/>
+<org.eventb.core.seesContext name="_DCm3cpLXEeGDnrSJsRnBWA" org.eventb.core.target="c1"/>
+<org.eventb.core.seesContext name="_DCm3c5LXEeGDnrSJsRnBWA" org.eventb.core.target="c2"/>
+<org.eventb.core.variable name="_DCm3dJLXEeGDnrSJsRnBWA" org.eventb.core.identifier="floor"/>
+<org.eventb.core.variable name="_0U3GEJLVEeGDnrSJsRnBWA" org.eventb.core.identifier="move"/>
+<org.eventb.core.variable name="_0U3GEZLVEeGDnrSJsRnBWA" org.eventb.core.identifier="door"/>
+<org.eventb.core.invariant name="_0U3GE5LVEeGDnrSJsRnBWA" org.eventb.core.label="inv3" org.eventb.core.predicate="move ∈ {up,down} ⇒ door = closed" org.eventb.core.theorem="true"/>
+<org.eventb.core.event name="'" org.eventb.core.convergence="0" org.eventb.core.extended="true" org.eventb.core.label="INITIALISATION">
+<org.eventb.core.action name="_0U3tIJLVEeGDnrSJsRnBWA" org.eventb.core.assignment="door ≔ open" org.eventb.core.label="act3"/>
+</org.eventb.core.event>
+<org.eventb.core.event name="_W2fq9JLSEeGDnrSJsRnBWA" org.eventb.core.convergence="0" org.eventb.core.extended="true" org.eventb.core.label="move_up">
+<org.eventb.core.refinesEvent name="_DCnegJLXEeGDnrSJsRnBWA" org.eventb.core.target="move_up"/>
+</org.eventb.core.event>
+<org.eventb.core.event name="_W2gSA5LSEeGDnrSJsRnBWA" org.eventb.core.convergence="0" org.eventb.core.extended="true" org.eventb.core.label="move_up_stop">
+<org.eventb.core.refinesEvent name="_DCnegZLXEeGDnrSJsRnBWA" org.eventb.core.target="move_up_stop"/>
+</org.eventb.core.event>
+<org.eventb.core.event name="_W2g5EZLSEeGDnrSJsRnBWA" org.eventb.core.convergence="0" org.eventb.core.extended="true" org.eventb.core.label="move_dn">
+<org.eventb.core.refinesEvent name="_DCoFkJLXEeGDnrSJsRnBWA" org.eventb.core.target="move_dn"/>
+</org.eventb.core.event>
+<org.eventb.core.event name="_W2hgIZLSEeGDnrSJsRnBWA" org.eventb.core.convergence="0" org.eventb.core.extended="true" org.eventb.core.label="move_dn_stop">
+<org.eventb.core.refinesEvent name="_DCoFkZLXEeGDnrSJsRnBWA" org.eventb.core.target="move_dn_stop"/>
+</org.eventb.core.event>
+<org.eventb.core.event name="_0U4UMZLVEeGDnrSJsRnBWA" org.eventb.core.convergence="0" org.eventb.core.extended="false" org.eventb.core.label="switch_move_up">
+<org.eventb.core.refinesEvent name="_DCoFkpLXEeGDnrSJsRnBWA" org.eventb.core.target="switch_move"/>
+<org.eventb.core.guard name="_DCoFk5LXEeGDnrSJsRnBWA" org.eventb.core.label="grd1" org.eventb.core.predicate="door = closed"/>
+<org.eventb.core.action name="_0RkW8JLUEeGDnrSJsRnBWA" org.eventb.core.assignment="move ≔ up" org.eventb.core.label="act1"/>
+<org.eventb.core.guard name="_DCoFkpLXEeGDnrSJsRnBWB" org.eventb.core.label="grd2" org.eventb.core.predicate="move = idle"/>
+<org.eventb.core.guard name="_DCoFkpLXEeGDnrSJsRnBWC" org.eventb.core.label="grd3" org.eventb.core.predicate="floor &lt; top_floor"/>
+</org.eventb.core.event>
+<org.eventb.core.event name="_0U4UM5LVEeGDnrSJsRnBWA" org.eventb.core.convergence="0" org.eventb.core.extended="false" org.eventb.core.label="open_door">
+<org.eventb.core.guard name="_0U4UNJLVEeGDnrSJsRnBWA" org.eventb.core.label="grd1" org.eventb.core.predicate="door = closed"/>
+<org.eventb.core.guard name="_0U4UNZLVEeGDnrSJsRnBWA" org.eventb.core.label="grd2" org.eventb.core.predicate="move = idle"/>
+<org.eventb.core.action name="_0U47QJLVEeGDnrSJsRnBWA" org.eventb.core.assignment="door ≔ open" org.eventb.core.label="act1"/>
+</org.eventb.core.event>
+<org.eventb.core.event name="_0U47QZLVEeGDnrSJsRnBWA" org.eventb.core.convergence="0" org.eventb.core.extended="false" org.eventb.core.label="close_door">
+<org.eventb.core.guard name="_0U47QpLVEeGDnrSJsRnBWA" org.eventb.core.label="grd1" org.eventb.core.predicate="door = open"/>
+<org.eventb.core.action name="_0U47Q5LVEeGDnrSJsRnBWA" org.eventb.core.assignment="door ≔ closed" org.eventb.core.label="act1"/>
+</org.eventb.core.event>
+<org.eventb.core.event name="_0U47RJLVEeGDnrSJsRnBWA" org.eventb.core.convergence="0" org.eventb.core.extended="false" org.eventb.core.label="switch_move_dn">
+<org.eventb.core.refinesEvent name="_DCpTsJLXEeGDnrSJsRnBWA" org.eventb.core.target="switch_move"/>
+<org.eventb.core.guard name="_DCpTsZLXEeGDnrSJsRnBWA" org.eventb.core.label="grd1" org.eventb.core.predicate="door = closed"/>
+<org.eventb.core.action name="_0RkW8JLUEeGDnrSJsRnBWA" org.eventb.core.assignment="move ≔ down" org.eventb.core.label="act1"/>
+<org.eventb.core.guard name="_DCpTsZLXEeGDnrSJsRnBWB" org.eventb.core.label="grd2" org.eventb.core.predicate="move = idle"/>
+</org.eventb.core.event>
+<org.eventb.core.event name="_0U47RpLVEeGDnrSJsRnBWA" org.eventb.core.convergence="0" org.eventb.core.extended="false" org.eventb.core.label="switch_move_st">
+<org.eventb.core.refinesEvent name="_DCpTspLXEeGDnrSJsRnBWA" org.eventb.core.target="switch_move"/>
+<org.eventb.core.action name="_0RkW8JLUEeGDnrSJsRnBWA" org.eventb.core.assignment="move ≔ idle" org.eventb.core.label="act1"/>
+</org.eventb.core.event>
+<org.eventb.core.invariant name="_0U3GEpLVEeGDnrSJsRnBWA" org.eventb.core.label="inv4" org.eventb.core.predicate="door ∈ D"/>
+</org.eventb.core.machineFile>

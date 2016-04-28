@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<org.eventb.core.poFile org.eventb.core.poStamp="1">
+<org.eventb.core.poPredicateSet name="CTXHYP" org.eventb.core.poStamp="0">
+<org.eventb.core.poIdentifier name="N" org.eventb.core.type="ℤ"/>
+<org.eventb.core.poIdentifier name="floors" org.eventb.core.type="ℙ(ℤ)"/>
+<org.eventb.core.poIdentifier name="ground_floor" org.eventb.core.type="ℤ"/>
+<org.eventb.core.poIdentifier name="top_floor" org.eventb.core.type="ℤ"/>
+<org.eventb.core.poPredicate name="ground_floos" org.eventb.core.predicate="floors=0 ‥ N − 1" org.eventb.core.source="/LiftCaseStudy/c0.buc|org.eventb.core.contextFile#c0|org.eventb.core.axiom#_YgvtoJLPEeGDnrSJsRnBWD"/>
+<org.eventb.core.poPredicate name="ground_floot" org.eventb.core.predicate="card(floors)=N" org.eventb.core.source="/LiftCaseStudy/c0.buc|org.eventb.core.contextFile#c0|org.eventb.core.axiom#_YgvtoJLPEeGDnrSJsRnBWC"/>
+<org.eventb.core.poPredicate name="ground_floou" org.eventb.core.predicate="N&gt;1" org.eventb.core.source="/LiftCaseStudy/c0.buc|org.eventb.core.contextFile#c0|org.eventb.core.axiom#_UDnxIZLGEeGDnrSJsRnBWA"/>
+<org.eventb.core.poPredicate name="ground_floov" org.eventb.core.predicate="N+1=top_floor − ground_floor+1" org.eventb.core.source="/LiftCaseStudy/c0.buc|org.eventb.core.contextFile#c0|org.eventb.core.axiom#_UDnxI5LGEeGDnrSJsRnBWA"/>
+<org.eventb.core.poPredicate name="ground_floow" org.eventb.core.predicate="N+1=N − 0+1" org.eventb.core.source="/LiftCaseStudy/c0.buc|org.eventb.core.contextFile#c0|org.eventb.core.axiom#_YgvtoJLPEeGDnrSJsRnBWA"/>
+<org.eventb.core.poPredicate name="ground_floox" org.eventb.core.predicate="ground_floor=0" org.eventb.core.source="/LiftCaseStudy/c0.buc|org.eventb.core.contextFile#c0|org.eventb.core.axiom#_UDoYMJLGEeGDnrSJsRnBWA"/>
+<org.eventb.core.poPredicate name="ground_flooy" org.eventb.core.predicate="top_floor=N − 1" org.eventb.core.source="/LiftCaseStudy/c0.buc|org.eventb.core.contextFile#c0|org.eventb.core.axiom#_UDoYMZLGEeGDnrSJsRnBWA"/>
+<org.eventb.core.poPredicate name="ground_flooz" org.eventb.core.predicate="N=3" org.eventb.core.source="/LiftCaseStudy/c0.buc|org.eventb.core.contextFile#c0|org.eventb.core.axiom#_ympjEecqEeSkl9xpDj6YMw"/>
+<org.eventb.core.poIdentifier name="M" org.eventb.core.type="ℙ(M)"/>
+<org.eventb.core.poIdentifier name="down" org.eventb.core.type="M"/>
+<org.eventb.core.poIdentifier name="idle" org.eventb.core.type="M"/>
+<org.eventb.core.poIdentifier name="up" org.eventb.core.type="M"/>
+<org.eventb.core.poPredicate name="ground_floo{" org.eventb.core.predicate="partition(M,{up},{down},{idle})" org.eventb.core.source="/LiftCaseStudy/c1.buc|org.eventb.core.contextFile#c1|org.eventb.core.axiom#+"/>
+<org.eventb.core.poIdentifier name="D" org.eventb.core.type="ℙ(D)"/>
+<org.eventb.core.poIdentifier name="closed" org.eventb.core.type="D"/>
+<org.eventb.core.poIdentifier name="open" org.eventb.core.type="D"/>
+<org.eventb.core.poPredicate name="ground_floo|" org.eventb.core.predicate="partition(D,{open},{closed})" org.eventb.core.source="/LiftCaseStudy/c2.buc|org.eventb.core.contextFile#c2|org.eventb.core.axiom#_k2W4EZLSEeGDnrSJsRnBWA"/>
+</org.eventb.core.poPredicateSet>
+<org.eventb.core.poPredicateSet name="ABSHYP" org.eventb.core.parentSet="/LiftCaseStudy/m1.bpo|org.eventb.core.poFile#m1|org.eventb.core.poPredicateSet#CTXHYP" org.eventb.core.poStamp="0">
+<org.eventb.core.poIdentifier name="door" org.eventb.core.type="D"/>
+<org.eventb.core.poIdentifier name="floor" org.eventb.core.type="ℤ"/>
+<org.eventb.core.poIdentifier name="move" org.eventb.core.type="M"/>
+<org.eventb.core.poPredicate name="floos" org.eventb.core.predicate="floor∈ground_floor ‥ top_floor" org.eventb.core.source="/LiftCaseStudy/m0.bum|org.eventb.core.machineFile#m0|org.eventb.core.invariant#_BGTi1JLXEeGDnrSJsRnBWA"/>
+<org.eventb.core.poPredicate name="floot" org.eventb.core.predicate="move∈M" org.eventb.core.source="/LiftCaseStudy/m0.bum|org.eventb.core.machineFile#m0|org.eventb.core.invariant#_BGTi1ZLXEeGDnrSJsRnBWA"/>
+</org.eventb.core.poPredicateSet>
+<org.eventb.core.poSequent name="inv3/THM" org.eventb.core.accurate="true" org.eventb.core.poDesc="Theorem" org.eventb.core.poStamp="0">
+<org.eventb.core.poPredicateSet name="SEQHYP" org.eventb.core.parentSet="/LiftCaseStudy/m1.bpo|org.eventb.core.poFile#m1|org.eventb.core.poPredicateSet#ABSHYP"/>
+<org.eventb.core.poPredicate name="SEQHYQ" org.eventb.core.predicate="move∈{up,down}⇒door=closed" org.eventb.core.source="/LiftCaseStudy/m1.bum|org.eventb.core.machineFile#m1|org.eventb.core.invariant#_0U3GE5LVEeGDnrSJsRnBWA"/>
+<org.eventb.core.poSource name="SEQHYR" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/LiftCaseStudy/m1.bum|org.eventb.core.machineFile#m1|org.eventb.core.invariant#_0U3GE5LVEeGDnrSJsRnBWA"/>
+<org.eventb.core.poSelHint name="SEQHYS" org.eventb.core.poSelHintFst="/LiftCaseStudy/m1.bpo|org.eventb.core.poFile#m1|org.eventb.core.poPredicateSet#ABSHYP" org.eventb.core.poSelHintSnd="/LiftCaseStudy/m1.bpo|org.eventb.core.poFile#m1|org.eventb.core.poPredicateSet#ABSHYP"/>
+</org.eventb.core.poSequent>
+<org.eventb.core.poPredicateSet name="EVTIDENTfloos" org.eventb.core.parentSet="/LiftCaseStudy/m1.bpo|org.eventb.core.poFile#m1|org.eventb.core.poPredicateSet#CTXHYP" org.eventb.core.poStamp="0">
+<org.eventb.core.poIdentifier name="door'" org.eventb.core.type="D"/>
+<org.eventb.core.poIdentifier name="move'" org.eventb.core.type="M"/>
+<org.eventb.core.poIdentifier name="floor'" org.eventb.core.type="ℤ"/>
+</org.eventb.core.poPredicateSet>
+<org.eventb.core.poPredicateSet name="EVTALLHYPfloos" org.eventb.core.parentSet="/LiftCaseStudy/m1.bpo|org.eventb.core.poFile#m1|org.eventb.core.poPredicateSet#EVTIDENTfloos" org.eventb.core.poStamp="0"/>
+<org.eventb.core.poPredicateSet name="EVTIDENTfloot" org.eventb.core.parentSet="/LiftCaseStudy/m1.bpo|org.eventb.core.poFile#m1|org.eventb.core.poPredicateSet#ALLHYP" org.eventb.core.poStamp="1">
+<org.eventb.core.poIdentifier name="floor'" org.eventb.core.type="ℤ"/>
+</org.eventb.core.poPredicateSet>
+<org.eventb.core.poPredicateSet name="EVTALLHYPfloot" org.eventb.core.parentSet="/LiftCaseStudy/m1.bpo|org.eventb.core.poFile#m1|org.eventb.core.poPredicateSet#EVTIDENTfloot" org.eventb.core.poStamp="1">
+<org.eventb.core.poPredicate name="PRD0" org.eventb.core.predicate="floor&lt;top_floor" org.eventb.core.source="/LiftCaseStudy/m0.bum|org.eventb.core.machineFile#m0|org.eventb.core.event#_BGUJ4pLXEeGDnrSJsRnBWA|org.eventb.core.guard#_BGUJ45LXEeGDnrSJsRnBWA"/>
+<org.eventb.core.poPredicate name="PRD1" org.eventb.core.predicate="move=up" org.eventb.core.source="/LiftCaseStudy/m0.bum|org.eventb.core.machineFile#m0|org.eventb.core.event#_BGUJ4pLXEeGDnrSJsRnBWA|org.eventb.core.guard#_BGUJ5JLXEeGDnrSJsRnBWA"/>
+</org.eventb.core.poPredicateSet>
+<org.eventb.core.poPredicateSet name="EVTIDENTfloou" org.eventb.core.parentSet="/LiftCaseStudy/m1.bpo|org.eventb.core.poFile#m1|org.eventb.core.poPredicateSet#ALLHYP" org.eventb.core.poStamp="1">
+<org.eventb.core.poIdentifier name="move'" org.eventb.core.type="M"/>
+</org.eventb.core.poPredicateSet>
+<org.eventb.core.poPredicateSet name="EVTALLHYPfloou" org.eventb.core.parentSet="/LiftCaseStudy/m1.bpo|org.eventb.core.poFile#m1|org.eventb.core.poPredicateSet#EVTIDENTfloou" org.eventb.core.poStamp="1">
+<org.eventb.core.poPredicate name="PRD0" org.eventb.core.predicate="floor≥top_floor" org.eventb.core.source="/LiftCaseStudy/m0.bum|org.eventb.core.machineFile#m0|org.eventb.core.event#_BGUJ5pLXEeGDnrSJsRnBWA|org.eventb.core.guard#_BGUw8JLXEeGDnrSJsRnBWA"/>
+<org.eventb.core.poPredicate name="PRD1" org.eventb.core.predicate="move=up" org.eventb.core.source="/LiftCaseStudy/m0.bum|org.eventb.core.machineFile#m0|org.eventb.core.event#_BGUJ5pLXEeGDnrSJsRnBWA|org.eventb.core.guard#_BGUw8ZLXEeGDnrSJsRnBWA"/>
+</org.eventb.core.poPredicateSet>
+<org.eventb.core.poPredicateSet name="EVTIDENTfloov" org.eventb.core.parentSet="/LiftCaseStudy/m1.bpo|org.eventb.core.poFile#m1|org.eventb.core.poPredicateSet#ALLHYP" org.eventb.core.poStamp="1">
+<org.eventb.core.poIdentifier name="floor'" org.eventb.core.type="ℤ"/>
+</org.eventb.core.poPredicateSet>
+<org.eventb.core.poPredicateSet name="EVTALLHYPfloov" org.eventb.core.parentSet="/LiftCaseStudy/m1.bpo|org.eventb.core.poFile#m1|org.eventb.core.poPredicateSet#EVTIDENTfloov" org.eventb.core.poStamp="1">
+<org.eventb.core.poPredicate name="PRD0" org.eventb.core.predicate="floor&gt;ground_floor" org.eventb.core.source="/LiftCaseStudy/m0.bum|org.eventb.core.machineFile#m0|org.eventb.core.event#_BGUw85LXEeGDnrSJsRnBWA|org.eventb.core.guard#_BGUw9JLXEeGDnrSJsRnBWA"/>
+<org.eventb.core.poPredicate name="PRD1" org.eventb.core.predicate="move=down" org.eventb.core.source="/LiftCaseStudy/m0.bum|org.eventb.core.machineFile#m0|org.eventb.core.event#_BGUw85LXEeGDnrSJsRnBWA|org.eventb.core.guard#_BGUw9ZLXEeGDnrSJsRnBWA"/>
+</org.eventb.core.poPredicateSet>
+<org.eventb.core.poPredicateSet name="EVTIDENTfloow" org.eventb.core.parentSet="/LiftCaseStudy/m1.bpo|org.eventb.core.poFile#m1|org.eventb.core.poPredicateSet#ALLHYP" org.eventb.core.poStamp="1">
+<org.eventb.core.poIdentifier name="move'" org.eventb.core.type="M"/>
+</org.eventb.core.poPredicateSet>
+<org.eventb.core.poPredicateSet name="EVTALLHYPfloow" org.eventb.core.parentSet="/LiftCaseStudy/m1.bpo|org.eventb.core.poFile#m1|org.eventb.core.poPredicateSet#EVTIDENTfloow" org.eventb.core.poStamp="1">
+<org.eventb.core.poPredicate name="PRD0" org.eventb.core.predicate="floor≤ground_floor" org.eventb.core.source="/LiftCaseStudy/m0.bum|org.eventb.core.machineFile#m0|org.eventb.core.event#_BGUw95LXEeGDnrSJsRnBWA|org.eventb.core.guard#_BGVYAJLXEeGDnrSJsRnBWA"/>
+<org.eventb.core.poPredicate name="PRD1" org.eventb.core.predicate="move=down" org.eventb.core.source="/LiftCaseStudy/m0.bum|org.eventb.core.machineFile#m0|org.eventb.core.event#_BGUw95LXEeGDnrSJsRnBWA|org.eventb.core.guard#_BGVYAZLXEeGDnrSJsRnBWA"/>
+</org.eventb.core.poPredicateSet>
+<org.eventb.core.poPredicateSet name="EVTIDENTfloox" org.eventb.core.parentSet="/LiftCaseStudy/m1.bpo|org.eventb.core.poFile#m1|org.eventb.core.poPredicateSet#ALLHYP" org.eventb.core.poStamp="1">
+<org.eventb.core.poIdentifier name="move'" org.eventb.core.type="M"/>
+</org.eventb.core.poPredicateSet>
+<org.eventb.core.poPredicateSet name="EVTALLHYPfloox" org.eventb.core.parentSet="/LiftCaseStudy/m1.bpo|org.eventb.core.poFile#m1|org.eventb.core.poPredicateSet#EVTIDENTfloox" org.eventb.core.poStamp="1">
+<org.eventb.core.poPredicate name="PRD0" org.eventb.core.predicate="door=closed" org.eventb.core.source="/LiftCaseStudy/m1.bum|org.eventb.core.machineFile#m1|org.eventb.core.event#_0U4UMZLVEeGDnrSJsRnBWA|org.eventb.core.guard#_DCoFk5LXEeGDnrSJsRnBWA"/>
+<org.eventb.core.poPredicate name="PRD1" org.eventb.core.predicate="move=idle" org.eventb.core.source="/LiftCaseStudy/m1.bum|org.eventb.core.machineFile#m1|org.eventb.core.event#_0U4UMZLVEeGDnrSJsRnBWA|org.eventb.core.guard#_DCoFkpLXEeGDnrSJsRnBWB"/>
+<org.eventb.core.poPredicate name="PRD2" org.eventb.core.predicate="floor&lt;top_floor" org.eventb.core.source="/LiftCaseStudy/m1.bum|org.eventb.core.machineFile#m1|org.eventb.core.event#_0U4UMZLVEeGDnrSJsRnBWA|org.eventb.core.guard#_DCoFkpLXEeGDnrSJsRnBWC"/>
+</org.eventb.core.poPredicateSet>
+<org.eventb.core.poPredicateSet name="EVTIDENTflooy" org.eventb.core.parentSet="/LiftCaseStudy/m1.bpo|org.eventb.core.poFile#m1|org.eventb.core.poPredicateSet#ALLHYP" org.eventb.core.poStamp="1">
+<org.eventb.core.poIdentifier name="door'" org.eventb.core.type="D"/>
+</org.eventb.core.poPredicateSet>
+<org.eventb.core.poPredicateSet name="EVTALLHYPflooy" org.eventb.core.parentSet="/LiftCaseStudy/m1.bpo|org.eventb.core.poFile#m1|org.eventb.core.poPredicateSet#EVTIDENTflooy" org.eventb.core.poStamp="1">
+<org.eventb.core.poPredicate name="PRD0" org.eventb.core.predicate="door=closed" org.eventb.core.source="/LiftCaseStudy/m1.bum|org.eventb.core.machineFile#m1|org.eventb.core.event#_0U4UM5LVEeGDnrSJsRnBWA|org.eventb.core.guard#_0U4UNJLVEeGDnrSJsRnBWA"/>
+<org.eventb.core.poPredicate name="PRD1" org.eventb.core.predicate="move=idle" org.eventb.core.source="/LiftCaseStudy/m1.bum|org.eventb.core.machineFile#m1|org.eventb.core.event#_0U4UM5LVEeGDnrSJsRnBWA|org.eventb.core.guard#_0U4UNZLVEeGDnrSJsRnBWA"/>
+</org.eventb.core.poPredicateSet>
+<org.eventb.core.poPredicateSet name="EVTIDENTflooz" org.eventb.core.parentSet="/LiftCaseStudy/m1.bpo|org.eventb.core.poFile#m1|org.eventb.core.poPredicateSet#ALLHYP" org.eventb.core.poStamp="1">
+<org.eventb.core.poIdentifier name="door'" org.eventb.core.type="D"/>
+</org.eventb.core.poPredicateSet>
+<org.eventb.core.poPredicateSet name="EVTALLHYPflooz" org.eventb.core.parentSet="/LiftCaseStudy/m1.bpo|org.eventb.core.poFile#m1|org.eventb.core.poPredicateSet#EVTIDENTflooz" org.eventb.core.poStamp="1">
+<org.eventb.core.poPredicate name="PRD0" org.eventb.core.predicate="door=open" org.eventb.core.source="/LiftCaseStudy/m1.bum|org.eventb.core.machineFile#m1|org.eventb.core.event#_0U47QZLVEeGDnrSJsRnBWA|org.eventb.core.guard#_0U47QpLVEeGDnrSJsRnBWA"/>
+</org.eventb.core.poPredicateSet>
+<org.eventb.core.poPredicateSet name="EVTIDENTfloo{" org.eventb.core.parentSet="/LiftCaseStudy/m1.bpo|org.eventb.core.poFile#m1|org.eventb.core.poPredicateSet#ALLHYP" org.eventb.core.poStamp="1">
+<org.eventb.core.poIdentifier name="move'" org.eventb.core.type="M"/>
+</org.eventb.core.poPredicateSet>
+<org.eventb.core.poPredicateSet name="EVTALLHYPfloo{" org.eventb.core.parentSet="/LiftCaseStudy/m1.bpo|org.eventb.core.poFile#m1|org.eventb.core.poPredicateSet#EVTIDENTfloo{" org.eventb.core.poStamp="1">
+<org.eventb.core.poPredicate name="PRD0" org.eventb.core.predicate="door=closed" org.eventb.core.source="/LiftCaseStudy/m1.bum|org.eventb.core.machineFile#m1|org.eventb.core.event#_0U47RJLVEeGDnrSJsRnBWA|org.eventb.core.guard#_DCpTsZLXEeGDnrSJsRnBWA"/>
+<org.eventb.core.poPredicate name="PRD1" org.eventb.core.predicate="move=idle" org.eventb.core.source="/LiftCaseStudy/m1.bum|org.eventb.core.machineFile#m1|org.eventb.core.event#_0U47RJLVEeGDnrSJsRnBWA|org.eventb.core.guard#_DCpTsZLXEeGDnrSJsRnBWB"/>
+</org.eventb.core.poPredicateSet>
+<org.eventb.core.poPredicateSet name="EVTIDENTfloo|" org.eventb.core.parentSet="/LiftCaseStudy/m1.bpo|org.eventb.core.poFile#m1|org.eventb.core.poPredicateSet#ALLHYP" org.eventb.core.poStamp="1">
+<org.eventb.core.poIdentifier name="move'" org.eventb.core.type="M"/>
+</org.eventb.core.poPredicateSet>
+<org.eventb.core.poPredicateSet name="EVTALLHYPfloo|" org.eventb.core.parentSet="/LiftCaseStudy/m1.bpo|org.eventb.core.poFile#m1|org.eventb.core.poPredicateSet#EVTIDENTfloo\|" org.eventb.core.poStamp="1"/>
+<org.eventb.core.poPredicateSet name="ALLHYP" org.eventb.core.parentSet="/LiftCaseStudy/m1.bpo|org.eventb.core.poFile#m1|org.eventb.core.poPredicateSet#ABSHYP" org.eventb.core.poStamp="1">
+<org.eventb.core.poPredicate name="PRD0" org.eventb.core.predicate="move∈{up,down}⇒door=closed" org.eventb.core.source="/LiftCaseStudy/m1.bum|org.eventb.core.machineFile#m1|org.eventb.core.invariant#_0U3GE5LVEeGDnrSJsRnBWA"/>
+<org.eventb.core.poPredicate name="PRD1" org.eventb.core.predicate="door∈D" org.eventb.core.source="/LiftCaseStudy/m1.bum|org.eventb.core.machineFile#m1|org.eventb.core.invariant#_0U3GEpLVEeGDnrSJsRnBWA"/>
+</org.eventb.core.poPredicateSet>
+</org.eventb.core.poFile>

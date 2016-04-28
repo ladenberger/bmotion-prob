@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<org.eventb.core.machineFile org.eventb.core.comment="Specification for the lift moving" org.eventb.core.configuration="org.eventb.core.fwd" org.eventb.texttools.text_lastmodified="1429513214400" org.eventb.texttools.text_representation="machine m0 // Specification for the lift moving&#10; sees c0 c1&#10;&#10;variables floor move&#10;&#10;invariants&#10;  @inv1 floor ∈ ground_floor ‥ top_floor&#10;  @inv2 move ∈ M&#10;&#10;events&#10;  event INITIALISATION&#10;    then&#10;      @act1 floor ≔ ground_floor&#10;      @act2 move ≔ idle&#10;  end&#10;&#10;  event move_up&#10;    where&#10;      @grd1 floor &lt; top_floor&#10;      @grd2 move = up&#10;    then&#10;      @act1 floor ≔ floor+1&#10;  end&#10;&#10;  event move_up_stop&#10;    where&#10;      @grd1 floor ≥ top_floor&#10;      @grd2 move = up&#10;    then&#10;      @act1 move ≔ idle&#10;  end&#10;&#10;  event move_dn&#10;    where&#10;      @grd1 floor &gt; ground_floor&#10;      @grd2 move = down&#10;    then&#10;      @act1 floor ≔ floor−1&#10;  end&#10;&#10;  event move_dn_stop&#10;    where&#10;      @grd1 floor ≤ ground_floor&#10;      @grd2 move = down&#10;    then&#10;      @act1 move ≔ idle&#10;  end&#10;&#10;  event switch_move&#10;    then&#10;      @act1 move :∈ M&#10;  end&#10;end&#10;" version="5">
+<org.eventb.core.seesContext name="_BGTi0JLXEeGDnrSJsRnBWA" org.eventb.core.target="c0"/>
+<org.eventb.core.seesContext name="_BGTi0ZLXEeGDnrSJsRnBWA" org.eventb.core.target="c1"/>
+<org.eventb.core.variable name="_BGTi0pLXEeGDnrSJsRnBWA" org.eventb.core.identifier="floor"/>
+<org.eventb.core.variable name="_BGTi05LXEeGDnrSJsRnBWA" org.eventb.core.identifier="move"/>
+<org.eventb.core.invariant name="_BGTi1JLXEeGDnrSJsRnBWA" org.eventb.core.label="inv1" org.eventb.core.predicate="floor ∈ ground_floor ‥ top_floor"/>
+<org.eventb.core.invariant name="_BGTi1ZLXEeGDnrSJsRnBWA" org.eventb.core.label="inv2" org.eventb.core.predicate="move ∈ M"/>
+<org.eventb.core.event name="'" org.eventb.core.convergence="0" org.eventb.core.extended="false" org.eventb.core.label="INITIALISATION">
+<org.eventb.core.action name="_BGUJ4JLXEeGDnrSJsRnBWA" org.eventb.core.assignment="floor ≔ ground_floor" org.eventb.core.label="act1"/>
+<org.eventb.core.action name="_BGUJ4ZLXEeGDnrSJsRnBWA" org.eventb.core.assignment="move ≔ idle" org.eventb.core.label="act2"/>
+</org.eventb.core.event>
+<org.eventb.core.event name="_BGUJ4pLXEeGDnrSJsRnBWA" org.eventb.core.convergence="0" org.eventb.core.extended="false" org.eventb.core.label="move_up">
+<org.eventb.core.guard name="_BGUJ45LXEeGDnrSJsRnBWA" org.eventb.core.label="grd1" org.eventb.core.predicate="floor &lt; top_floor"/>
+<org.eventb.core.guard name="_BGUJ5JLXEeGDnrSJsRnBWA" org.eventb.core.label="grd2" org.eventb.core.predicate="move = up"/>
+<org.eventb.core.action name="_BGUJ5ZLXEeGDnrSJsRnBWA" org.eventb.core.assignment="floor ≔ floor+1" org.eventb.core.label="act1"/>
+</org.eventb.core.event>
+<org.eventb.core.event name="_BGUJ5pLXEeGDnrSJsRnBWA" org.eventb.core.convergence="0" org.eventb.core.extended="false" org.eventb.core.label="move_up_stop">
+<org.eventb.core.guard name="_BGUw8JLXEeGDnrSJsRnBWA" org.eventb.core.label="grd1" org.eventb.core.predicate="floor ≥ top_floor"/>
+<org.eventb.core.guard name="_BGUw8ZLXEeGDnrSJsRnBWA" org.eventb.core.label="grd2" org.eventb.core.predicate="move = up"/>
+<org.eventb.core.action name="_BGUw8pLXEeGDnrSJsRnBWA" org.eventb.core.assignment="move ≔ idle" org.eventb.core.label="act1"/>
+</org.eventb.core.event>
+<org.eventb.core.event name="_BGUw85LXEeGDnrSJsRnBWA" org.eventb.core.convergence="0" org.eventb.core.extended="false" org.eventb.core.label="move_dn">
+<org.eventb.core.guard name="_BGUw9JLXEeGDnrSJsRnBWA" org.eventb.core.label="grd1" org.eventb.core.predicate="floor &gt; ground_floor"/>
+<org.eventb.core.guard name="_BGUw9ZLXEeGDnrSJsRnBWA" org.eventb.core.label="grd2" org.eventb.core.predicate="move = down"/>
+<org.eventb.core.action name="_BGUw9pLXEeGDnrSJsRnBWA" org.eventb.core.assignment="floor ≔ floor−1" org.eventb.core.label="act1"/>
+</org.eventb.core.event>
+<org.eventb.core.event name="_BGUw95LXEeGDnrSJsRnBWA" org.eventb.core.convergence="0" org.eventb.core.extended="false" org.eventb.core.label="move_dn_stop">
+<org.eventb.core.guard name="_BGVYAJLXEeGDnrSJsRnBWA" org.eventb.core.label="grd1" org.eventb.core.predicate="floor ≤ ground_floor"/>
+<org.eventb.core.guard name="_BGVYAZLXEeGDnrSJsRnBWA" org.eventb.core.label="grd2" org.eventb.core.predicate="move = down"/>
+<org.eventb.core.action name="_BGVYApLXEeGDnrSJsRnBWA" org.eventb.core.assignment="move ≔ idle" org.eventb.core.label="act1"/>
+</org.eventb.core.event>
+<org.eventb.core.event name="_BGVYA5LXEeGDnrSJsRnBWA" org.eventb.core.convergence="0" org.eventb.core.extended="false" org.eventb.core.label="switch_move">
+<org.eventb.core.action name="_BGVYBJLXEeGDnrSJsRnBWA" org.eventb.core.assignment="move :∈ M" org.eventb.core.label="act1"/>
+</org.eventb.core.event>
+</org.eventb.core.machineFile>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<org.eventb.core.contextFile org.eventb.core.configuration="org.eventb.core.fwd" org.eventb.texttools.text_lastmodified="1335796891147" org.eventb.texttools.text_representation="context c2&#10;&#10;constants OP CL&#10;&#10;sets D&#10;&#10;axioms&#10;  @axm1 partition(D,{OP},{CL})&#10;end&#10;" version="3">
+<org.eventb.core.carrierSet name="_k2WRAJLSEeGDnrSJsRnBWA" org.eventb.core.identifier="D"/>
+<org.eventb.core.constant name="_k2WRAZLSEeGDnrSJsRnBWA" org.eventb.core.identifier="open"/>
+<org.eventb.core.constant name="_k2W4EJLSEeGDnrSJsRnBWA" org.eventb.core.identifier="closed"/>
+<org.eventb.core.axiom name="_k2W4EZLSEeGDnrSJsRnBWA" org.eventb.core.label="axm7" org.eventb.core.predicate="partition(D,{open},{closed})"/>
+</org.eventb.core.contextFile>

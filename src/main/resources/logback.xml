@@ -1,0 +1,31 @@
+<configuration scan="true" scanPeriod="15 seconds">
+
+	<logger name="com.corundumstudio.socketio" level="ERROR" />
+	<logger name="de.prob.cli" level="ERROR" />
+	<logger name="de.prob.scripting" level="ERROR" />	
+	<logger name="de.bmotion.core" level="INFO" />
+	<logger name="de.bmotion.prob" level="INFO" />
+
+	<appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+		<layout class="ch.qos.logback.classic.PatternLayout">
+			<Pattern>%d{HH:mm:ss.SSS} |-%.-5level %logger{36} - %msg%n</Pattern>
+		</layout>
+	</appender>
+
+	<appender name="FILE" class="ch.qos.logback.core.FileAppender">
+		<file>bms.log</file>
+		<append>true</append>
+		<!-- encoders are assigned the type ch.qos.logback.classic.encoder.PatternLayoutEncoder 
+			by default -->
+		<encoder>
+			<pattern>%-4relative [%thread] %-5level %logger{35} - %msg%n
+			</pattern>
+		</encoder>
+	</appender>
+
+	<root level="INFO">
+		<appender-ref ref="CONSOLE" />
+		<appender-ref ref="FILE" />
+	</root>
+
+</configuration>

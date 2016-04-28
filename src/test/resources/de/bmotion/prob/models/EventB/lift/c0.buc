@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<org.eventb.core.contextFile org.eventb.core.comment="erster evol-trace:&#10;   total of N floors&#10;   should be&#10;   total of N+1 floors " org.eventb.core.configuration="org.eventb.core.fwd" org.eventb.texttools.text_lastmodified="1429513169806" org.eventb.texttools.text_representation="context c0&#10;/* erster evol-trace:&#10;   total of N floors&#10;   should be&#10;   total of N+1 floors */&#10;&#10;&#10;constants ground_floor top_floor N floors&#10;&#10;axioms&#10;  @axm1 floors = 0‥N−1&#10;  @axm2 card(floors) = N&#10;  @axm3 N &gt; 1&#10;  theorem @thm1 N+1 = top_floor−ground_floor+1&#10;  theorem @thm2 N+1 = N−0+1 // choice of gf and tf below is consistent&#10;  @axm4 ground_floor = 0&#10;  @axm5 top_floor = N−1&#10;  @axm6 N = 3&#10;end&#10;" version="3">
+<org.eventb.core.constant name="_UDnKEJLGEeGDnrSJsRnBWA" org.eventb.core.identifier="ground_floor"/>
+<org.eventb.core.constant name="_UDnKEZLGEeGDnrSJsRnBWA" org.eventb.core.identifier="top_floor"/>
+<org.eventb.core.constant name="_UDnxIJLGEeGDnrSJsRnBWA" org.eventb.core.identifier="N"/>
+<org.eventb.core.constant name="_YgvtoJLPEeGDnrSJsRnBWB" org.eventb.core.identifier="floors"/>
+<org.eventb.core.axiom name="_YgvtoJLPEeGDnrSJsRnBWD" org.eventb.core.label="axm1" org.eventb.core.predicate="floors = 0‥N−1"/>
+<org.eventb.core.axiom name="_YgvtoJLPEeGDnrSJsRnBWC" org.eventb.core.label="axm2" org.eventb.core.predicate="card(floors) = N"/>
+<org.eventb.core.axiom name="_UDnxIZLGEeGDnrSJsRnBWA" org.eventb.core.label="axm3" org.eventb.core.predicate="N &gt; 1"/>
+<org.eventb.core.axiom name="_UDnxI5LGEeGDnrSJsRnBWA" org.eventb.core.label="thm1" org.eventb.core.predicate="N+1 = top_floor−ground_floor+1" org.eventb.core.theorem="true"/>
+<org.eventb.core.axiom name="_YgvtoJLPEeGDnrSJsRnBWA" org.eventb.core.comment="choice of gf and tf below is consistent" org.eventb.core.label="thm2" org.eventb.core.predicate="N+1 = N−0+1" org.eventb.core.theorem="true"/>
+<org.eventb.core.axiom name="_UDoYMJLGEeGDnrSJsRnBWA" org.eventb.core.label="axm4" org.eventb.core.predicate="ground_floor = 0"/>
+<org.eventb.core.axiom name="_UDoYMZLGEeGDnrSJsRnBWA" org.eventb.core.label="axm5" org.eventb.core.predicate="top_floor = N−1"/>
+<org.eventb.core.axiom name="_ympjEecqEeSkl9xpDj6YMw" org.eventb.core.label="axm6" org.eventb.core.predicate="N = 3"/>
+</org.eventb.core.contextFile>

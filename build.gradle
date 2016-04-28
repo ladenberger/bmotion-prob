@@ -1,15 +1,15 @@
 apply plugin: 'java'
-apply plugin: 'groovy'
 apply plugin: 'maven'
+apply plugin: 'eclipse'
 
-project.version = '0.2.8'
+project.version = '0.3.0-SNAPSHOT'
 project.group = 'de.hhu.stups'
 project.archivesBaseName = "bmotion-prob"
 
-project.sourceCompatibility = '1.7'
-project.targetCompatibility = '1.7'
+project.sourceCompatibility = '1.8'
+project.targetCompatibility = '1.8'
 
-def bmotionVersion = '0.2.8'
+def bmotionVersion = '0.3.0-SNAPSHOT'
 
 repositories {
     mavenCentral()
@@ -25,13 +25,13 @@ repositories {
 
 sourceSets {
     main {
-        groovy {
+        java {
             srcDirs = ['src/main/java']
         }
     }
 
     test {
-        groovy {
+        java {
             srcDirs = ['src/test/java']
         }
     }
@@ -84,10 +84,10 @@ if (project.hasProperty('ossrhUsername') && project.hasProperty('ossrhPassword')
 
                 pom.project {
 
-                    name 'BMotion Studio for ProB Server'
+                    name 'BMotionWeb Server ProB Module'
                     packaging 'jar'
                     // optionally artifactId can be defined here
-                    description "BMotion Studio for ProB Server"
+                    description "BMotionWeb Server ProB Module"
                     url 'https://github.com/ladenberger/bmotion-prob'
 
                     licenses {

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<org.eventb.core.machineFile org.eventb.core.comment="Specification for the request and serve" org.eventb.core.configuration="org.eventb.core.fwd" org.eventb.texttools.text_lastmodified="1340705398779" org.eventb.texttools.text_representation="machine m2 // Specification for the request and serve&#10; refines m1  sees c0 c1 c2&#10;&#10;variables floor move door request service&#10;&#10;invariants&#10;  @inv5 request ⊆ ground_floor‥top_floor&#10;  @inv6 service ⊆ {floor}&#10;&#10;events&#10;  event INITIALISATION extends INITIALISATION&#10;    then&#10;      @act4 request ≔ ∅&#10;      @act5 service ≔ ∅&#10;  end&#10;&#10;  event move_serve refines switch_move_st&#10;    where&#10;      @grd1 floor ∈ request&#10;    then&#10;      @act1 move ≔ idle&#10;      @act2 request ≔ request ∖ {floor}&#10;      @act3 service ≔ service ∪ {floor}&#10;  end&#10;&#10;  event send_request&#10;    any f&#10;    where&#10;      @grd1 f ∈ floors&#10;    then&#10;      @act1 request ≔ request ∪ {f}&#10;  end&#10;&#10;  event move_up extends move_up&#10;    where&#10;      @grd3 floor ∉ request&#10;      @grd4 service = ∅&#10;  end&#10;&#10;  event move_up_stop extends move_up_stop&#10;  end&#10;&#10;  event move_dn extends move_dn&#10;    where&#10;      @grd3 floor ∉ request&#10;      @grd4 service = ∅&#10;  end&#10;&#10;  event move_dn_stop extends move_dn_stop&#10;  end&#10;&#10;  event switch_move_up extends switch_move_up&#10;  end&#10;&#10;  event open_door extends open_door&#10;    where&#10;      @grd3 floor ∈ service&#10;    then&#10;      @act2 service ≔ service ∖ {floor}&#10;  end&#10;&#10;  event close_door extends close_door&#10;  end&#10;&#10;  event switch_move_dn extends switch_move_dn&#10;  end&#10;end&#10;" version="5">
+<org.eventb.core.refinesMachine name="_FgPZcb93EeGeSMM5XAMsMg" org.eventb.core.target="m1"/>
+<org.eventb.core.seesContext name="_FgQAgL93EeGeSMM5XAMsMg" org.eventb.core.target="c0"/>
+<org.eventb.core.seesContext name="_FgQAgb93EeGeSMM5XAMsMg" org.eventb.core.target="c1"/>
+<org.eventb.core.seesContext name="_FgQAgr93EeGeSMM5XAMsMg" org.eventb.core.target="c2"/>
+<org.eventb.core.variable name="_I6PR1JLaEeGDnrSJsRnBWA" org.eventb.core.identifier="floor"/>
+<org.eventb.core.variable name="_0U3GEJLVEeGDnrSJsRnBWA" org.eventb.core.identifier="move"/>
+<org.eventb.core.variable name="_0U3GEZLVEeGDnrSJsRnBWA" org.eventb.core.identifier="door"/>
+<org.eventb.core.variable name="_I6PR1ZLaEeGDnrSJsRnBWA" org.eventb.core.identifier="request"/>
+<org.eventb.core.variable name="_W2hgIZLSEeGDnrSJsRnBWB" org.eventb.core.identifier="service"/>
+<org.eventb.core.invariant name="_I6PR1pLaEeGDnrSJsRnBWA" org.eventb.core.label="inv5" org.eventb.core.predicate="request ⊆ ground_floor‥top_floor"/>
+<org.eventb.core.invariant name="_W2hgIZLSEeGDnrSJsRnBWC" org.eventb.core.label="inv6" org.eventb.core.predicate="service ⊆ {floor}"/>
+<org.eventb.core.event name="'" org.eventb.core.convergence="0" org.eventb.core.extended="true" org.eventb.core.label="INITIALISATION">
+<org.eventb.core.action name="_I6P44JLaEeGDnrSJsRnBWA" org.eventb.core.assignment="request ≔ ∅" org.eventb.core.label="act4"/>
+<org.eventb.core.action name="_I6P44JLaEeGDnrSJsRnBWB" org.eventb.core.assignment="service ≔ ∅" org.eventb.core.label="act5"/>
+</org.eventb.core.event>
+<org.eventb.core.event name="_I6P44ZLaEeGDnrSJsRnBWA" org.eventb.core.convergence="0" org.eventb.core.extended="false" org.eventb.core.label="move_serve">
+<org.eventb.core.refinesEvent name="_FgScwL93EeGeSMM5XAMsMg" org.eventb.core.target="switch_move_st"/>
+<org.eventb.core.guard name="_I6P445LaEeGDnrSJsRnBWA" org.eventb.core.label="grd1" org.eventb.core.predicate="floor ∈ request"/>
+<org.eventb.core.action name="_I6P45JLaEeGDnrSJsRnBWA" org.eventb.core.assignment="move ≔ idle" org.eventb.core.label="act1"/>
+<org.eventb.core.action name="_I6P45ZLaEeGDnrSJsRnBWA" org.eventb.core.assignment="request ≔ request ∖ {floor}" org.eventb.core.label="act2"/>
+<org.eventb.core.action name="_I6P45ZLaEeGDnrSJsRnBWB" org.eventb.core.assignment="service ≔ service ∪ {floor}" org.eventb.core.label="act3"/>
+</org.eventb.core.event>
+<org.eventb.core.event name="_W2fq9JLSEeGDnrSJsRnBWA" org.eventb.core.convergence="0" org.eventb.core.extended="true" org.eventb.core.label="move_up">
+<org.eventb.core.refinesEvent name="_FgTq4L93EeGeSMM5XAMsMg" org.eventb.core.target="move_up"/>
+<org.eventb.core.guard name="_I6Qf9JLaEeGDnrSJsRnBWA" org.eventb.core.label="grd3" org.eventb.core.predicate="floor ∉ request"/>
+<org.eventb.core.guard name="_I6Qf9JLaEeGDnrSJsRnBWB" org.eventb.core.label="grd4" org.eventb.core.predicate="service = ∅"/>
+</org.eventb.core.event>
+<org.eventb.core.event name="_W2gSA5LSEeGDnrSJsRnBWA" org.eventb.core.convergence="0" org.eventb.core.extended="true" org.eventb.core.label="move_up_stop">
+<org.eventb.core.refinesEvent name="_FgUR8L93EeGeSMM5XAMsMg" org.eventb.core.target="move_up_stop"/>
+</org.eventb.core.event>
+<org.eventb.core.event name="_W2g5EZLSEeGDnrSJsRnBWA" org.eventb.core.convergence="0" org.eventb.core.extended="true" org.eventb.core.label="move_dn">
+<org.eventb.core.refinesEvent name="_FgU5AL93EeGeSMM5XAMsMg" org.eventb.core.target="move_dn"/>
+<org.eventb.core.guard name="_I6RHAZLaEeGDnrSJsRnBWA" org.eventb.core.label="grd3" org.eventb.core.predicate="floor ∉ request"/>
+<org.eventb.core.guard name="_I6RHAZLaEeGDnrSJsRnBWB" org.eventb.core.label="grd4" org.eventb.core.predicate="service = ∅"/>
+</org.eventb.core.event>
+<org.eventb.core.event name="_W2hgIZLSEeGDnrSJsRnBWA" org.eventb.core.convergence="0" org.eventb.core.extended="true" org.eventb.core.label="move_dn_stop">
+<org.eventb.core.refinesEvent name="_FgVgEL93EeGeSMM5XAMsMg" org.eventb.core.target="move_dn_stop"/>
+</org.eventb.core.event>
+<org.eventb.core.event name="_0U4UMZLVEeGDnrSJsRnBWA" org.eventb.core.convergence="0" org.eventb.core.extended="true" org.eventb.core.label="switch_move_up">
+<org.eventb.core.refinesEvent name="_FgWHIL93EeGeSMM5XAMsMg" org.eventb.core.target="switch_move_up"/>
+</org.eventb.core.event>
+<org.eventb.core.event name="_0U4UM5LVEeGDnrSJsRnBWA" org.eventb.core.convergence="0" org.eventb.core.extended="true" org.eventb.core.label="open_door">
+<org.eventb.core.refinesEvent name="_FgWHIb93EeGeSMM5XAMsMg" org.eventb.core.target="open_door"/>
+<org.eventb.core.guard name="_I6RuEJLaEeGDnrSJsRnBWB" org.eventb.core.label="grd3" org.eventb.core.predicate="floor ∈ service"/>
+<org.eventb.core.action name="_I6RuEJLaEeGDnrSJsRnBWC" org.eventb.core.assignment="service ≔ service ∖ {floor}" org.eventb.core.label="act2"/>
+</org.eventb.core.event>
+<org.eventb.core.event name="_0U47QZLVEeGDnrSJsRnBWA" org.eventb.core.convergence="0" org.eventb.core.extended="true" org.eventb.core.label="close_door">
+<org.eventb.core.refinesEvent name="_FgXVQL93EeGeSMM5XAMsMg" org.eventb.core.target="close_door"/>
+</org.eventb.core.event>
+<org.eventb.core.event name="_0U47RJLVEeGDnrSJsRnBWA" org.eventb.core.convergence="0" org.eventb.core.extended="true" org.eventb.core.label="switch_move_dn">
+<org.eventb.core.refinesEvent name="_FgXVQb93EeGeSMM5XAMsMg" org.eventb.core.target="switch_move_dn"/>
+</org.eventb.core.event>
+<org.eventb.core.event name="_FgXVQr93EeGeSMM5XAMsMg" org.eventb.core.convergence="0" org.eventb.core.extended="false" org.eventb.core.label="send_request">
+<org.eventb.core.parameter name="_FgX8UL93EeGeSMM5XAMsMg" org.eventb.core.identifier="f"/>
+<org.eventb.core.guard name="_FgX8Ub93EeGeSMM5XAMsMg" org.eventb.core.label="grd1" org.eventb.core.predicate="f ∈ floors"/>
+<org.eventb.core.action name="_FgYjYL93EeGeSMM5XAMsMg" org.eventb.core.assignment="request ≔ request ∪ {f}" org.eventb.core.label="act1"/>
+</org.eventb.core.event>
+</org.eventb.core.machineFile>
