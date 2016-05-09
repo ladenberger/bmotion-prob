@@ -156,7 +156,7 @@ public abstract class ProBVisualization extends BMotion implements IAnimationCha
 		File modelFile = new File(model);
 		if (modelFile.exists()) {
 
-			log.info("BMotion Studio: Loading model " + model);
+			log.info("BMotionWeb: Loading model " + model);
 
 			try {
 
