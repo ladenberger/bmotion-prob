@@ -306,7 +306,8 @@ public abstract class ProBVisualization extends BMotion implements IAnimationCha
 		if (newTrace == null) {
 			throw new BMotionException("Could not got to trace index " + index);
 		}
-
+		
+		animations.traceChange(newTrace);
 		trace = newTrace;
 
 	}

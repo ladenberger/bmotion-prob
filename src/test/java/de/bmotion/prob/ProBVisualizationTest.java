@@ -44,6 +44,7 @@ public class ProBVisualizationTest {
 		
 		vis.gotoTraceIndex(3);
 		
+		assertEquals(animations.getCurrentTrace(), vis.getTrace());		
 		assertEquals("switch_move_up()", vis.getTrace().getCurrentTransition().getRep());
 		
 	}
