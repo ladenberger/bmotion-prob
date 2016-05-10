@@ -151,7 +151,7 @@ public abstract class BVisualization extends ProBVisualization {
 	}
 
 	@Override
-	public Object executeEvent(String name, Map<String, String> options) throws BMotionException {
+	public Object executeEvent(Map<String, String> options) throws BMotionException {
 
 		if (trace == null) {
 			throw new BMotionException("Could not execute event because no trace exists.");
@@ -159,18 +159,21 @@ public abstract class BVisualization extends ProBVisualization {
 
 		Trace newTrace;
 
+		String transitionName = options.get("name");
 		String transitionPredicate = options.get("predicate");
+
 		if (transitionPredicate != null) {
 			transitionPredicate = transitionPredicate.length() == 0 ? "TRUE=TRUE" : transitionPredicate;
-			newTrace = trace.execute(name, transitionPredicate);
+			newTrace = trace.execute(transitionName, transitionPredicate);
 		} else {
-			newTrace = trace.execute(name);
+			newTrace = trace.execute(transitionName);
 		}
 
 		if (newTrace == null) {
-			throw new BMotionException("Could not execute event " + name + " " + transitionPredicate);
+			throw new BMotionException("Could not execute event " + transitionName + " " + transitionPredicate);
 		}
 
+		transitionExecutors.put(newTrace.getCurrent().getIndex(), options.get("executor"));
 		animations.traceChange(newTrace);
 		trace = newTrace;
 

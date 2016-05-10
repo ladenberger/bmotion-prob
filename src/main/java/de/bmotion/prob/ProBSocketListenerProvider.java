@@ -8,6 +8,7 @@ import com.corundumstudio.socketio.SocketIOClient;
 import com.corundumstudio.socketio.listener.DataListener;
 
 import de.bmotion.core.BMotion;
+import de.bmotion.core.BMotionException;
 import de.bmotion.core.BMotionSocketServer;
 import de.bmotion.core.IBMotionSocketListenerProvider;
 import de.bmotion.core.objects.ErrorObject;
@@ -123,6 +124,24 @@ public class ProBSocketListenerProvider implements IBMotionSocketListenerProvide
 					Trace trace = prob.getTrace();
 					if (ackRequest.isAckRequested()) {
 						ackRequest.sendAckData(prob.getHistory(trace.getCurrent()));
+					}
+				}
+			}
+		});
+
+		server.getSocket().addEventListener("gotoTraceIndex", SessionObject.class, new DataListener<SessionObject>() {
+			@Override
+			public void onData(final SocketIOClient client, SessionObject sessionObject, final AckRequest ackRequest) {
+				BMotion bms = server.getSessions().get(sessionObject.getSessionId());
+				if (bms != null && bms instanceof ProBVisualization) {
+					ProBVisualization prob = (ProBVisualization) bms;
+					String index = sessionObject.getOptions().get("index");
+					try {
+						prob.gotoTraceIndex(Integer.valueOf(index));
+					} catch (NumberFormatException e) {
+						ackRequest.sendAckData(new ErrorObject(e.getMessage()));
+					} catch (BMotionException e) {
+						ackRequest.sendAckData(new ErrorObject(e.getMessage()));
 					}
 				}
 			}

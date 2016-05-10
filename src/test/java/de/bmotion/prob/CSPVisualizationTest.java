@@ -4,7 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.net.URL;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -56,14 +55,13 @@ public class CSPVisualizationTest {
 	@Test
 	public void cspExecuteEventAndGetOpStringTest() throws BMotionException {
 
-		Map<String, String> options = Collections.emptyMap();
-		vis.executeEvent("Network", options);
+		vis.executeEvent("Network");
 		assertEquals("Network", vis.getOpString(vis.getTrace().getCurrentTransition()));
 
-		vis.executeEvent("test.0.3", options);
+		vis.executeEvent("test.0.3");
 		assertEquals("test.0.3", vis.getOpString(vis.getTrace().getCurrentTransition()));
 
-		vis.executeEvent("fail.2", options);
+		vis.executeEvent("fail.2");
 		assertEquals("fail.2", vis.getOpString(vis.getTrace().getCurrentTransition()));
 
 	}

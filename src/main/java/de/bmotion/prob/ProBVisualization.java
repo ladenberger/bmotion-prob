@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -39,8 +40,7 @@ public abstract class ProBVisualization extends BMotion implements IAnimationCha
 	protected final AnimationSelector animations;
 	protected final Api api;
 	protected Trace trace;
-
-	// private final transitionExecutors = [:]
+	protected Map<Integer, String> transitionExecutors = new HashMap<Integer, String>();
 
 	public ProBVisualization(String sessionId) {
 		super(sessionId, new ProBScriptEngineProvider());
@@ -93,9 +93,10 @@ public abstract class ProBVisualization extends BMotion implements IAnimationCha
 			transitionObject.setId(transition.getId());
 			transitionObject.setGroup(group);
 			transitionObject.setOpString(getOpString(transition));
+			transitionObject.setExecutor(transitionExecutors.get(i));
 			transitionObject.setIndex(i);
 			transitionObject.getParameters().addAll(transition.getParams());
-			transitionObject.getReturnValues().addAll(transition.getReturnValues());
+			transitionObject.getReturnValues().addAll(transition.getReturnValues());			
 			transitionObjectList.add(transitionObject);
 
 		});
@@ -295,6 +296,18 @@ public abstract class ProBVisualization extends BMotion implements IAnimationCha
 		});
 
 		return new GraphObject(nodes, edges);
+
+	}
+
+	public void gotoTraceIndex(int index) throws BMotionException {
+
+		Trace newTrace = trace.gotoPosition(Integer.valueOf(index));
+
+		if (newTrace == null) {
+			throw new BMotionException("Could not got to trace index " + index);
+		}
+
+		trace = newTrace;
 
 	}
 

@@ -80,7 +80,7 @@ public class EventBVisualizationTest {
 		assertEquals(11, modelObject.getTransitions().size());
 
 	}
-
+	
 	@Test
 	public void eventBExecuteEventAndGetOpStringTest() throws BMotionException {
 

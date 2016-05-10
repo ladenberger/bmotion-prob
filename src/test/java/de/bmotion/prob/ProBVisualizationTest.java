@@ -27,6 +27,26 @@ public class ProBVisualizationTest {
 	@AfterClass
 	public static void tearDownAfterClass() throws Exception {
 	}
+	
+	@Test
+	public void gotoTraceIndexTest() throws BMotionException {
+		
+		URL modelResource = ProBVisualizationTest.class.getResource("models/EventB/lift/m3.bum");
+		EventBVisualization vis = new EventBVisualization();
+		vis.initModel(modelResource.getPath(), new HashMap<String, String>());
+		Trace oldTrace = vis.getTrace();
+		Trace trace = oldTrace.randomAnimation(2);
+		animations.traceChange(trace);
+
+		vis.executeEvent("close_door");
+		vis.executeEvent("switch_move_up");
+		vis.executeEvent("move_up");
+		
+		vis.gotoTraceIndex(3);
+		
+		assertEquals("switch_move_up()", vis.getTrace().getCurrentTransition().getRep());
+		
+	}
 
 	@Test
 	public void getHistoryEventBTest() throws BMotionException {

@@ -22,6 +22,8 @@ public class TransitionObject {
 	private List<String> returnValues;
 	
 	private int index;
+	
+	private String executor;
 
 	public TransitionObject() {
 		
@@ -112,6 +114,14 @@ public class TransitionObject {
 
 	public void setIndex(int index) {
 		this.index = index;
+	}
+
+	public String getExecutor() {
+		return executor;
+	}
+
+	public void setExecutor(String executor) {
+		this.executor = executor;
 	}
 	
 }

@@ -33,23 +33,25 @@ public class CSPVisualization extends ProBVisualization {
 	}
 
 	@Override
-	public Object executeEvent(String name, Map<String, String> options) throws BMotionException {
+	public Object executeEvent(Map<String, String> options) throws BMotionException {
 
 		if (trace == null) {
 			throw new BMotionException("Could not execute event because no trace exists.");
 		}
 
+		String transitionName = options.get("name");
 		Transition transition = trace.getNextTransitions().stream().filter(t -> {
 			String parameterString = String.join(".", t.getParams());
 			String eventName = t.getParams().size() > 0 ? t.getName() + "." : t.getName();
-			return (eventName + parameterString).equals(name);
+			return (eventName + parameterString).equals(transitionName);
 		}).findFirst().orElse(null);
 
 		if (transition == null) {
-			throw new BMotionException("Could not execute event " + name);
+			throw new BMotionException("Could not execute event " + transitionName);
 		}
 
 		Trace newTrace = trace.add(transition);
+		transitionExecutors.put(newTrace.getCurrent().getIndex(), options.get("executor"));
 		animations.traceChange(newTrace);
 		trace = newTrace;
 
