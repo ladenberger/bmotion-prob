@@ -71,6 +71,7 @@ public abstract class ProBVisualization extends BMotion implements IAnimationCha
 		log.info("ProB Session " + id + " disconnected!");
 		animations.deregisterAnimationChangeListener(this);
 		animations.deregisterModelChangedListeners(this);
+		animations.removeTrace(trace);
 	}
 
 	public abstract String getOpString(Transition transition);
@@ -96,7 +97,7 @@ public abstract class ProBVisualization extends BMotion implements IAnimationCha
 			transitionObject.setExecutor(transitionExecutors.get(i));
 			transitionObject.setIndex(i);
 			transitionObject.getParameters().addAll(transition.getParams());
-			transitionObject.getReturnValues().addAll(transition.getReturnValues());			
+			transitionObject.getReturnValues().addAll(transition.getReturnValues());
 			transitionObjectList.add(transitionObject);
 
 		});
@@ -161,32 +162,8 @@ public abstract class ProBVisualization extends BMotion implements IAnimationCha
 
 			try {
 
-				// Get or create trace
-				if (trace != null) {
-					if (!trace.getModel().getModelFile().getCanonicalPath().equals(modelFile.getCanonicalPath())) {
-						Trace oldTrace = trace;
-						trace = createNewModelTrace(modelFile.getCanonicalPath());
-						animations.addNewAnimation(trace);
-						animations.removeTrace(oldTrace);
-					} else {
-						animations.changeCurrentAnimation(trace);
-					}
-				} else {
-					// Check if trace already exists in animations
-					trace = animations.getTraces().stream().filter(t -> {
-						try {
-							return t.getModel().getModelFile().getCanonicalPath().equals(modelFile.getCanonicalPath());
-						} catch (IOException e) {
-							return false;
-						}
-					}).findFirst().orElse(null);
-					if (trace == null) {
-						trace = createNewModelTrace(modelFile.getCanonicalPath());
-						animations.addNewAnimation(trace);
-					} else {
-						animations.changeCurrentAnimation(trace);
-					}
-				}
+				trace = createNewModelTrace(modelFile.getCanonicalPath());
+				animations.addNewAnimation(trace);
 
 				if (trace == null) {
 					throw new BMotionException("Could not create trace.");
@@ -306,7 +283,7 @@ public abstract class ProBVisualization extends BMotion implements IAnimationCha
 		if (newTrace == null) {
 			throw new BMotionException("Could not got to trace index " + index);
 		}
-		
+
 		animations.traceChange(newTrace);
 		trace = newTrace;
 
