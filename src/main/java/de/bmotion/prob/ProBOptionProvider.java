@@ -10,6 +10,7 @@ public class ProBOptionProvider implements IBMotionOptionProvider {
 	@Override
 	public void installOptions(Options options) {
 		options.addOption(Option.builder("probPort").hasArg().desc("ProB 2 Port").argName("probPort").build());
+		options.addOption(Option.builder("local").argName("local").build());
 	}
 
 }
