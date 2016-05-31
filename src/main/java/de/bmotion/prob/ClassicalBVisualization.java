@@ -8,6 +8,9 @@ import de.bmotion.prob.model.ModelObject;
 import de.bmotion.prob.model.SetObject;
 import de.bmotion.prob.model.TransitionObject;
 import de.bmotion.prob.model.VariableObject;
+import de.prob.animator.domainobjects.ClassicalB;
+import de.prob.animator.domainobjects.FormulaExpand;
+import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.model.classicalb.ClassicalBConstant;
 import de.prob.model.classicalb.ClassicalBMachine;
 import de.prob.model.classicalb.ClassicalBVariable;
@@ -64,6 +67,11 @@ public class ClassicalBVisualization extends BVisualization {
 
 		}
 
+	}
+
+	@Override
+	protected IEvalElement getEvalElement(String formula) {
+		return new ClassicalB(formula, FormulaExpand.expand);
 	}
 
 }

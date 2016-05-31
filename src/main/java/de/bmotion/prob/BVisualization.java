@@ -83,7 +83,7 @@ public abstract class BVisualization extends ProBVisualization {
 			StateSpace space = trace.getStateSpace();
 			IEvalElement e = formulas.get(formula);
 			if (!space.isSubscribed(e)) {
-				e = trace.getModel().parseFormula(formula);
+				e = getEvalElement(formula);
 				formulas.put(formula, e);
 				space.subscribe(this, e);
 			}
@@ -338,5 +338,7 @@ public abstract class BVisualization extends ProBVisualization {
 		}
 
 	}
+	
+	protected abstract IEvalElement getEvalElement(String formula);
 
 }

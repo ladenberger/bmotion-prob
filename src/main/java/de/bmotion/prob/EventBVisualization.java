@@ -1,13 +1,19 @@
 package de.bmotion.prob;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import org.eventb.core.ast.extension.IFormulaExtension;
 
 import de.bmotion.prob.model.ConstantObject;
 import de.bmotion.prob.model.ModelObject;
 import de.bmotion.prob.model.SetObject;
 import de.bmotion.prob.model.TransitionObject;
 import de.bmotion.prob.model.VariableObject;
+import de.prob.animator.domainobjects.EventB;
+import de.prob.animator.domainobjects.FormulaExpand;
+import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.model.eventb.Event;
 import de.prob.model.eventb.EventBMachine;
 import de.prob.model.eventb.EventBModel;
@@ -86,6 +92,11 @@ public class EventBVisualization extends BVisualization {
 
 		}
 
+	}
+
+	@Override
+	protected IEvalElement getEvalElement(String formula) {
+		return new EventB(formula, Collections.<IFormulaExtension> emptySet(), FormulaExpand.expand);
 	}
 
 }

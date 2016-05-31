@@ -162,7 +162,7 @@ public abstract class ProBVisualization extends BMotion implements IAnimationCha
 
 			try {
 
-				trace = createNewModelTrace(modelFile.getCanonicalPath());
+				trace = createNewModelTrace(modelFile.getCanonicalPath(), options);
 				animations.addNewAnimation(trace);
 
 				if (trace == null) {
@@ -184,26 +184,26 @@ public abstract class ProBVisualization extends BMotion implements IAnimationCha
 
 	}
 
-	private Trace createNewModelTrace(String modelPath) throws BMotionException {
+	private Trace createNewModelTrace(String modelPath, Map<String, String> options) throws BMotionException {
 
 		StateSpace s;
 		try {
 			String fileExtension = modelPath.substring(modelPath.length() - 3);
 			switch (fileExtension) {
 			case "csp":
-				s = api.csp_load(modelPath);
+				s = api.csp_load(modelPath, options);
 				break;
 			case "buc":
 			case "bcc":
 			case "bum":
 			case "bcm":
-				s = api.eventb_load(modelPath);
+				s = api.eventb_load(modelPath, options);
 				break;
 			case "mch":
-				s = api.b_load(modelPath);
+				s = api.b_load(modelPath, options);
 				break;
 			case "tla":
-				s = api.tla_load(modelPath);
+				s = api.tla_load(modelPath, options);
 				break;
 			default:
 				throw new BMotionException("Unknown model " + modelPath);
