@@ -53,6 +53,14 @@ public class InitSessionTest {
 	}
 
 	@Test
+	public void initSessionWithNullOptions() throws BMotionException {
+		URL modelResource = InitSessionTest.class.getResource("models/B/phonebook/phonebook.mch");
+		BMotion bms = InitSessionService.initSession(server.getSocketServer(), sessionId, modelResource.getPath(),
+				null);
+		assertThat(bms, instanceOf(ClassicalBVisualization.class));
+	}
+
+	@Test
 	public void initBSessionTest() throws BMotionException {
 		initSessionTestHelper("models/B/phonebook/phonebook.mch", ClassicalBVisualization.class);
 	}
