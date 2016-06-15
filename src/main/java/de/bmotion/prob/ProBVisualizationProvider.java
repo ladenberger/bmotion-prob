@@ -10,15 +10,20 @@ public class ProBVisualizationProvider implements IBMotionVisualizationProvider 
 	@Override
 	public BMotion get(String sessionId, String modelPath, Map<String, String> options) {
 
-		switch (getFormalism(modelPath)) {
-		case "b":
-			return new ClassicalBVisualization(sessionId);
-		case "eventb":
-			return new EventBVisualization(sessionId);
-		case "csp":
-			return new CSPVisualization(sessionId);
-		default:
+		String formalism = getFormalism(modelPath);
+		if(formalism == null) {
 			return null;
+		} else {
+			switch (formalism) {
+			case "b":
+				return new ClassicalBVisualization(sessionId);
+			case "eventb":
+				return new EventBVisualization(sessionId);
+			case "csp":
+				return new CSPVisualization(sessionId);
+			default:
+				return null;
+			}
 		}
 
 	}

@@ -52,6 +52,11 @@ public class InitSessionTest {
 
 	}
 
+	@Test(expected = BMotionException.class)
+	public void initSessionWithUnknownSpecificationFileShouldThrowException() throws BMotionException {
+		InitSessionService.initSession(server.getSocketServer(), sessionId, "unknownSpecificationFile", null);
+	}
+
 	@Test
 	public void initSessionWithNullOptions() throws BMotionException {
 		URL modelResource = InitSessionTest.class.getResource("models/B/phonebook/phonebook.mch");
