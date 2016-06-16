@@ -168,10 +168,12 @@ public abstract class ProBVisualization extends BMotion implements IAnimationCha
 				if (trace == null) {
 					throw new BMotionException("Could not create trace.");
 				}
-
+				
 				toolData.put("stateId", trace.getCurrentState().getId());
 				toolData.put("traceId", trace.getUUID().toString());
 				toolData.put("initialized", trace.getCurrentState().isInitialised());
+				toolData.put("lastOperation", trace.getCurrentState().toString());
+
 				updateModelData(trace);
 
 			} catch (IOException e) {
@@ -291,6 +293,14 @@ public abstract class ProBVisualization extends BMotion implements IAnimationCha
 
 	@Override
 	public void animatorStatus(final boolean busy) {
+	}
+
+	@Override
+	public void sessionLoaded() {
+		toolData.put("stateId", trace.getCurrentState().getId());
+		toolData.put("traceId", trace.getUUID().toString());
+		toolData.put("initialized", trace.getCurrentState().isInitialised());
+		toolData.put("lastOperation", trace.getCurrentState().toString());
 	}
 
 }

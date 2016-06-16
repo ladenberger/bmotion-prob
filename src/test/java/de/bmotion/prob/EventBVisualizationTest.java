@@ -60,9 +60,9 @@ public class EventBVisualizationTest {
 		assertNotNull(vis.getTrace());
 
 		// Client data is set
-		assertEquals(tooltData.get("stateId"), vis.getTrace().getCurrentState().getId());
-		assertEquals(tooltData.get("traceId"), vis.getTrace().getUUID().toString());
-		assertEquals(true, tooltData.get("initialized"));
+		assertEquals(vis.getTrace().getCurrentState().getId(), tooltData.get("stateId"));
+		assertEquals(vis.getTrace().getUUID().toString(), tooltData.get("traceId"));
+		assertEquals(tooltData.get("initialized"), true);
 
 	}
 
