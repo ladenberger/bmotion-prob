@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import de.be4.classicalb.core.parser.exceptions.BException;
+import de.bmotion.core.BMotionEvalException;
 import de.bmotion.core.BMotionException;
 import de.bmotion.core.objects.FormulaListObject;
 import de.bmotion.core.objects.FormulaObject;
@@ -58,15 +59,15 @@ public abstract class BVisualization extends ProBVisualization {
 	public Object eval(String formula, Map<String, Object> options) throws BMotionException {
 
 		if (trace == null) {
-			throw new BMotionException("No trace exists.");
+			throw new BMotionEvalException("No trace exists", formula);
 		}
 
 		if (formula == null) {
-			throw new BMotionException("Formula must not be null.");
+			throw new BMotionEvalException("Formula must not be null", formula);
 		}
 
 		if (!trace.getCurrentState().isInitialised()) {
-			throw new BMotionException("Model must be initialized.");
+			throw new BMotionEvalException("Model must be initialized", formula);
 		}
 
 		Object stateId = options.get("stateId");
@@ -338,7 +339,7 @@ public abstract class BVisualization extends ProBVisualization {
 		}
 
 	}
-	
+
 	protected abstract IEvalElement getEvalElement(String formula);
 
 }
