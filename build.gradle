@@ -2,14 +2,14 @@ apply plugin: 'java'
 apply plugin: 'maven'
 apply plugin: 'eclipse'
 
-project.version = '0.3.0-SNAPSHOT'
+project.version = '0.3.0'
 project.group = 'de.hhu.stups'
 project.archivesBaseName = "bmotion-prob"
 
 project.sourceCompatibility = '1.8'
 project.targetCompatibility = '1.8'
 
-def bmotionVersion = '0.3.0-SNAPSHOT'
+def bmotionVersion = '0.3.0'
 
 repositories {
     mavenCentral()
