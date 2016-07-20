@@ -19,6 +19,7 @@ import org.junit.Test;
 import de.bmotion.core.BMotionException;
 import de.bmotion.core.objects.FormulaListObject;
 import de.bmotion.core.objects.FormulaObject;
+import de.bmotion.core.objects.FormulaReturnObject;
 import de.bmotion.prob.model.ModelObject;
 import de.bmotion.prob.objects.BEventReturnObject;
 import de.prob.statespace.AnimationSelector;
@@ -80,7 +81,7 @@ public class EventBVisualizationTest {
 		assertEquals(11, modelObject.getTransitions().size());
 
 	}
-	
+
 	@Test
 	public void eventBExecuteEventAndGetOpStringTest() throws BMotionException {
 
@@ -140,8 +141,8 @@ public class EventBVisualizationTest {
 		Map<String, Map<String, Object>> result = vis.evaluateFormulas(oList);
 		Map<String, Object> resultFormulas = result.get("somebmsid");
 		assertEquals(2, resultFormulas.size());
-		assertEquals(resultFormulas.get("move"), "idle");
-		assertEquals(resultFormulas.get("service"), "{}");
+		assertEquals(((FormulaReturnObject) resultFormulas.get("move")).getResult(), "idle");
+		assertEquals(((FormulaReturnObject) resultFormulas.get("service")).getResult(), "{}");
 
 	}
 
@@ -162,8 +163,8 @@ public class EventBVisualizationTest {
 		Map<String, Map<String, Object>> result = vis.evaluateFormulas(oList);
 		Map<String, Object> resultFormulas = result.get("somebmsid");
 		assertEquals(2, resultFormulas.size());
-		assertThat(resultFormulas.get("floor"), instanceOf(BigInteger.class));
-		assertEquals(resultFormulas.get("service"), Collections.emptyList());
+		assertThat(((FormulaReturnObject) resultFormulas.get("floor")).getResult(), instanceOf(BigInteger.class));
+		assertEquals(((FormulaReturnObject) resultFormulas.get("service")).getResult(), Collections.emptyList());
 
 	}
 

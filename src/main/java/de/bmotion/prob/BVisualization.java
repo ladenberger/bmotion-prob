@@ -13,6 +13,7 @@ import de.bmotion.core.BMotionEvalException;
 import de.bmotion.core.BMotionException;
 import de.bmotion.core.objects.FormulaListObject;
 import de.bmotion.core.objects.FormulaObject;
+import de.bmotion.core.objects.FormulaReturnObject;
 import de.bmotion.prob.model.ModelObject;
 import de.bmotion.prob.objects.BEventReturnObject;
 import de.bmotion.prob.objects.GraphNodeEdgeObject;
@@ -260,8 +261,10 @@ public abstract class BVisualization extends ProBVisualization {
 							.collect(Collectors.toMap(Map.Entry::getKey, e -> {
 
 								FormulaListObject list = (FormulaListObject) e.getValue();
-								return list.getFormulas().stream()
+								Map<String, Object> collect = list.getFormulas().stream()
 										.collect(Collectors.toMap(obj -> obj.getFormula(), obj -> {
+
+											FormulaReturnObject returnObj = new FormulaReturnObject();
 
 											Boolean translate = false;
 											Object translateOption = obj.getOptions().get("translate");
@@ -276,12 +279,16 @@ public abstract class BVisualization extends ProBVisualization {
 											Object fRes = flattenResultList.get(convertedExpressions.indexOf(foundObj));
 
 											if (translate) {
-												return fRes;
+												returnObj.setResult(fRes);
 											} else {
-												return reTranslate(fRes);
+												returnObj.setResult(reTranslate(fRes));
 											}
 
+											return returnObj;
+
 										}));
+
+								return collect;
 
 							}));
 
