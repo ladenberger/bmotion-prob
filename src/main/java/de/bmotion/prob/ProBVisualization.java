@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 
 import de.bmotion.core.BMotion;
 import de.bmotion.core.BMotionException;
+import de.bmotion.core.BMotionServer;
 import de.bmotion.core.objects.FormulaListObject;
 import de.bmotion.prob.model.TransitionObject;
 import de.bmotion.prob.objects.GraphNodeEdgeObject;
@@ -153,36 +154,42 @@ public abstract class ProBVisualization extends BMotion implements IAnimationCha
 	protected abstract void updateModelData(Trace t);
 
 	@Override
-	public void initModel(String model, Map<String, String> options) throws BMotionException {
+	public void initModel(String model, Map<String, String> options, String mode) throws BMotionException {
 
-		File modelFile = new File(model);
-		if (modelFile.exists()) {
+		if (mode == BMotionServer.MODE_INTEGRATED) {
+			trace = animations.getCurrentTrace();
+		} else {
 
-			log.info("BMotionWeb: Loading model " + model);
+			File modelFile = new File(model);
+			if (modelFile.exists()) {
 
-			try {
+				log.info("BMotionWeb: Loading model " + model);
 
-				trace = createNewModelTrace(modelFile.getCanonicalPath(), options);
-				animations.addNewAnimation(trace);
+				try {
 
-				if (trace == null) {
-					throw new BMotionException("Could not create trace.");
+					trace = createNewModelTrace(modelFile.getCanonicalPath(), options);
+					animations.addNewAnimation(trace);
+
+				} catch (IOException e) {
+					throw new BMotionException("An error occured while loading model " + model + ": " + e.getMessage());
 				}
-				
-				toolData.put("stateId", trace.getCurrentState().getId());
-				toolData.put("traceId", trace.getUUID().toString());
-				toolData.put("initialized", trace.getCurrentState().isInitialised());
-				toolData.put("lastOperation", trace.getCurrentState().toString());
 
-				updateModelData(trace);
-
-			} catch (IOException e) {
-				throw new BMotionException("An error occured while loading model " + model + ": " + e.getMessage());
+			} else {
+				throw new BMotionException("No file exists at path " + model);
 			}
 
-		} else {
-			throw new BMotionException("No file exists at path " + model);
 		}
+
+		if (trace == null) {
+			throw new BMotionException("Could not create or get trace. Please animate a model.");
+		}
+
+		toolData.put("stateId", trace.getCurrentState().getId());
+		toolData.put("traceId", trace.getUUID().toString());
+		toolData.put("initialized", trace.getCurrentState().isInitialised());
+		toolData.put("lastOperation", trace.getCurrentState().toString());
+
+		updateModelData(trace);
 
 	}
 
