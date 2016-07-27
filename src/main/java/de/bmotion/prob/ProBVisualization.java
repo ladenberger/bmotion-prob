@@ -240,10 +240,6 @@ public abstract class ProBVisualization extends BMotion implements IAnimationCha
 
 		nodes.add(rootObj);
 
-		for (int i = 0; i <= trace.getTransitionList().size(); i++) {
-
-		}
-
 		IntStream.range(0, trace.getTransitionList().size()).forEach(i -> {
 
 			Transition transition = trace.getTransitionList().get(i);
