@@ -274,7 +274,7 @@ public abstract class ProBVisualization extends BMotion implements IAnimationCha
 
 			GraphNodeEdgeObject edgeObj = new GraphNodeEdgeObject("edges");
 			edgeObj.getData().put("id", "e" + sId + "" + dId);
-			edgeObj.getData().put("label", transition.getName());
+			edgeObj.getData().put("label", getOpString(transition));
 			edgeObj.getData().put("source", sId);
 			edgeObj.getData().put("target", dId);
 			edges.add(edgeObj);
