@@ -38,7 +38,7 @@ public class InitSessionTest {
 	private void initSessionTestHelper(String modelPath, Class<?> visualizationClass) throws BMotionException {
 
 		URL modelResource = InitSessionTest.class.getResource(modelPath);
-		BMotion bms = InitSessionService.initSession(server.getSocketServer(), sessionId, modelResource.getPath(),
+		BMotion bms = InitSessionService.initSession(server.getSocketServer(), sessionId, modelResource.getPath(), null,
 				new HashMap<String, String>());
 
 		// Correct visualization instance
@@ -54,13 +54,19 @@ public class InitSessionTest {
 
 	@Test(expected = BMotionException.class)
 	public void initSessionWithUnknownSpecificationFileShouldThrowException() throws BMotionException {
-		InitSessionService.initSession(server.getSocketServer(), sessionId, "unknownSpecificationFile", null);
+		InitSessionService.initSession(server.getSocketServer(), sessionId, "unknownSpecificationFile",
+				"unknownGroovyFile", null);
+	}
+
+	@Test(expected = BMotionException.class)
+	public void initSessionWithNullSpecificationFileShouldThrowException() throws BMotionException {
+		InitSessionService.initSession(server.getSocketServer(), sessionId, null, null, null);
 	}
 
 	@Test
 	public void initSessionWithNullOptions() throws BMotionException {
 		URL modelResource = InitSessionTest.class.getResource("models/B/phonebook/phonebook.mch");
-		BMotion bms = InitSessionService.initSession(server.getSocketServer(), sessionId, modelResource.getPath(),
+		BMotion bms = InitSessionService.initSession(server.getSocketServer(), sessionId, modelResource.getPath(), null,
 				null);
 		assertThat(bms, instanceOf(ClassicalBVisualization.class));
 	}
