@@ -67,6 +67,10 @@ public abstract class ProBVisualization extends BMotion implements IAnimationCha
 		return trace;
 	}
 
+	public AnimationSelector getAnimationSelector() {
+		return animations;
+	}
+
 	@Override
 	public void disconnect() {
 		log.info("ProB Session " + id + " disconnected!");
