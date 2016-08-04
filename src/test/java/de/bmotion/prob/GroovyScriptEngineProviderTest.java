@@ -48,7 +48,7 @@ public class GroovyScriptEngineProviderTest {
 		proBScriptEngineProvider.load(groovyResource.getPath(), vis);
 
 		// Two methods should be registered
-		assertEquals(vis.getMethods().size(), 3);
+		assertEquals(vis.getMethods().size(), 4);
 
 		// Test method without parameters
 		Object response1 = vis.callMethod("someMethodWithoutParameter");
@@ -61,6 +61,10 @@ public class GroovyScriptEngineProviderTest {
 		// Test method with two parameters
 		Object response3 = vis.callMethod("someMethodWith2Parameter", "arg1", "arg2");
 		assertEquals(String.valueOf(response3), "Call with two parameters arg1 arg2");
+		
+		// Test method that returns an integer
+		Object response4 = vis.callMethod("returnInteger");
+		assertEquals(response4, 0);
 		
 	}
 	
