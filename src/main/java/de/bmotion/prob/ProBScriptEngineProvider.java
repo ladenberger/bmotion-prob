@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.net.URI;
 
 import com.google.common.base.Charsets;
-import com.google.common.base.Joiner;
 import com.google.common.io.Resources;
 
 import de.bmotion.core.BMotion;
@@ -22,10 +21,15 @@ public class ProBScriptEngineProvider implements IBMotionScriptEngineProvider {
 
 	private AnimationSelector animations;
 
-	private static final String[] IMPORTS = new String[] { "import de.prob.statespace.*;",
-			"import de.prob.currentModel.representation.*;", "import de.prob.currentModel.classicalb.*;",
-			"import de.prob.currentModel.eventb.*;", "import de.prob.animator.domainobjects.*;",
-			"import de.prob.animator.command.*;" };
+	/*
+	 * private static final String[] IMPORTS = new String[] {
+	 * "import de.prob.statespace.*;",
+	 * "import de.prob.currentModel.representation.*;",
+	 * "import de.prob.currentModel.classicalb.*;",
+	 * "import de.prob.currentModel.eventb.*;",
+	 * "import de.prob.animator.domainobjects.*;",
+	 * "import de.prob.animator.command.*;" };
+	 */
 
 	public ProBScriptEngineProvider() {
 		this.api = de.prob.Main.getInjector().getInstance(Api.class);
@@ -53,7 +57,7 @@ public class ProBScriptEngineProvider implements IBMotionScriptEngineProvider {
 		try {
 			URI uri = groovyFile.toURI();
 			String scriptContents = Resources.toString(uri.toURL(), Charsets.UTF_8);
-			engine.evaluate(Joiner.on("\n").join(IMPORTS) + "\n" + scriptContents);
+			engine.evaluate(scriptContents);
 		} catch (IOException e) {
 			throw new BMotionException("An exception occurred while loading groovy script: " + e.getMessage() + ".");
 		} catch (GroovyRuntimeException e) {
@@ -64,9 +68,8 @@ public class ProBScriptEngineProvider implements IBMotionScriptEngineProvider {
 
 	}
 
-	@Override
-	public String[] getImports() {
-		return IMPORTS;
-	}
+	/*
+	 * @Override public String[] getImports() { return IMPORTS; }
+	 */
 
 }
