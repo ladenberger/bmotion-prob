@@ -226,6 +226,8 @@ public abstract class BVisualization extends ProBVisualization {
 			return f;
 		}).collect(Collectors.toList());
 
+		int formulasAmount = convertedExpressions.size();
+
 		IEvalElement eval = trace.getModel().parseFormula(String.join("|->", convertedExpressions));
 		GetTransitionDiagramCommand cmd = new GetTransitionDiagramCommand(eval);
 		StateSpace stateSpace = trace.getStateSpace();
@@ -253,7 +255,7 @@ public abstract class BVisualization extends ProBVisualization {
 					}
 				});
 
-				List<Object> flattenResultList = flattenList(translatedResults);
+				List<Object> flattenResultList = flattenList(translatedResults, formulasAmount, 0);
 
 				if (node.getErrors().isEmpty()) {
 
@@ -320,11 +322,11 @@ public abstract class BVisualization extends ProBVisualization {
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<Object> flattenList(List<Object> nestedList) {
+	public List<Object> flattenList(List<Object> nestedList, int nr, int deep) {
 		List<Object> flatList = new LinkedList<Object>();
 		for (Object obj : nestedList) {
-			if (obj instanceof List) {
-				for (Object el : flattenList((List<Object>) obj)) {
+			if (obj instanceof ArrayList && deep < nr - 1) {
+				for (Object el : flattenList((ArrayList<Object>) obj, nr, deep + 1)) {
 					flatList.add(el);
 				}
 			} else {
