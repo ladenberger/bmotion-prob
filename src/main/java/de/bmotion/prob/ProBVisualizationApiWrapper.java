@@ -1,14 +1,10 @@
 package de.bmotion.prob;
 
-import java.util.List;
-
 import de.bmotion.core.BMotion;
 import de.bmotion.core.BMotionApiWrapper;
-import de.bmotion.prob.model.TransitionObject;
 import de.prob.model.representation.AbstractModel;
 import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.Trace;
-import de.prob.statespace.TraceElement;
 
 public class ProBVisualizationApiWrapper extends BMotionApiWrapper implements IProBVisualizationApi {
 
@@ -29,11 +25,6 @@ public class ProBVisualizationApiWrapper extends BMotionApiWrapper implements IP
 	@Override
 	public AnimationSelector getAnimationSelector() {
 		return ((ProBVisualization) bmotion).getAnimationSelector();
-	}
-
-	@Override
-	public List<TransitionObject> getHistory(TraceElement currentTraceElement) {
-		return ((ProBVisualization) bmotion).getHistory(currentTraceElement);
 	}
 
 }
