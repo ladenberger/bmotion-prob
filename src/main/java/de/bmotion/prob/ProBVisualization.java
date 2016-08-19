@@ -31,7 +31,8 @@ import de.prob.statespace.Trace;
 import de.prob.statespace.TraceElement;
 import de.prob.statespace.Transition;
 
-public abstract class ProBVisualization extends BMotion implements IAnimationChangeListener, IModelChangedListener {
+public abstract class ProBVisualization extends BMotion
+		implements IAnimationChangeListener, IModelChangedListener, IProBVisualizationApi {
 
 	private final Logger log = LoggerFactory.getLogger(ProBVisualization.class);
 

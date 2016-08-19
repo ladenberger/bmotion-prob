@@ -52,7 +52,7 @@ public class ProBScriptEngineProvider implements IBMotionScriptEngineProvider {
 		engine.setVariable("api", api);
 		engine.setVariable("animations", animations);
 		engine.setVariable("engine", engine);
-		engine.setVariable("bms", session);
+		engine.setVariable("bms", new ProBVisualizationApiWrapper(session));
 
 		try {
 			URI uri = groovyFile.toURI();

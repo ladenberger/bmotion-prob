@@ -57,28 +57,49 @@ public class GroovyScriptEngineProviderTest {
 		// Test method with one parameter
 		Object response2 = vis.callMethod("someMethodWith1Parameter", "arg1");
 		assertEquals(String.valueOf(response2), "Call with one parameter arg1");
-		
+
 		// Test method with two parameters
 		Object response3 = vis.callMethod("someMethodWith2Parameter", "arg1", "arg2");
 		assertEquals(String.valueOf(response3), "Call with two parameters arg1 arg2");
-		
+
 		// Test method that returns an integer
 		Object response4 = vis.callMethod("returnInteger");
 		assertEquals(response4, 0);
-		
+
 	}
-	
+
 	@Test(expected = BMotionException.class)
 	public void ProBGroovyScriptEngineProviderCallMethodErrorTest() throws BMotionException {
 
 		URL groovyResource = ClassicalBVisualizationTest.class.getResource("groovy/registerMethod.groovy");
 		proBScriptEngineProvider.load(groovyResource.getPath(), vis);
-		
-		// Test someMethodWith2Parameter method with three parameters should throw exception
+
+		// Test someMethodWith2Parameter method with three parameters should
+		// throw exception
 		vis.callMethod("someMethodWith2Parameter", "arg1", "arg2");
-		// Test someMethodWith2Parameter method with one parameter should throw exception
+		// Test someMethodWith2Parameter method with one parameter should throw
+		// exception
 		vis.callMethod("someMethodWith2Parameter", "arg1");
-		
+
+	}
+
+	@Test(expected = BMotionException.class)
+	public void ProBGroovyScriptEngineProviderOnlyInterfaceMethodShouldBeAvailableTest() throws BMotionException {
+
+		URL groovyResource = ClassicalBVisualizationTest.class.getResource("groovy/onlyInterface.groovy");
+		proBScriptEngineProvider.load(groovyResource.getPath(), vis);
+
+		// Should throw exception
+		vis.callMethod("onlyInterface");
+
+	}
+
+	@Test
+	public void ProBGroovyScriptEngineProviderInterfaceMethodTest() throws BMotionException {
+
+		URL groovyResource = ClassicalBVisualizationTest.class.getResource("groovy/interfaceMethods.groovy");
+		proBScriptEngineProvider.load(groovyResource.getPath(), vis);
+
 	}
 
 }
